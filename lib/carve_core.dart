@@ -5,3 +5,4 @@ export 'src/rules/predicate.dart';
 export 'src/loader/case_parser.dart';
 export 'src/loader/validator.dart';
 export 'src/loader/solver.dart';
+export 'src/engine/carve_engine.dart';
