@@ -59,6 +59,6 @@ void main() {
   test('links are order-independent in the exposed state', () {
     final e = CarveEngine(fixture());
     e.link('priya', 'adrian');
-    expect(e.state.hasLink('adrian', 'priya'), isTrue);
+    expect(e.state.linkedPairs, equals({'adrian|priya'}));
   });
 }
