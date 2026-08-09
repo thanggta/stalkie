@@ -1,0 +1,16 @@
+{
+  "id": "thread_001",
+  "type": "thread",
+  "label": "Messages — unknown number",
+  "damage": { "profile": "block-loss", "intensity": 0.4, "seed": 8812 },
+  "content": {
+    "participants": [
+      { "entityId": "adrian", "display": "Adrian" },
+      { "entityId": "priya", "display": "+84 90 ___ 4471" }
+    ],
+    "messages": [
+      { "at": "2026-03-14T19:04:00+07:00", "from": "priya", "text": "changed my mind. the usual place", "corrupt": false },
+      { "at": "2026-03-14T19:06:00+07:00", "from": "adrian", "text": "i can't keep ███████ like this", "corrupt": true }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "id": "note_002",
+  "type": "note",
+  "label": "Note — draft",
+  "damage": { "profile": "partial-decode", "intensity": 0.6, "seed": 4413 },
+  "content": {
+    "title": "draft — do not send",
+    "body": "If you're reading this I already ███ to Marcus about the ███████",
+    "modifiedAt": "2026-03-12T02:11:00+07:00"
+  }
+}

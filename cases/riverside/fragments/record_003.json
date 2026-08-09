@@ -1,0 +1,14 @@
+{
+  "id": "record_003",
+  "type": "record",
+  "label": "Call log — partial",
+  "damage": { "profile": "scanline-tear", "intensity": 0.5, "seed": 991 },
+  "content": {
+    "kind": "call_log",
+    "columns": ["at", "entityId", "durationSec", "direction"],
+    "rows": [
+      ["2026-03-14T18:52:00+07:00", "priya", 47, "in"],
+      ["2026-03-14T22:10:00+07:00", null, 0, "missed"]
+    ]
+  }
+}
