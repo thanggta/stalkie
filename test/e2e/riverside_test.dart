@@ -33,7 +33,7 @@ void main() {
 
     final report = scoreVerdict(c, {'q_who': 'priya'});
     expect(report.accuracy, equals(1.0));
-    expect(engine.cyclesRemaining, greaterThanOrEqualTo(0));
+    expect(engine.cyclesRemaining, equals(12));
   });
 
   test('riverside cannot be fully recovered — scarcity holds', () {
