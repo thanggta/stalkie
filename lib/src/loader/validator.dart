@@ -1,5 +1,6 @@
 // lib/src/loader/validator.dart
 import '../models/case_file.dart';
+import 'solver.dart';
 
 /// Returns a list of human-readable problems. Empty means valid.
 /// Never throws — the caller decides how to present failures.
@@ -64,6 +65,13 @@ List<String> validateCase(CaseFile c) {
 
   if (c.questions.isEmpty) {
     problems.add('A case needs at least one verdict question.');
+  }
+
+  if (!isSolvable(c)) {
+    problems.add(
+        'INV-1 violated: no set of fragments within cycleBudget '
+        '(${c.cycleBudget}) supports every verdict question. The case is '
+        'unwinnable.');
   }
 
   return problems;
