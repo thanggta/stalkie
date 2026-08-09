@@ -61,7 +61,7 @@ void main() {
     expect(
         () => parseCase(minimalManifest(), frags),
         throwsA(predicate((e) =>
-            e is CaseFormatException && e.toString().contains('audio'))));
+            e is CaseFormatException && e.toString().contains('DR-6'))));
   });
 
   test('rejects a fragment missing damage.seed', () {
