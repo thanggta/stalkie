@@ -57,5 +57,9 @@ void main(List<String> args) {
     stderr.writeln('FAILED  ${args.first}');
     stderr.writeln('  • ${e.message}');
     exit(1);
+  } catch (e) {
+    stderr.writeln('FAILED  ${args.first}');
+    stderr.writeln('  • $e');
+    exit(1);
   }
 }
