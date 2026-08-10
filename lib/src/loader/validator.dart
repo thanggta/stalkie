@@ -8,7 +8,11 @@ List<String> validateCase(CaseFile c) {
   final problems = <String>[];
 
   // Every sector entry must resolve to a fragment.
+  final seenSectorIds = <String>{};
   for (final e in c.sectorMap) {
+    if (!seenSectorIds.add(e.fragmentId)) {
+      problems.add('Duplicate sector entry for "${e.fragmentId}".');
+    }
     if (!c.fragments.containsKey(e.fragmentId)) {
       problems.add(
           'Sector entry "${e.fragmentId}" has no fragment file.');
