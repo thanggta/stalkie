@@ -21,23 +21,42 @@ distinction is a legal requirement, not a stylistic preference (see `docs/compli
 
 ## Stack
 
-Flutter (Dart), iOS + Android. No backend. Content is static JSON bundles read from local
+**Swift / SwiftUI, iOS only.** No backend. Content is static JSON bundles read from local
 storage.
 
-Chosen because we render a *fictional* OS: we explicitly don't want platform widgets, and
-Flutter's own renderer gives pixel-identical output everywhere plus the fragment shaders the
-damage system needs. Rationale and rejected alternatives: design spec §6.2.
+Changed on 2026-08-12 (DR-9). Flutter was chosen when Android was in scope; assumption A2
+("iOS and Android both matter") was overturned in favour of iOS-only, which is the exact
+condition DR-2 named for switching to SwiftUI. Damage rendering moves from Flutter fragment
+shaders to Metal.
+
+**Android is out of scope.** Do not add cross-platform abstractions for a port that is not
+planned. If Android returns, it is a rewrite, and that cost was accepted knowingly.
 
 ---
 
 ## Rules that override your defaults
 
-### 1. Never simulate an Apple interface
+### 1. The iOS-lookalike shell is a deliberate, owner-accepted risk
 
-Guideline 5.2.5 carries App Store Removal **and** Developer Program Removal severity, and it
-names Messages explicitly. No iOS home-screen grids, no iMessage-style bubbles, no SF Pro, no
-Apple emoji — including inside authored case content. `docs/compliance.md` §1 has the do/don't
-table. **If a UI suggestion would look at home on an iPhone, it is wrong here.**
+**This rule was reversed on 2026-08-12. Earlier docs say the opposite — they are superseded,
+not merely stale.** The shell is now an iOS lookalike: home-screen grid, system font, iOS
+status bar, iMessage-style bubbles. See DR-8 in the design spec and `docs/compliance.md` §1.1.
+
+The owner was shown the exposure — Guideline 5.2.5 is App Store Removal **and** Developer
+Program Removal, and it names Messages explicitly — and chose this anyway. **Do not relitigate
+it, do not water it down, and do not "helpfully" make the UI less iOS-like.** If you think it
+is wrong, say so once and then build what was asked.
+
+Three rules still bind, and these are not negotiable:
+
+1. **Never ship Apple's artwork.** No copied icon files, logos, wordmarks, or glyph artwork.
+   That is copyright and 4.1(c) — a different and worse problem than 5.2.5, and it is not
+   covered by the accepted risk. Every asset is originally drawn.
+2. **The visual language is a swappable theme layer.** Fonts, bubble geometry, corner radii,
+   icon shapes, status-bar layout are data, not hardcoded constants. A reviewer flag must cost
+   a reskin, not a rewrite.
+3. **Fictional characters and brands only.** INV-6 is unchanged and unaffected. No real brand,
+   logo, or trademark in any shipped asset.
 
 ### 2. Content is data, never script
 
@@ -115,4 +134,15 @@ case.
 
 ## Project state
 
-Greenfield. Docs exist; no code yet. Not a git repository — `git init` before the first commit.
+**Plan 1 (core engine) is complete and on `main`** — 15 commits, 37 tests green, `dart analyze`
+clean, `dart run tool/validate_case.dart cases/riverside` exits 0. It is a pure-Dart package:
+domain models, the six-predicate grammar, JSON parser, validator (INV-1…INV-4), exact
+solvability solver, carve engine, verdict scoring, the `riverside` sample case, and the
+author-facing validator CLI.
+
+**That package is being ported to Swift** (DR-9). The Dart code is the reference implementation
+and its 37 tests are the specification — port behaviour, not just syntax. Nothing renders yet.
+
+Known gaps, none addressed: no CI (`docs/compliance.md` §5 and this file both require
+invariants to run in CI), no `analysis_options.yaml` (so `lints` is declared but inert), and
+the reading table above points at a plan file that does not exist.

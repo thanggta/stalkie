@@ -56,7 +56,7 @@ It is the only concept I found that resolves all three constraints with one move
 
 | Constraint | How the reframe resolves it |
 |---|---|
-| 5.2.5 — no Apple lookalike | The shell is a desktop-style forensic workstation. It resembles no Apple product, interface, or app. Nothing to argue about. |
+| 5.2.5 — no Apple lookalike | ~~The shell is a desktop-style forensic workstation. It resembles no Apple product, interface, or app. Nothing to argue about.~~ **No longer true — overturned by DR-8 on 2026-08-12. This constraint is now knowingly unresolved and carried as accepted risk.** The reframe below still resolves the other two. |
 | 4.3(b) — meaningfully different | Every competitor ships *free exhaustive browsing*. This ships *constrained recovery with a win condition*. Different verb, different loop, different failure state. |
 | Asset cost — the unbounded one | **Degraded assets are cheaper to produce than pristine ones.** A torn, half-decoded, block-corrupted photo costs a fraction of convincing fake photography — and it is *more* convincing, because real recovered data looks exactly like that. |
 
@@ -194,6 +194,14 @@ Server scope is exactly two things, both optional at v1:
 
 **Flutter.**
 
+> **⚠ OVERTURNED 2026-08-12 by DR-9 — the stack is now Swift / SwiftUI, iOS only.** The whole
+> argument below rested on two premises that no longer hold: that we are building a *fictional*
+> OS (DR-8 replaced it with an iOS lookalike), and that Android is in scope (A2 overturned).
+> Note the inversion: because the shell now deliberately *does* imitate the platform, native
+> widgets stopped being a liability and became an asset. The rejection note under SwiftUI below
+> names this exact condition and says "switch" — which is what happened. Retained as the record
+> of why Flutter was right at the time.
+
 The usual argument says native wins on UI fidelity. **This project inverts it.** We are
 building a *fictional* OS — we explicitly do not want platform widgets, and we want identical
 rendering everywhere, because the interface is a designed artifact, not a native experience.
@@ -267,13 +275,40 @@ INV-1 and INV-2 together *are* the scarcity rule (§3). INV-5 is a compliance re
 
 | ID | Decision | Alternative rejected | Overturn if… |
 |---|---|---|---|
-| DR-1 | Forensic recovery console, not a phone shell | Fictional phone OS (safer, less differentiated); retro flip phone (cheap, strong identity, limited content types); seized laptop | You'd rather ship closer to the proven formula and accept 4.3(b) exposure |
-| DR-2 | Flutter | SwiftUI (better if iOS-only) | A2 is wrong — iOS-only, then SwiftUI |
+| ~~DR-1~~ | ~~Forensic recovery console, not a phone shell~~ | **OVERTURNED 2026-08-12 by DR-8.** | — |
+| ~~DR-2~~ | ~~Flutter~~ | **OVERTURNED 2026-08-12 by DR-9**, via the exact condition this record named. | — |
 | DR-3 | Own JSON schema, no Ink | Ink for all content | A case needs deep branching dialogue |
 | DR-4 | Runtime damage shaders | Pre-authored damaged assets | Shader work proves harder than the asset savings justify |
 | DR-5 | One-time IAP per case pack; case 1 free and complete | Weekly subscription (genre standard) | You accept paywall review risk for the 8.9% tail — but see §9 |
 | DR-6 | No `audio` fragments in v1 | Ship all five types | A case's core reveal genuinely requires voice |
 | DR-7 | English only at v1 | 6 languages like Stalkie | After first case validates, localization is real leverage |
+| DR-8 | **iOS-lookalike shell** — home grid, system font, iOS status bar, iMessage-style bubbles | Forensic workstation (the original DR-1, zero 5.2.5 exposure); fictional phone OS (phone-shaped and immersive, own visual language, near-zero 5.2.5 exposure) | A reviewer flags 5.2.5, or you decide the account risk outweighs the familiarity gain |
+| DR-9 | **Swift / SwiftUI, iOS only**; damage via Metal | Flutter (the original DR-2, retains Android) | Android returns to scope — and note that is a rewrite, not a recompile |
+
+### DR-8 — the reasoning, stated honestly
+
+Chosen for maximum player familiarity and immersion. The owner was shown that Guideline 5.2.5
+carries App Store Removal **and** Developer Program Removal, that it names Messages explicitly,
+and that this shell is the precise configuration it describes. The owner was also shown the
+middle option — a fictional phone OS that keeps the phone-shaped intimacy while resembling no
+Apple product — and rejected it in favour of the full lookalike.
+
+**This is an accepted business risk owned by the project owner, not an engineering oversight.**
+It is recorded here so no future contributor mistakes it for one and "fixes" it.
+
+Two consequences follow, and both are load-bearing:
+
+- **§4.3(b) differentiation gets weaker.** "Phone shell" was one of the four differentiators in
+  `docs/compliance.md` §3's comparison table. The remaining three — cycle budget, filed verdict
+  scored on accuracy, and never enough budget to see everything (INV-2) — now carry the whole
+  differentiation argument alone. They must be prominent in the first ten minutes of play and
+  in the App Store screenshots, or there is no 4.3(b) answer left.
+- **The theme layer is the retreat plan.** Fonts, bubble geometry, radii, icon shapes and
+  status-bar layout ship as data, never as hardcoded constants. If this is not built, a 5.2.5
+  flag means a rewrite instead of a reskin, and DR-8 becomes irreversible in practice.
+
+Apple's own artwork is never shipped under any circumstance — copied icons, logos, wordmarks or
+glyph artwork are copyright and 4.1(c), which DR-8 does **not** cover.
 
 ---
 
@@ -297,7 +332,7 @@ the whole differentiated loop without paying.
 
 1. One complete case, free, start to filed verdict, ~45–90 minutes
 2. All five invariants INV-1…INV-6 enforced by automated tests
-3. Ships on iOS and Android
+3. Ships on iOS only (DR-9; Android removed from scope 2026-08-12)
 4. Zero simulated Apple interfaces, zero real brands (INV-6)
 5. A second case authorable **without an engineer** — the real test of the content pipeline
 

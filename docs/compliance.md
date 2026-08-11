@@ -21,9 +21,34 @@ past — an account-level risk.
 This names the reference genre's core mechanic: a simulated iOS home screen containing a fake
 iMessage-style thread.
 
-**Our mitigation is structural, not cosmetic.** CARVE's shell is a forensic recovery
-workstation. It resembles no Apple product, interface, or app. There is nothing to argue about
-in review because there is no resemblance to assess.
+> ## ⚠ 1.1 — SUPERSEDED ON 2026-08-12. READ THIS BEFORE THE REST OF §1.
+>
+> **The mitigation described below was deliberately abandoned by the project owner.** The shell
+> is now an iOS lookalike: home-screen grid with rounded-square icons, system font, iOS status
+> bar, iMessage-style bubbles. That is the exact configuration 5.2.5 names.
+>
+> **This is an accepted risk, not an oversight.** The owner was shown the severity — App Store
+> Removal *and* Apple Developer Program Removal, an account-level loss rather than a
+> resubmittable rejection — and the asymmetry below (that inventing in-fiction brand names
+> mitigates 4.1(b), not 5.2.5) and chose to proceed. Recorded as DR-8 in the design spec.
+>
+> **The analysis in the rest of §1 remains factually accurate and is retained deliberately.**
+> It is the record of what the risk is. Do not delete it to make the decision look better.
+>
+> **What still binds, and is not covered by the accepted risk:**
+> - **Apple's own artwork is never shipped.** No copied icon files, logos, wordmarks, or glyph
+>   artwork. That is copyright and 4.1(c), a distinct and worse exposure. All assets original.
+> - **The visual language ships as a swappable theme layer** — fonts, geometry, radii, icon
+>   shapes and status-bar layout as data, so a reviewer flag costs a reskin, not a rewrite.
+>   This is the entire retreat plan; if it is not built, there is no retreat.
+> - **INV-6 is unchanged.** No real brand, logo, or trademark in any shipped asset.
+>
+> **Re-verify 5.2.5's live text before every submission.** With this shell, that checklist item
+> stops being routine and becomes the highest-value line in §8.
+
+**The original mitigation, now abandoned — structural, not cosmetic.** CARVE's shell was to be a
+forensic recovery workstation. It would resemble no Apple product, interface, or app. There
+would be nothing to argue about in review because there would be no resemblance to assess.
 
 > **The asymmetry to keep in mind:** the genre's standard workaround — inventing in-fiction
 > brand names — mitigates 4.1(b), not 5.2.5. Under 5.2.5 the exposure *is* the simulated OS
@@ -80,7 +105,7 @@ text of the removal condition.
 |---|---|
 | Free exhaustive browsing | Constrained recovery under a cycle budget |
 | No win condition | Filed verdict, scored on accuracy |
-| Phone shell | Forensic workstation |
+| Phone shell | ~~Forensic workstation~~ — **no longer a differentiator (DR-8).** Our shell is now a phone shell too. |
 | Read everything | Never enough budget to see everything (INV-2) |
 
 A **free, complete first case** is the strongest available answer here: a reviewer can play the
@@ -155,9 +180,17 @@ There is no research finding that changes this and no product reason that would 
 
 Run before every submission.
 
-- [ ] Re-read 5.2.5, 4.1, 4.3, 3.1.2 from Apple's live page — confirm text unchanged
-- [ ] No screen resembles an Apple interface (§1 table)
-- [ ] No Apple emoji anywhere, including authored content
+- [ ] **Re-read 5.2.5 from Apple's live page — confirm text unchanged. Highest-value line here,
+      because DR-8 puts us inside what it describes (§1.1).** Then 4.1, 4.3, 3.1.2.
+- [ ] ~~No screen resembles an Apple interface~~ — **N/A under DR-8, deliberately.** Instead:
+      confirm no *Apple-authored asset* ships (icons, logos, wordmarks, glyph artwork). That is
+      4.1(c) and copyright, and DR-8 does not cover it.
+- [ ] Theme layer intact — fonts, geometry, radii, icon shapes, status bar all still data, not
+      hardcoded. This is the retreat path; verify it still works by reskinning in a scratch
+      build before submitting.
+- [ ] 4.3(b) differentiation visible in the first ten minutes and in the screenshots — cycle
+      budget, filed verdict, INV-2 scarcity. "Phone shell" is no longer one of our four
+      differentiators (§3), so the other three carry it alone.
 - [ ] INV-6 asset review passed for every case in the build
 - [ ] No real brand, logo, or wordmark in screenshots or the App Store listing
 - [ ] Free first case complete and playable to a filed verdict without payment
