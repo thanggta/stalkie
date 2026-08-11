@@ -54,6 +54,11 @@ struct CLILogicTests {
       arguments: [tempRoot.path],
       stdout: { out.text.append($0) },
       stderr: { err.text.append($0) })
+    #expect(code == 1)
+    #expect(err.text.contains("FAILED"))
+    #expect(!err.text.contains("Fatal error"))
+  }
+
   @Test func validationProblemsReturnOneAndListThem() throws {
     // Rule 9: the valid-case test would still pass if CLIRunner stopped
     // calling validateCase. This fixture parses but FAILS validation, so the
