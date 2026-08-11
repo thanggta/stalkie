@@ -27,6 +27,9 @@ struct PredicateTests {
     let p = try parsePredicate(["linked": .array([.string("adrian"), .string("priya")])])
     #expect(p.evaluate(makeState(linked: ["adrian|priya"])) == true)
     #expect(p.evaluate(makeState(linked: ["priya|adrian"])) == false)
+    // A forward-only raw-order fallback would pass in the reversed-argument
+    // direction; the read path must reject it in BOTH argument orders.
+    #expect(makeState(linked: ["priya|adrian"]).hasLink("priya", "adrian") == false)
   }
 
   @Test func allRequiresEveryChildAnyRequiresOne() throws {
@@ -56,11 +59,20 @@ struct PredicateTests {
 
   @Test func rejectsPredicateOutsideSixKeyGrammar() throws {
     // INV-5: no expression evaluator, no scripting hook, ever.
-    #expect(throws: PredicateFormatError.self) {
-      try parsePredicate(["eval": .string(#"carved("a") && true"#)])
-    }
-    #expect(throws: PredicateFormatError.self) {
-      try parsePredicate(["scriptRef": .string("unlock.js")])
+    // The message assertion keeps this discriminating: it must fail if a 7th
+    // key were accepted and rejected only by the switch's default path.
+    expectUnknownPredicate(["eval": .string(#"carved("a") && true"#)])
+    expectUnknownPredicate(["scriptRef": .string("unlock.js")])
+  }
+
+  private func expectUnknownPredicate(_ object: [String: JSONValue]) {
+    do {
+      _ = try parsePredicate(object)
+      Issue.record("expected PredicateFormatError for \(object)")
+    } catch let e as PredicateFormatError {
+      #expect(e.message.contains("Unknown predicate"))
+    } catch {
+      Issue.record("expected PredicateFormatError, got \(error)")
     }
   }
 
