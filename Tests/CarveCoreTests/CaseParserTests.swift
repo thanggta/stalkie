@@ -85,6 +85,20 @@ struct CaseParserTests {
       messageContaining: "deterministic")
   }
 
+  @Test func rejectsFragmentNullDamageSeed() {
+    // A JSON `null` seed fails Int decoding via valueNotFound, not
+    // keyNotFound; both branches must yield the deterministic-damage message.
+    let nullSeed = """
+    { "id": "note_001", "type": "note", "label": "A note",
+    "damage": { "profile": "block-loss", "intensity": 0.2, "seed": null },
+    "content": { "title": "x", "body": "y" } }
+    """
+    expectCaseFormatError(
+      manifest: minimalManifestJSON,
+      files: fragmentFiles(["note_001.json": nullSeed]),
+      messageContaining: "deterministic")
+  }
+
   @Test func rejectsUnknownDamageProfile() {
     let bad = minimalFragmentJSON.replacingOccurrences(of: "block-loss", with: "sparkles")
     #expect(throws: CaseFormatError.self) {
