@@ -123,10 +123,10 @@ Run every invariant in CI against every case.
 
 ## Definition of done for a case
 
-A non-engineer can author it end to end without touching Dart:
+A non-engineer can author it end to end without touching Swift:
 
 ```
-write case.json + fragments  →  dart run tool/validate_case.dart cases/<id>  →  play in harness  →  commit
+write case.json + fragments  →  swift run CarveCLI cases/<id>  →  play in harness  →  commit
 ```
 
 If authoring a new case requires code changes, **the schema failed** — fix the schema, not the
@@ -134,15 +134,18 @@ case.
 
 ## Project state
 
-**Plan 1 (core engine) is complete and on `main`** — 15 commits, 37 tests green, `dart analyze`
-clean, `dart run tool/validate_case.dart cases/riverside` exits 0. It is a pure-Dart package:
-domain models, the six-predicate grammar, JSON parser, validator (INV-1…INV-4), exact
-solvability solver, carve engine, verdict scoring, the `riverside` sample case, and the
-author-facing validator CLI.
+**The core engine is complete as a Swift package** — 57 tests green, CI enforced
+(`.github/workflows/ci.yml`), `swift run CarveCLI cases/riverside` exits 0. The Swift package
+(`Sources/CarveCore`) is the SPM library target the iOS app will depend on: domain models,
+the six-predicate grammar, Codable JSON loader, validator (INV-1…INV-4), exact solvability
+solver, carve engine, verdict scoring, the `riverside` sample case, and the author-facing
+`CarveCLI` validator. The Dart implementation that this ported was the reference; it is
+deleted — `git` history at the Plan 1 commits (before 2026-08-12) is the record.
 
-**That package is being ported to Swift** (DR-9). The Dart code is the reference implementation
-and its 37 tests are the specification — port behaviour, not just syntax. Nothing renders yet.
+The port deliberately FIXED the Dart defects that were logged against Plan 1 rather than
+reproducing them: Codable field-level parsing errors, strict `schemaVersion` integer checking,
+value-type case/engine models, cast-free predicate parsing, canonical link keys, and a
+Codable-restorable `CarveEngine`. `hiddenUntil` is still NOT implemented — it lands with the
+link board (Plan 4), and v1 cases must not use it.
 
-Known gaps, none addressed: no CI (`docs/compliance.md` §5 and this file both require
-invariants to run in CI), no `analysis_options.yaml` (so `lints` is declared but inert), and
-the reading table above points at a plan file that does not exist.
+Nothing renders yet — the SwiftUI shell is Plan 3.

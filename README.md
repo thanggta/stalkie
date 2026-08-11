@@ -12,7 +12,10 @@ damaged device images, you carve out what's recoverable, link the fragments, and
 
 ## Status
 
-**Design complete. No code yet.** Everything needed to start implementing is in `docs/`.
+**Core engine complete, nothing renders yet.** The game rules — domain models, six-predicate
+unlock grammar, JSON loader, validator (INV-1…INV-4), solvability solver, carve engine, verdict
+scoring — ship as a Swift package (`Sources/CarveCore`) with a validation CLI (`CarveCLI`).
+The SwiftUI shell is the next phase.
 
 > The directory is named `stalkie/` — that predates the concept, from when this began as
 > research into cloning *Stalkie · Mobile Detective*. The project is CARVE and is deliberately
@@ -49,20 +52,19 @@ Three findings from research drove every major decision:
 
 ## Stack
 
-Flutter (Dart), iOS + Android, no backend. Content is static JSON bundles read locally.
-
-Flutter because we render a *fictional* OS — we explicitly don't want platform widgets, and its
-own renderer gives pixel-identical output plus the fragment shaders the damage system needs.
-This inverts the usual native-fidelity argument; rationale in design spec §6.2.
+Swift / SwiftUI, iOS only, no backend. Content is static JSON bundles read locally. Damage
+rendering is Metal (Plan 2). See DR-8/DR-9 in the design spec for the decision records.
 
 ## Getting started
 
 ```bash
-dart test                                        # all suites
-dart run tool/validate_case.dart cases/riverside # validate a case
+swift build                                            # builds CarveCore + CarveCLI
+swift test                                             # all suites (57 tests)
+swift run CarveCLI cases/riverside                     # validate a case
 ```
 
-Neither works yet — Task 1 of the core plan creates the package.
+The invariants (INV-1…INV-5) are enforced by tests and run against every case in CI
+(`.github/workflows/ci.yml`).
 
 ## Non-negotiable
 

@@ -253,10 +253,10 @@ proves the case is winnable. **Run it in CI on every case.** It is the differenc
 ## 6. Authoring workflow
 
 1. Author writes `case.json` + fragment files in a text editor (or a spreadsheet → JSON export)
-2. `dart run tool/validate_case.dart cases/riverside` — runs every §5 check
+2. `swift run CarveCLI cases/riverside` — runs every §5 check
 3. Drop clean images in `media/`. No image editing for damage — that's `damage.profile`.
 4. Play it in the dev harness
 5. Commit
 
 **Success criterion for the whole pipeline (design spec §10.5): a non-engineer completes this
-loop without touching Dart.** If authoring case 2 needs code changes, the schema failed.
+loop without touching Swift.** If authoring case 2 needs code changes, the schema failed.
