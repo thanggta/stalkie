@@ -46,7 +46,14 @@ struct ValidateAllCasesTests {
       "no cases/ subdirectories contain a case.json — the enumeration matched nothing")
 
     for dir in caseDirs {
-      let c = try loadCase(at: "\(casesDir)/\(dir)")
+      let c: CaseFile
+      do {
+        c = try loadCase(at: "\(casesDir)/\(dir)")
+      } catch let e as CaseFormatError {
+        throw CaseFormatError("case \(dir): \(e.message)")
+      } catch {
+        throw CaseFormatError("case \(dir): \(error)")
+      }
       let problems = validateCase(c)
       #expect(problems.isEmpty, "case \(c.id): validator problems: \(problems)")
     }
