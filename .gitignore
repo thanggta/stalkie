@@ -2,3 +2,7 @@
 .packages
 pubspec.lock
 build/
+.build/
+.swiftpm/
+DerivedData/
+xcuserdata/
