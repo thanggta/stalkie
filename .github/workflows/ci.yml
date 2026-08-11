@@ -1,0 +1,21 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        run: swift build
+      - name: Test
+        run: swift test
+      - name: Validate every case via CLI
+        run: |
+          set -e
+          for d in cases/*/; do
+            echo "== $d"
+            swift run CarveCLI "$d" >/dev/null || exit 1
+          done

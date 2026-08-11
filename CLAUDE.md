@@ -16,7 +16,7 @@ distinction is a legal requirement, not a stylistic preference (see `docs/compli
 | 1 | `docs/superpowers/specs/2026-08-09-carve-design.md` | The design. Start here. |
 | 2 | `docs/content-schema.md` | The case format. Enough to implement `case_loader` alone. |
 | 3 | `docs/compliance.md` | Constraints that override product preference |
-| 4 | `docs/superpowers/plans/2026-08-09-carve-plan.md` | Execution plan, phased |
+| 4 | `docs/superpowers/plans/2026-08-09-carve-core-plan.md` | Execution plan, phased |
 | 5 | `docs/research-findings.md` | Why the design is shaped this way |
 
 ## Stack
