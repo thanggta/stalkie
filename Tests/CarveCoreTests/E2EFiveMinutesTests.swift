@@ -49,7 +49,10 @@ struct E2EFiveMinutesTests {
     #expect(engine.isVisible("note_unsent"))
     #expect(engine.isVisible("record_places") == false)
 
+    // Places stay closed until she draws the eli–sable link (not just more carving).
     engine.carve("calls_recent")
+    #expect(engine.isVisible("record_places") == false)
+    engine.link("sable", "eli")
     #expect(engine.isVisible("record_places"))
     engine.carve("record_places")
     engine.carve("thread_ivy")

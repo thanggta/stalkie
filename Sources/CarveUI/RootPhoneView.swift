@@ -6,6 +6,8 @@ public enum PhoneRoute: Hashable {
   case home
   case app(PhoneAppId)
   case fragment(String)
+  case verdict
+  case verdictResults
 }
 
 public struct RootPhoneView: View {
@@ -29,6 +31,10 @@ public struct RootPhoneView: View {
               AppContainerView(appId: appId, path: $path)
             case .fragment(let id):
               FragmentHostView(fragmentId: id, path: $path)
+            case .verdict:
+              VerdictFlowView(path: $path)
+            case .verdictResults:
+              VerdictResultsView(path: $path)
             }
           }
       }

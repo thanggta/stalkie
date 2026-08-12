@@ -1,4 +1,4 @@
-// Apps/Carve/Views/HomeScreenView.swift
+// Sources/CarveUI/Views/HomeScreenView.swift
 import SwiftUI
 import CarveShell
 
@@ -53,7 +53,60 @@ struct HomeScreenView: View {
         .padding(.horizontal, theme.spacing.lg)
 
         Spacer()
+
+        verdictEntry
+          .padding(.horizontal, theme.spacing.lg)
+          .padding(.bottom, theme.spacing.xl)
       }
+    }
+  }
+
+  @ViewBuilder
+  private var verdictEntry: some View {
+    if session.isFiled {
+      Button {
+        path.append(.verdictResults)
+      } label: {
+        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+          Text("What you decided")
+            .font(theme.fonts.headlineFont)
+            .foregroundStyle(theme.palette.badgeText.color)
+          Text("Read it again")
+            .font(theme.fonts.footnoteFont)
+            .foregroundStyle(theme.palette.badgeText.color.opacity(0.8))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(theme.spacing.md)
+        .background(
+          theme.palette.unlockBannerBackground.color,
+          in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
+        )
+      }
+      .buttonStyle(.plain)
+    } else {
+      Button {
+        path.append(.verdict)
+      } label: {
+        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+          Text("When you put the phone down")
+            .font(theme.fonts.headlineFont)
+            .foregroundStyle(theme.palette.badgeText.color)
+          Text(
+            session.answeredCount == 0
+              ? "You will have decided what you believe."
+              : "\(session.answeredCount) of \(session.caseFile.questions.count) answered — not filed yet."
+          )
+          .font(theme.fonts.footnoteFont)
+          .foregroundStyle(theme.palette.badgeText.color.opacity(0.85))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(theme.spacing.md)
+        .background(
+          theme.palette.destructive.color,
+          in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
+        )
+      }
+      .buttonStyle(.plain)
     }
   }
 }
@@ -123,6 +176,7 @@ struct AppGlyph: View {
     case .phone: return theme.palette.iconPhone
     case .photos: return theme.palette.iconPhotos
     case .places: return theme.palette.iconPlaces
+    case .board: return theme.palette.accent
     }
   }
 
@@ -175,6 +229,10 @@ struct AppGlyph: View {
       PinGlyph()
         .stroke(theme.palette.badgeText.color, lineWidth: 2)
         .padding(theme.spacing.md)
+    case .board:
+      LinkGlyph()
+        .stroke(theme.palette.badgeText.color, lineWidth: 2)
+        .padding(theme.spacing.md)
     }
   }
 }
@@ -204,6 +262,20 @@ private struct PinGlyph: Shape {
                             width: rect.width * 0.4, height: rect.height * 0.4))
     p.move(to: CGPoint(x: rect.midX, y: c.y + rect.height * 0.15))
     p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.1))
+    return p
+  }
+}
+
+private struct LinkGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    let left = CGPoint(x: rect.minX + rect.width * 0.28, y: rect.midY)
+    let right = CGPoint(x: rect.maxX - rect.width * 0.28, y: rect.midY)
+    let r = min(rect.width, rect.height) * 0.14
+    p.addEllipse(in: CGRect(x: left.x - r, y: left.y - r, width: r * 2, height: r * 2))
+    p.addEllipse(in: CGRect(x: right.x - r, y: right.y - r, width: r * 2, height: r * 2))
+    p.move(to: left)
+    p.addLine(to: right)
     return p
   }
 }

@@ -29,6 +29,8 @@ struct AppContainerView: View {
           PhotosGridView(path: $path)
         case .places:
           RecordListView(appId: .places, path: $path)
+        case .board:
+          LinkBoardView()
         }
       }
     }

@@ -98,4 +98,81 @@ struct GameSessionWiringTests {
     session.setTheme(b.id)
     #expect(session.theme.id == b.id)
   }
+
+  @Test func drawingLinkProducesCanonicalKeyAndUnlocksGatedFragment() throws {
+    // Wiring, not rules: session.link must store the engine's canonical key and
+    // surface fragments gated on `linked`. Break linkKey and this fails.
+    let session = GameSession(caseFile: try loadFiveMinutes())
+
+    #expect(session.openFragment("thread_theo").outcome == .ok)
+    #expect(session.openFragment("thread_sable").outcome == .ok)
+    #expect(session.isVisible("record_places") == false)
+    #expect(session.linkedPairs.isEmpty)
+
+    session.link("sable", "eli")
+
+    #expect(session.linkedPairs == ["eli|sable"])
+    #expect(session.hasLink("eli", "sable"))
+    #expect(session.hasLink("sable", "eli"))
+    #expect(session.isVisible("record_places"))
+    #expect(session.pendingNotices.contains { $0.fragmentId == "record_places" })
+
+    // Board entities come from carved content — no separate entity table.
+    let ids = Set(session.boardEntities.map(\.entityId))
+    #expect(ids.contains("eli"))
+    #expect(ids.contains("sable"))
+  }
+
+  @Test func unansweredQuestionCountsWrongThroughSessionPath() throws {
+    // fileVerdict refuses incomplete sets; scoreVerdict through draftAnswers
+    // still counts blanks as wrong — the UI must not invent a free pass.
+    let session = GameSession(caseFile: try loadFiveMinutes())
+    let correct: [String: String] = [
+      "q_sable_who": "affair",
+      "q_thursday_lie": "yes",
+      "q_thursday_where": "with_sable",
+      "q_theo_cover": "yes",
+      "q_theo_knew": "unknown",
+      "q_usual_place": "sable_place",
+      "q_rae_mentioned": "yes",
+      "q_hide_phone": "yes",
+      "q_ivy_party": "no",
+      "q_ivy_knows_affair": "unknown",
+      "q_how_long": "weeks",
+      "q_unsent_to": "sable",
+      "q_still_active": "yes",
+      "q_mom_related": "no",
+      "q_leaving": "unknown",
+    ]
+
+    for (id, option) in correct where id != "q_leaving" {
+      session.setAnswer(questionId: id, option: option)
+    }
+
+    #expect(session.engine.state.answeredQuestionIds.contains("q_sable_who"))
+    #expect(session.engine.state.answeredQuestionIds.contains("q_leaving") == false)
+
+    let incomplete = session.fileVerdict()
+    guard case .incomplete(let missing) = incomplete else {
+      Issue.record("expected incomplete filing, got \(incomplete)")
+      return
+    }
+    #expect(missing == ["q_leaving"])
+    #expect(session.isFiled == false)
+
+    // Direct scoring of the same draft the UI holds: blank is wrong, not omitted.
+    let report = scoreVerdict(session.caseFile, session.draftAnswers)
+    #expect(report.total == 15)
+    #expect(report.results.first { $0.questionId == "q_leaving" }?.isCorrect == false)
+
+    session.setAnswer(questionId: "q_leaving", option: "yes")  // wrong on purpose
+    let filed = session.fileVerdict()
+    guard case .filed(let finalReport) = filed else {
+      Issue.record("expected filed, got \(filed)")
+      return
+    }
+    #expect(session.isFiled)
+    #expect(finalReport.results.first { $0.questionId == "q_leaving" }?.isCorrect == false)
+    #expect(finalReport.correct == 14)
+  }
 }

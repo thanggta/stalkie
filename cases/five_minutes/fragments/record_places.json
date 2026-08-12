@@ -6,7 +6,7 @@
   "hiddenUntil": {
     "all": [
       { "carved": "thread_sable" },
-      { "carved": "calls_recent" }
+      { "linked": ["eli", "sable"] }
     ]
   },
   "content": {
