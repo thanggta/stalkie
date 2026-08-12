@@ -1,0 +1,13 @@
+{
+  "id": "image_jacket",
+  "type": "image",
+  "label": "Photos — jacket",
+  "damage": { "profile": "block-loss", "intensity": 0.45, "seed": 3301 },
+  "hiddenUntil": { "carved": "thread_sable" },
+  "content": {
+    "source": "media/img_jacket_source.png",
+    "capturedAt": "2026-07-22T21:18:00+07:00",
+    "exifIntact": true,
+    "depicts": ["sable", "location_river_court"]
+  }
+}

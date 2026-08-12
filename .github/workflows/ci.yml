@@ -22,7 +22,7 @@ jobs:
           }
           EOF
           swift /tmp/metalcheck.swift
-      - name: Build
+      - name: Build package
         run: swift build
       - name: Test
         run: swift test
@@ -33,3 +33,19 @@ jobs:
             echo "== $d"
             swift run CarveCLI "$d" >/dev/null || exit 1
           done
+      - name: Build phone shell UI (SPM)
+        # Compiles SwiftUI shell + viewers on the host. Proves the theme layer
+        # and fragment wiring typecheck without a simulator.
+        run: swift build --target CarveUI
+      - name: Build iOS app (simulator)
+        # generic/platform avoids depending on a named simulator device.
+        # CODE_SIGNING_ALLOWED=NO so CI never needs a signing identity.
+        run: |
+          xcodebuild \
+            -project Apps/Carve.xcodeproj \
+            -scheme Carve \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY= \
+            build

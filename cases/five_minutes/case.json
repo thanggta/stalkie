@@ -3,12 +3,12 @@
   "id": "five_minutes",
   "title": "Five Minutes",
   "briefing": "His phone is unlocked on the counter. The shower is still running. You told yourself you wouldn't.",
-  "estimatedMinutes": 45,
   "sectorMap": [
     { "fragmentId": "thread_theo", "typeHint": "thread", "integrity": 0.95 },
     { "fragmentId": "thread_mom", "typeHint": "thread", "integrity": 0.98 },
     { "fragmentId": "note_lists", "typeHint": "note", "integrity": 0.9 },
-    { "fragmentId": "calls_recent", "typeHint": "record", "integrity": 0.85 }
+    { "fragmentId": "calls_recent", "typeHint": "record", "integrity": 0.85 },
+    { "fragmentId": "image_counter", "typeHint": "image", "integrity": 0.7 }
   ],
   "verdict": {
     "questions": [

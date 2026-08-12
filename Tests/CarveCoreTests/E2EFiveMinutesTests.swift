@@ -58,6 +58,10 @@ struct E2EFiveMinutesTests {
     engine.carve("note_unsent")
     engine.carve("thread_mom")
     engine.carve("note_lists")
+    #expect(engine.isVisible("image_counter"))
+    #expect(engine.carve("image_counter").outcome == .ok)
+    #expect(engine.isVisible("image_jacket"))
+    #expect(engine.carve("image_jacket").outcome == .ok)
   }
 
   @Test func fiveMinutesPerfectFilingScoresOne() throws {

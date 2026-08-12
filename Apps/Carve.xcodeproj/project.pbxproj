@@ -1,0 +1,298 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		E33B9471EBD440C49579FCC0 /* CarveApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D006CEC3752E41B8882EFF6A /* CarveApp.swift */; };
+		A20EBA3C9B824282973741ED /* CarveCore in Frameworks */ = {isa = PBXBuildFile; productRef = 2415D537BC1A4344BE21B6D6 /* CarveCore */; };
+		F459AAE35A5E484BA7D76AA1 /* CarveDamage in Frameworks */ = {isa = PBXBuildFile; productRef = 0F2B957145084A41AA17C0A9 /* CarveDamage */; };
+		D7277735F688409988C63210 /* CarveShell in Frameworks */ = {isa = PBXBuildFile; productRef = 32B469BA14344365B31F452A /* CarveShell */; };
+		D9B6D5C746EE41E9939C16CF /* CarveUI in Frameworks */ = {isa = PBXBuildFile; productRef = 027E892A13AA4CD58960BB55 /* CarveUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		2921BCDCBB6C4422B81D3F5C /* Carve.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Carve.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE5D863CD33F4CCEBD4C679B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D006CEC3752E41B8882EFF6A /* CarveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CarveApp.swift; path = ../Apps/Carve/CarveApp.swift; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7F39ABDC7BC743E0AD36DFB7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A20EBA3C9B824282973741ED /* CarveCore in Frameworks */,
+				F459AAE35A5E484BA7D76AA1 /* CarveDamage in Frameworks */,
+				D7277735F688409988C63210 /* CarveShell in Frameworks */,
+				D9B6D5C746EE41E9939C16CF /* CarveUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8BD05ED640C048908595C102 = {
+			isa = PBXGroup;
+			children = (
+				0604AEF3B0494CBF8A61DA0A /* Carve */,
+				190441A7306343238C68CA8B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		190441A7306343238C68CA8B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2921BCDCBB6C4422B81D3F5C /* Carve.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0604AEF3B0494CBF8A61DA0A /* Carve */ = {
+			isa = PBXGroup;
+			children = (
+				EE5D863CD33F4CCEBD4C679B /* Info.plist */,
+				D006CEC3752E41B8882EFF6A /* CarveApp.swift */,
+			);
+			path = Carve;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6545D54280BD492983A838DE /* Carve */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3B7F2F50834457293E211F7 /* Build configuration list for PBXNativeTarget "Carve" */;
+			buildPhases = (
+				0E1FB209197846E88694D163 /* Sources */,
+				7F39ABDC7BC743E0AD36DFB7 /* Frameworks */,
+				3EF59F0167124855B9D39522 /* Resources */,
+				F9AAC11D09404B3DB20F4745 /* Copy Case Bundle */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Carve;
+			packageProductDependencies = (
+				2415D537BC1A4344BE21B6D6 /* CarveCore */,
+				0F2B957145084A41AA17C0A9 /* CarveDamage */,
+				32B469BA14344365B31F452A /* CarveShell */,
+				027E892A13AA4CD58960BB55 /* CarveUI */,
+			);
+			productName = Carve;
+			productReference = 2921BCDCBB6C4422B81D3F5C /* Carve.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8110B965A179474AAA803ED4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = D8C4FA48FBF9469FAA0887B0 /* Build configuration list for PBXProject "Carve" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8BD05ED640C048908595C102;
+			packageReferences = (
+				5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */,
+			);
+			productRefGroup = 190441A7306343238C68CA8B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6545D54280BD492983A838DE /* Carve */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		3EF59F0167124855B9D39522 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		F9AAC11D09404B3DB20F4745 /* Copy Case Bundle */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/../cases/five_minutes/case.json",
+			);
+			name = "Copy Case Bundle";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases/five_minutes/case.json",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "set -e\nCASE_SRC=\"${SRCROOT}/../cases/five_minutes\"\nCASE_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases/five_minutes\"\nmkdir -p \"${CASE_DST}\"\nrsync -a --delete \"${CASE_SRC}/\" \"${CASE_DST}/\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0E1FB209197846E88694D163 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E33B9471EBD440C49579FCC0 /* CarveApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		E79033815B1A47D48799B99C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		11B5552DFBBC4BD3AED9C0EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		ACB55FF6C9394B47AED2A0FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Carve/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CARVE;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = games.carve.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		99E22392ECB04DBCA2F9D6A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Carve/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CARVE;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = games.carve.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D8C4FA48FBF9469FAA0887B0 /* Build configuration list for PBXProject "Carve" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E79033815B1A47D48799B99C /* Debug */,
+				11B5552DFBBC4BD3AED9C0EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3B7F2F50834457293E211F7 /* Build configuration list for PBXNativeTarget "Carve" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ACB55FF6C9394B47AED2A0FA /* Debug */,
+				99E22392ECB04DBCA2F9D6A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ..;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2415D537BC1A4344BE21B6D6 /* CarveCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */;
+			productName = CarveCore;
+		};
+		0F2B957145084A41AA17C0A9 /* CarveDamage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */;
+			productName = CarveDamage;
+		};
+		32B469BA14344365B31F452A /* CarveShell */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */;
+			productName = CarveShell;
+		};
+		027E892A13AA4CD58960BB55 /* CarveUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */;
+			productName = CarveUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 8110B965A179474AAA803ED4 /* Project object */;
+}

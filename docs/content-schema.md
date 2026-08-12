@@ -37,7 +37,6 @@ one source image serving many reveal states.
   "id": "five_minutes",
   "title": "Five Minutes",
   "briefing": "His phone is unlocked on the counter. The shower is still running.",
-  "estimatedMinutes": 45,
   "sectorMap": [
     { "fragmentId": "thread_theo", "typeHint": "thread", "integrity": 0.95 },
     { "fragmentId": "calls_recent", "typeHint": "record", "integrity": 0.85 }
@@ -63,13 +62,19 @@ one source image serving many reveal states.
 |---|---|---|
 | `schemaVersion` | int | Must be `1`. Loader rejects unknown versions rather than guessing. |
 | `id` | string | `^[a-z0-9_]+$`, unique across all cases |
+| `title` | string | Display name |
+| `briefing` | string | Optional author/store copy. Ignored by the engine; shell may show it. |
 | `sectorMap[]` | array | Fragments visible at case open (no gate, or gate true on empty state) |
 | `sectorMap[].integrity` | float 0–1 | Drives default damage intensity **and** is shown to the player as a hint |
 | `verdict.questions[]` | array | Production cases target ~15 concise questions (owner: DR-11). All must be answered to file. |
 | `verdict.questions[].correct` | string | The answer key. **Must** appear in `options`. |
 | `verdict.questions[].supportedBy` | string[] | Fragment ids that make this answerable. Enforces INV-3 (must be reachable). |
 
-`cycleBudget` and `sectorMap[].carveCost` are **gone** (DR-11). Do not author them.
+**Removed / do not author:**
+- `cycleBudget`, `sectorMap[].carveCost` — gone with DR-11
+- `estimatedMinutes` — vestigial from early planning; not loaded, not displayed. Playtime is not a design constant anymore under free browsing.
+
+Extra JSON keys are ignored by the loader, but new cases should not reintroduce the removed fields.
 
 ---
 
@@ -99,6 +104,20 @@ All fragments share an envelope:
 
 `damage.seed` being required is deliberate: random damage would make screenshots
 irreproducible and bug reports useless.
+
+### What `damage` means by fragment type (resolved)
+
+The envelope requires `damage` on every fragment so authors and the loader share one shape.
+**Rendering does not treat every type the same:**
+
+| Type | What `damage` does |
+|---|---|
+| `image` | **Applied at runtime** by `CarveDamage` (Metal). Profile + intensity + seed drive the shader. Clean source in `media/` only — never a pre-corrupted asset. |
+| `thread`, `note`, `record` | **Not applied as a generator.** Text corruption is **authored inline** with `█` (and `corrupt: true` on thread messages). The engine never invents missing words — which words are lost *is* the puzzle (see §3.1). The `damage` block on text fragments is retained for envelope uniformity and may inform future chrome (e.g. integrity hints); shells must not run Metal profiles on text or invent █ spans from it. |
+| `audio` | Not built in v1. |
+
+If a future design needs procedural text damage, that is a decision record — not a silent
+shader side-effect.
 
 ### 3.1 `thread`
 

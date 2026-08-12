@@ -1,0 +1,12 @@
+{
+  "id": "image_counter",
+  "type": "image",
+  "label": "Photos — kitchen",
+  "damage": { "profile": "partial-decode", "intensity": 0.3, "seed": 3302 },
+  "content": {
+    "source": "media/img_counter_source.png",
+    "capturedAt": "2026-08-11T07:42:00+07:00",
+    "exifIntact": false,
+    "depicts": []
+  }
+}
