@@ -5,14 +5,45 @@ this project.
 
 ## What this is
 
-A narrative investigation game. The player is a data-recovery technician who carves fragments
-out of damaged device images, links them, and files a verdict.
+**You have his phone. You don't have long.**
 
-The *loop* is the product: constrained recovery under a cycle budget, ending in a filed verdict
-scored on accuracy. That loop — not the shell around it — is what makes this different from the
-genre (`docs/compliance.md` §3). Since DR-8 the shell is an iOS lookalike, which means the loop
-now carries the entire 4.3(b) differentiation argument by itself. Read rule 1 below before
-touching any UI.
+A relationship-suspicion drama. The player has her partner's unlocked phone and a limited window
+before he's back. She reads what she can, pieces together what she finds, and decides what she
+believes about him. Then she lives with that call.
+
+### Who this is for
+
+**Women who have felt this.** Not detectives, not hackers, not forensic analysts. The fantasy is
+the one everybody recognises and nobody admits to: *his phone is right there and you have five
+minutes.* Every design question resolves against her, not against a puzzle-game audience.
+
+### Tone: drama, never horror
+
+Jealousy, doubt, the sick feeling of being half-right. **No horror. No supernatural, no jump
+scares, no dead-girlfriend twist, no ARG creepypasta.** The genre leans horror because it is
+easier than writing a believable relationship — we are not taking that shortcut. The dread here
+is entirely ordinary: he might be lying, or you might be about to blow up something real over
+nothing.
+
+### What makes it better than the competition
+
+Same shelf as the rest of the genre, executed better. Three things they don't do
+(`docs/compliance.md` §3), and since DR-8 made the shell an iOS lookalike, **these three now
+carry the entire product differentiation by themselves:**
+
+1. **You can never read everything.** A hard budget, and the case is authored so the budget
+   cannot cover it (INV-2). Every tap costs you another one you'll never make.
+2. **You have to decide.** The game ends in a filed verdict, scored on accuracy — not in
+   "you've now read all the content."
+3. **You can be wrong.** Confidently, and with consequences.
+
+Everyone else ships free exhaustive browsing with no win condition and no way to lose.
+
+### The one line that never moves
+
+This is **fiction about fictional people**. No feature reads real contacts, photos, messages, or
+location, and nothing accepts a real phone number or handle to look up. Rule 6 below, no
+exceptions — it is what keeps this a game about a feeling rather than a tool for doing the thing.
 
 ## Read in this order
 

@@ -103,12 +103,25 @@ text of the removal condition.
 
 | Every competitor | CARVE |
 |---|---|
-| Free exhaustive browsing | Constrained recovery under a cycle budget |
-| No win condition | Filed verdict, scored on accuracy |
-| Phone shell | ~~Forensic workstation~~ — **no longer a differentiator (DR-8).** Our shell is now a phone shell too. |
-| Read everything | Never enough budget to see everything (INV-2) |
+| Free exhaustive browsing | A hard budget — "minutes before he's back" (DR-10) |
+| No win condition | You must decide. Filed verdict, scored on accuracy. |
+| Read everything | You never read all of it. Authored so the budget cannot cover it (INV-2). |
+| No way to lose | You can be confidently wrong, and it costs you |
+| Horror / supernatural hook | Ordinary relationship drama, deliberately (DR-10) |
+| ~~Phone shell~~ | ~~Forensic workstation~~ — **dead as a differentiator (DR-8).** Our shell is a phone shell too. |
 
-A **free, complete first case** is the strongest available answer here: a reviewer can play the
+**Read that table as a warning, not a comfort.** DR-8 struck out the shell and DR-10 struck out
+the premise — the two differentiators that were *visible in a screenshot*. What remains is real
+but is all **loop**, and a loop is invisible until someone plays it. Since 4.3(b)'s literal
+removal condition is "do not attract customers", and both reference apps in `research-findings.md`
+have near-zero ratings, the burden is now specific:
+
+- The budget, the countdown, and the verdict must be legible in the **first two minutes** of
+  play, not unlocked in hour two.
+- They must be legible in the **App Store screenshots and preview video**, because that is the
+  only differentiation a reviewer or a browsing customer sees before installing.
+
+A **free, complete first case** remains the strongest available answer: a reviewer can play the
 entire differentiated loop without paying.
 
 ---

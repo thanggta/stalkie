@@ -1,10 +1,35 @@
 # CARVE — Design Spec
 
-**Status:** Approved for planning · **Date:** 2026-08-09 · **Supersedes:** nothing
+**Status:** Approved for planning · **Date:** 2026-08-09
+**Reframed 2026-08-12 — read §0.1 before anything else.**
 
-> **Working title: CARVE.** *File carving* is the real forensic term for recovering files from
-> raw disk fragments when the filesystem metadata is gone. It names the mechanic, it's short,
-> and it's ownable.
+> ## ⚠ 0.1 The premise changed on 2026-08-12 (DR-10)
+>
+> **This document was written for a forensic-investigation game. That framing is dead.** The
+> product is now a relationship-suspicion drama: *you have your partner's phone and a few
+> minutes before he's back.* Target player is a woman who has felt exactly that, not a
+> detective or a puzzle enthusiast. Tone is jealousy and doubt — **no horror, no supernatural,
+> no ARG.**
+>
+> **The mechanics survive the reframe intact; only the fiction around them changes.** This is
+> why the reframe is cheap and why no engine code moved:
+>
+> | Built as | Now reads as |
+> |---|---|
+> | Cycle budget | Minutes before he's back. Same scarcity, more natural motivation. |
+> | Carving a fragment | Opening a thread, restoring a deleted photo, scrolling back far enough |
+> | `damage` / partial decode | Deleted and half-overwritten messages, recovered in pieces |
+> | Filed verdict | What she decides she believes, scored on accuracy |
+> | INV-2 (never fully recoverable) | You never get to read all of it. The core feeling. |
+>
+> **Where the old framing still shows, the framing is wrong, not the mechanic.** Anything below
+> that says "forensic workstation", "data-recovery technician", or "device image" is superseded
+> by this note and by DR-8 (the shell is an iOS lookalike). The invariants, the schema, and the
+> six-predicate grammar are unaffected.
+>
+> **Open, needs the owner:** the name. *File carving* is a forensic term, and the code is
+> `CarveCore` / `CarveEngine` / `CarveCLI` across 30 commits. The mechanic it names is no longer
+> described in forensic language. Renaming is mechanical but not free — flagged, not done.
 
 ---
 
@@ -42,13 +67,21 @@ A design that only avoids the iPhone shell solves #1 and half of #2. It does not
 
 ## 2. The core idea
 
-**You are not browsing a phone. You are recovering a damaged one.**
+**You are not browsing his phone. You are choosing what you'll never get to read.**
 
-The player is a contract data-recovery technician. Clients send device images that are
-corrupted, partially overwritten, water-damaged, or deliberately wiped. You carve out what's
-recoverable, cross-reference the fragments, and file a conclusion.
+*Reframed 2026-08-12 by DR-10. The previous premise — a contract data-recovery technician
+examining client device images — is superseded. The sentence below it, about the verb, was
+always the real idea and survives unchanged.*
+
+He left his phone. He's in the shower, or downstairs, or asleep. You have minutes, not hours,
+and every thread you open is one you didn't. Some of it is deleted and comes back in pieces.
+When you put it down you have to decide what you actually believe — and you might be wrong.
 
 The verb changes from **browse** to **allocate under scarcity, then infer**.
+
+That single sentence is the whole product, and it is what every competitor is missing. They
+give you a phone and unlimited time, which is not a game — it is a reading app. The scarcity is
+what turns snooping into a decision, and the verdict is what makes the decision cost something.
 
 ### Why this specific reframe
 
@@ -241,10 +274,10 @@ Each unit has one purpose, a defined interface, and is independently testable.
 |---|---|---|
 | `case_loader` | Reads + validates a case bundle → domain objects | schema only |
 | `carve_engine` | Cycle budget, carve costs, reveal state. **Pure, no UI, no IO.** | domain models |
-| `damage` | Profile → shader params → rendered degraded asset | Flutter render |
+| `damage` | Profile → shader params → rendered degraded asset | Metal render (DR-9) |
 | `board` | Link graph state, player-drawn connections | domain models |
 | `verdict` | Scores filed answers against the case answer key | domain models |
-| `shell_ui` | The fictional workstation UI | all of the above |
+| `shell_ui` | The phone shell — iOS lookalike per DR-8, built as a swappable theme layer | all of the above |
 | `entitlement` | Which case packs are owned | store SDK |
 
 **`carve_engine` and `verdict` must stay pure** — no Flutter imports. They hold the actual
@@ -284,6 +317,36 @@ INV-1 and INV-2 together *are* the scarcity rule (§3). INV-5 is a compliance re
 | DR-7 | English only at v1 | 6 languages like Stalkie | After first case validates, localization is real leverage |
 | DR-8 | **iOS-lookalike shell** — home grid, system font, iOS status bar, iMessage-style bubbles | Forensic workstation (the original DR-1, zero 5.2.5 exposure); fictional phone OS (phone-shaped and immersive, own visual language, near-zero 5.2.5 exposure) | A reviewer flags 5.2.5, or you decide the account risk outweighs the familiarity gain |
 | DR-9 | **Swift / SwiftUI, iOS only**; damage via Metal | Flutter (the original DR-2, retains Android) | Android returns to scope — and note that is a rewrite, not a recompile |
+| DR-10 | **Relationship-suspicion drama for women; drama tone, no horror.** "You have his phone and five minutes." | Forensic investigation framing (the original premise); horror/supernatural framing (the genre default) | The audience doesn't respond, or playtests show the drama can't carry it without a genre hook |
+
+### DR-10 — the reasoning
+
+The forensic framing was chosen to solve Guideline 5.2.5 (§1), and DR-8 already abandoned that
+solution. Once the shell is a phone, "you are a data-recovery technician examining a seized
+drive" is a costume over a phone game — it adds an explanation the player has to accept before
+she can feel anything.
+
+The suspicion framing needs no explanation. Every player already knows what it is to want to
+look. It also makes the scarcity mechanic *diegetic* rather than abstract: a cycle budget is a
+game rule, but "he's in the shower" is a reason.
+
+**Tone is drama, not horror, and this is a deliberate bet against the genre.** *Simulacra* and
+most of the cluster reach for supernatural or serial-killer hooks because a believable failing
+relationship is harder to write than a ghost. That difficulty is the moat. A player who finishes
+a case thinking *"I've had that argument"* is worth more than one who finishes it startled.
+
+**Consequences:**
+
+- **Casting and content change, mechanics do not.** The engine, schema, invariants, and
+  six-predicate grammar are untouched by this record. `riverside` is now off-premise content —
+  it is a drowned-brother mystery — and should be re-authored or retired before it becomes the
+  template every later case imitates.
+- **The verdict question set carries the drama.** "Who did he meet" is a procedural question.
+  "Is he leaving you", "did she know about you", "has this happened before" are the ones that
+  land, and they are what makes being *wrong* hurt.
+- **INV-6 and rule 6 matter more here, not less.** The closer the fiction sits to something a
+  player recognises, the more important it is that every character, number, and handle is
+  invented, and that the app never touches real device data.
 
 ### DR-8 — the reasoning, stated honestly
 
