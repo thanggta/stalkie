@@ -10,14 +10,13 @@ struct AppContainerView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      // Status bar clearance — real phone apps draw under the status area.
       Spacer().frame(height: theme.statusBar.height)
 
-      AppNavBar(
-        title: appId.title,
-        backLabel: "Home"
-      ) {
-        path = []
+      // Messages owns its large-title chrome; other apps use the compact bar.
+      if appId != .messages {
+        AppNavBar(title: appId.title, backLabel: "Home") {
+          path = []
+        }
       }
 
       Group {
@@ -35,19 +34,23 @@ struct AppContainerView: View {
         case .board:
           LinkBoardView()
         case .decide:
-          // Routed at home; keep a safe fallback.
           EmptyShellAppView(appId: appId)
         case .calendar, .camera, .browser, .mail, .settings, .music:
           EmptyShellAppView(appId: appId)
         }
       }
     }
-    .background(theme.palette.groupedBackground.color.ignoresSafeArea())
+    .background(
+      (appId == .messages
+        ? theme.palette.elevatedBackground.color
+        : theme.palette.groupedBackground.color)
+        .ignoresSafeArea()
+    )
     .hideSystemNavigationChrome()
   }
 }
 
-/// iOS-style top bar: chevron + back label, centered title, hairline rule.
+/// iOS-style compact top bar: chevron + back label, centered title.
 struct AppNavBar: View {
   @Environment(\.carveTheme) private var theme
   let title: String
@@ -109,33 +112,119 @@ struct EmptyShellAppView: View {
   }
 }
 
+// MARK: - Messages (large-title chrome)
+
 struct MessagesListView: View {
   @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
   @Binding var path: [PhoneRoute]
+  @State private var query: String = ""
+
+  private var items: [VisibleFragmentItem] {
+    let all = session.visibleFragments(in: .messages)
+    let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !q.isEmpty else { return all }
+    return all.filter {
+      rowTitle($0).localizedCaseInsensitiveContains(q)
+        || threadPreview($0).localizedCaseInsensitiveContains(q)
+    }
+  }
 
   var body: some View {
-    let items = session.visibleFragments(in: .messages)
-    List {
-      ForEach(items) { item in
-        Button {
-          path.append(.fragment(item.id))
-        } label: {
-          MessagesThreadRow(item: item, preview: threadPreview(item))
+    VStack(spacing: 0) {
+      messagesTopBar
+
+      ScrollView {
+        VStack(alignment: .leading, spacing: 0) {
+          Text("Messages")
+            .font(theme.fonts.largeTitleFont)
+            .fontWeight(.bold)
+            .foregroundStyle(theme.palette.primaryText.color)
+            .padding(.horizontal, theme.spacing.md)
+            .padding(.top, theme.spacing.xs)
+            .padding(.bottom, theme.spacing.sm)
+
+          searchField
+            .padding(.horizontal, theme.spacing.md)
+            .padding(.bottom, theme.spacing.sm)
+
+          LazyVStack(spacing: 0) {
+            ForEach(items) { item in
+              Button {
+                path.append(.fragment(item.id))
+              } label: {
+                MessagesThreadRow(item: item, preview: threadPreview(item))
+                  .padding(.horizontal, theme.spacing.md)
+                  .padding(.vertical, theme.spacing.sm)
+              }
+              .buttonStyle(.plain)
+
+              Rectangle()
+                .fill(theme.palette.separator.color)
+                .frame(height: 0.33)
+                .padding(.leading, theme.spacing.md + 48 + theme.spacing.md)
+            }
+          }
         }
-        .listRowInsets(EdgeInsets(
-          top: theme.spacing.sm,
-          leading: theme.spacing.md,
-          bottom: theme.spacing.sm,
-          trailing: theme.spacing.md
-        ))
-        .listRowBackground(theme.palette.elevatedBackground.color)
-        .listRowSeparatorTint(theme.palette.separator.color)
       }
     }
-    .listStyle(.plain)
-    .scrollContentBackground(.hidden)
     .background(theme.palette.elevatedBackground.color)
+  }
+
+  /// Edit · (space) · compose — matches Messages top chrome language.
+  private var messagesTopBar: some View {
+    HStack {
+      Button {
+        path = []
+      } label: {
+        HStack(spacing: 2) {
+          Text("‹")
+            .font(theme.fonts.titleFont)
+          Text("Home")
+            .font(theme.fonts.bodyFont)
+        }
+        .foregroundStyle(theme.palette.accent.color)
+      }
+      .buttonStyle(.plain)
+
+      Spacer()
+
+      // Compose affordance — non-functional (you don't text as him).
+      ZStack {
+        Circle()
+          .fill(theme.palette.accent.color)
+          .frame(width: 30, height: 30)
+        Text("+")
+          .font(theme.fonts.headlineFont)
+          .fontWeight(.semibold)
+          .foregroundStyle(theme.palette.badgeText.color)
+      }
+      .opacity(0.35)
+    }
+    .padding(.horizontal, theme.spacing.md)
+    .padding(.vertical, theme.spacing.xs)
+  }
+
+  private var searchField: some View {
+    HStack(spacing: theme.spacing.xs) {
+      Text("⌕")
+        .font(theme.fonts.subheadlineFont)
+        .foregroundStyle(theme.palette.tertiaryText.color)
+      TextField(
+        "",
+        text: $query,
+        prompt: Text("Search")
+          .foregroundStyle(theme.palette.tertiaryText.color)
+      )
+      .font(theme.fonts.bodyFont)
+      .foregroundStyle(theme.palette.primaryText.color)
+    }
+    .padding(.horizontal, theme.spacing.sm)
+    .padding(.vertical, theme.spacing.sm)
+    .background(
+      theme.palette.groupedBackground.color,
+      in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
+    )
   }
 
   private func threadPreview(_ item: VisibleFragmentItem) -> String {
@@ -143,6 +232,13 @@ struct MessagesListView: View {
       let last = content.messages.last
     {
       return last.text
+    }
+    return item.fragment.label
+  }
+
+  private func rowTitle(_ item: VisibleFragmentItem) -> String {
+    if let t = try? FragmentContent.thread(item.fragment) {
+      return t.counterpartyDisplay
     }
     return item.fragment.label
   }
@@ -156,16 +252,24 @@ struct MessagesThreadRow: View {
 
   var body: some View {
     HStack(alignment: .top, spacing: theme.spacing.md) {
-      // Contact monogram — original, not a stock asset.
       ZStack {
         Circle()
-          .fill(theme.palette.groupedBackground.color)
+          .fill(
+            LinearGradient(
+              colors: [
+                theme.palette.groupedBackground.color,
+                theme.palette.separator.color,
+              ],
+              startPoint: .topLeading,
+              endPoint: .bottomTrailing
+            )
+          )
         Text(monogram)
           .font(theme.fonts.headlineFont)
           .fontWeight(.semibold)
           .foregroundStyle(theme.palette.secondaryText.color)
       }
-      .frame(width: 48, height: 48)
+      .frame(width: 52, height: 52)
 
       VStack(alignment: .leading, spacing: 3) {
         HStack(alignment: .firstTextBaseline) {
@@ -178,12 +282,16 @@ struct MessagesThreadRow: View {
           Text(timeLabel)
             .font(theme.fonts.footnoteFont)
             .foregroundStyle(theme.palette.tertiaryText.color)
+          Text("›")
+            .font(theme.fonts.footnoteFont)
+            .foregroundStyle(theme.palette.tertiaryText.color.opacity(0.7))
         }
-        HStack(spacing: theme.spacing.xs) {
+        HStack(alignment: .center, spacing: theme.spacing.xs) {
           Text(preview)
             .font(theme.fonts.subheadlineFont)
             .foregroundStyle(theme.palette.secondaryText.color)
             .lineLimit(2)
+            .multilineTextAlignment(.leading)
           if item.isUnreadUnlock {
             Circle()
               .fill(theme.palette.badge.color)
@@ -192,7 +300,7 @@ struct MessagesThreadRow: View {
         }
       }
     }
-    .padding(.vertical, theme.spacing.xxs)
+    .contentShape(Rectangle())
   }
 
   private var rowTitle: String {
@@ -203,8 +311,7 @@ struct MessagesThreadRow: View {
   }
 
   private var monogram: String {
-    let name = rowTitle
-    let parts = name.split(separator: " ")
+    let parts = rowTitle.split(separator: " ")
     if let first = parts.first?.first {
       return String(first).uppercased()
     }
@@ -223,6 +330,8 @@ struct MessagesThreadRow: View {
     return f.string(from: date)
   }
 }
+
+// MARK: - Notes / Records / Photos
 
 struct NotesListView: View {
   @EnvironmentObject private var session: GameSession

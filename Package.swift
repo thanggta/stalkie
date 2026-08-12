@@ -22,7 +22,8 @@ let package = Package(
     .target(name: "CarveShell", dependencies: ["CarveCore"]),
     .target(
       name: "CarveUI",
-      dependencies: ["CarveCore", "CarveDamage", "CarveShell"]),
+      dependencies: ["CarveCore", "CarveDamage", "CarveShell"],
+      resources: [.process("Resources")]),
     .executableTarget(name: "CarveCLI", dependencies: ["CarveCLILib"]),
     .testTarget(name: "CarveCoreTests", dependencies: ["CarveCore", "CarveCLILib"]),
     .testTarget(name: "CarveDamageTests", dependencies: ["CarveCore", "CarveDamage"]),

@@ -80,6 +80,7 @@ extension Theme {
       showsSignalGlyphs: true,
       timeCentered: true
     ),
-    spacing: ThemeSpacing(xxs: 2, xs: 4, sm: 6, md: 10, lg: 14, xl: 20, xxl: 28)
+    spacing: ThemeSpacing(xxs: 2, xs: 4, sm: 6, md: 10, lg: 14, xl: 20, xxl: 28),
+    homeWallpaperAsset: "workstation_home"
   )
 }

@@ -287,6 +287,8 @@ public struct Theme: Equatable, Sendable, Identifiable {
   public let icon: ThemeIconShape
   public let statusBar: ThemeStatusBarLayout
   public let spacing: ThemeSpacing
+  /// Bundled wallpaper image name in CarveUI resources (no extension). Nil = gradient only.
+  public let homeWallpaperAsset: String?
 
   public init(
     id: String,
@@ -297,7 +299,8 @@ public struct Theme: Equatable, Sendable, Identifiable {
     bubble: ThemeBubbleGeometry,
     icon: ThemeIconShape,
     statusBar: ThemeStatusBarLayout,
-    spacing: ThemeSpacing
+    spacing: ThemeSpacing,
+    homeWallpaperAsset: String? = nil
   ) {
     self.id = id
     self.displayName = displayName
@@ -308,6 +311,7 @@ public struct Theme: Equatable, Sendable, Identifiable {
     self.icon = icon
     self.statusBar = statusBar
     self.spacing = spacing
+    self.homeWallpaperAsset = homeWallpaperAsset
   }
 
   public static let allBuiltIn: [Theme] = [.iosLookalike, .fallbackWorkstation]

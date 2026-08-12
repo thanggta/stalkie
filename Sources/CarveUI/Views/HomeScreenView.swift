@@ -2,6 +2,11 @@
 // Unlocked home screen. Dense icon page + dock — not a sparse game lobby.
 
 import SwiftUI
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 import CarveShell
 
 struct HomeScreenView: View {
@@ -50,33 +55,33 @@ struct HomeScreenView: View {
 
   private var wallpaper: some View {
     ZStack {
+      if let name = theme.homeWallpaperAsset, let img = HomeWallpaper.image(named: name) {
+        img
+          .resizable()
+          .scaledToFill()
+          .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
+          .clipped()
+      } else {
+        // Saturated gradient fallback if the asset is missing from the bundle.
+        LinearGradient(
+          colors: [
+            theme.palette.homeWallpaperTop.color,
+            theme.palette.accent.color,
+            theme.palette.homeWallpaperBottom.color,
+            theme.palette.iconPhotos.color,
+          ],
+          startPoint: .topLeading,
+          endPoint: .bottomTrailing
+        )
+      }
+      // Gentle top shade only — status glyphs stay readable without washing the image out.
       LinearGradient(
         colors: [
-          theme.palette.homeWallpaperTop.color,
-          theme.palette.accent.color.opacity(0.45),
-          theme.palette.homeWallpaperBottom.color,
-          theme.palette.iconPhotos.color.opacity(0.55),
+          theme.palette.primaryText.color.opacity(0.18),
+          theme.palette.primaryText.color.opacity(0),
         ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-      )
-      RadialGradient(
-        colors: [
-          theme.palette.badgeText.color.opacity(0.22),
-          theme.palette.badgeText.color.opacity(0),
-        ],
-        center: .topTrailing,
-        startRadius: 10,
-        endRadius: 340
-      )
-      RadialGradient(
-        colors: [
-          theme.palette.iconPlaces.color.opacity(0.4),
-          theme.palette.iconPlaces.color.opacity(0),
-        ],
-        center: UnitPoint(x: 0.2, y: 0.55),
-        startRadius: 8,
-        endRadius: 260
+        startPoint: .top,
+        endPoint: UnitPoint(x: 0.5, y: 0.22)
       )
     }
   }
@@ -155,6 +160,39 @@ struct HomeScreenView: View {
     let all = Theme.allBuiltIn
     guard let idx = all.firstIndex(where: { $0.id == session.themeId }) else { return }
     session.setTheme(all[(idx + 1) % all.count].id)
+  }
+}
+
+/// Resolve wallpaper from SPM module bundle or the app main bundle (Xcode packaging).
+enum HomeWallpaper {
+  static func image(named name: String) -> Image? {
+    var candidates: [Bundle] = [.module, .main]
+    if let url = Bundle.main.url(forResource: "CarveCore_CarveUI", withExtension: "bundle"),
+      let b = Bundle(url: url)
+    {
+      candidates.insert(b, at: 0)
+    }
+    for bundle in candidates {
+      // Loose PNG resources are not always found by Image(_:bundle:); load via platform image.
+      #if canImport(UIKit)
+      if let ui = UIImage(named: name, in: bundle, with: nil) {
+        return Image(uiImage: ui)
+      }
+      if let url = bundle.url(forResource: name, withExtension: "png"),
+        let data = try? Data(contentsOf: url),
+        let ui = UIImage(data: data)
+      {
+        return Image(uiImage: ui)
+      }
+      #elseif canImport(AppKit)
+      if let url = bundle.url(forResource: name, withExtension: "png"),
+        let ns = NSImage(contentsOf: url)
+      {
+        return Image(nsImage: ns)
+      }
+      #endif
+    }
+    return nil
   }
 }
 
@@ -268,7 +306,10 @@ struct AppGlyph: View {
     let mark = theme.palette.badgeText.color
     switch appId {
     case .messages:
-      BubbleGlyph().fill(mark).padding(theme.spacing.md + 2)
+      // Solid filled bubble — closer to the real Messages mark language.
+      BubbleGlyph()
+        .fill(mark)
+        .padding(theme.spacing.md + 1)
     case .notes:
       ZStack {
         RoundedRectangle(cornerRadius: theme.radii.chip * 0.4, style: .continuous)
@@ -297,7 +338,14 @@ struct AppGlyph: View {
     case .camera:
       CameraGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md)
     case .browser:
-      CompassGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md)
+      ZStack {
+        Circle()
+          .stroke(mark, lineWidth: 2.2)
+          .padding(theme.spacing.md)
+        CompassGlyph()
+          .fill(mark)
+          .padding(theme.spacing.lg - 1)
+      }
     case .mail:
       EnvelopeGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md)
     case .settings:
@@ -326,28 +374,39 @@ private struct BubbleGlyph: Shape {
   }
 }
 
+/// Classic telephone handset (C-curve) — must not read as share/link.
 private struct PhoneHandsetGlyph: Shape {
   func path(in rect: CGRect) -> Path {
     var p = Path()
     let w = rect.width
     let h = rect.height
-    p.addRoundedRect(
-      in: CGRect(x: rect.minX + w * 0.12, y: rect.minY + h * 0.18,
-                 width: w * 0.32, height: h * 0.28),
-      cornerSize: CGSize(width: w * 0.12, height: w * 0.12))
-    p.addRoundedRect(
-      in: CGRect(x: rect.minX + w * 0.56, y: rect.minY + h * 0.54,
-                 width: w * 0.32, height: h * 0.28),
-      cornerSize: CGSize(width: w * 0.12, height: w * 0.12))
-    p.move(to: CGPoint(x: rect.minX + w * 0.38, y: rect.minY + h * 0.32))
-    p.addQuadCurve(
-      to: CGPoint(x: rect.minX + w * 0.62, y: rect.minY + h * 0.64),
-      control: CGPoint(x: rect.minX + w * 0.78, y: rect.minY + h * 0.42))
-    p.addLine(to: CGPoint(x: rect.minX + w * 0.52, y: rect.minY + h * 0.7))
-    p.addQuadCurve(
-      to: CGPoint(x: rect.minX + w * 0.28, y: rect.minY + h * 0.38),
-      control: CGPoint(x: rect.minX + w * 0.62, y: rect.minY + h * 0.5))
+    // Outer C
+    p.move(to: CGPoint(x: rect.minX + w * 0.28, y: rect.minY + h * 0.18))
+    p.addCurve(
+      to: CGPoint(x: rect.minX + w * 0.28, y: rect.minY + h * 0.82),
+      control1: CGPoint(x: rect.minX + w * 0.02, y: rect.minY + h * 0.28),
+      control2: CGPoint(x: rect.minX + w * 0.02, y: rect.minY + h * 0.72))
+    p.addCurve(
+      to: CGPoint(x: rect.minX + w * 0.42, y: rect.minY + h * 0.70),
+      control1: CGPoint(x: rect.minX + w * 0.38, y: rect.minY + h * 0.86),
+      control2: CGPoint(x: rect.minX + w * 0.46, y: rect.minY + h * 0.78))
+    p.addCurve(
+      to: CGPoint(x: rect.minX + w * 0.42, y: rect.minY + h * 0.30),
+      control1: CGPoint(x: rect.minX + w * 0.22, y: rect.minY + h * 0.62),
+      control2: CGPoint(x: rect.minX + w * 0.22, y: rect.minY + h * 0.38))
+    p.addCurve(
+      to: CGPoint(x: rect.minX + w * 0.28, y: rect.minY + h * 0.18),
+      control1: CGPoint(x: rect.minX + w * 0.46, y: rect.minY + h * 0.22),
+      control2: CGPoint(x: rect.minX + w * 0.38, y: rect.minY + h * 0.14))
     p.closeSubpath()
+    // Ear pad
+    p.addEllipse(in: CGRect(
+      x: rect.minX + w * 0.30, y: rect.minY + h * 0.12,
+      width: w * 0.38, height: h * 0.28))
+    // Mouth pad
+    p.addEllipse(in: CGRect(
+      x: rect.minX + w * 0.30, y: rect.minY + h * 0.60,
+      width: w * 0.38, height: h * 0.28))
     return p
   }
 }
@@ -456,15 +515,21 @@ private struct CameraGlyph: Shape {
   }
 }
 
+/// Safari-like compass mark — ring + diamond needle (original geometry).
 private struct CompassGlyph: Shape {
   func path(in rect: CGRect) -> Path {
     var p = Path()
-    p.addEllipse(in: rect.insetBy(dx: rect.width * 0.12, dy: rect.height * 0.12))
+    let inset = rect.insetBy(dx: rect.width * 0.14, dy: rect.height * 0.14)
+    p.addEllipse(in: inset)
+    // Needle diamond
     p.move(to: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.22))
-    p.addLine(to: CGPoint(x: rect.midX + rect.width * 0.12, y: rect.midY))
+    p.addLine(to: CGPoint(x: rect.midX + rect.width * 0.14, y: rect.midY))
     p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.22))
-    p.addLine(to: CGPoint(x: rect.midX - rect.width * 0.12, y: rect.midY))
+    p.addLine(to: CGPoint(x: rect.midX - rect.width * 0.14, y: rect.midY))
     p.closeSubpath()
+    // Inner hub
+    let hub = min(rect.width, rect.height) * 0.08
+    p.addEllipse(in: CGRect(x: rect.midX - hub, y: rect.midY - hub, width: hub * 2, height: hub * 2))
     return p
   }
 }
