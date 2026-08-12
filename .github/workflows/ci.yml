@@ -49,3 +49,15 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY= \
             build
+      - name: Build UI test target (compile only)
+        # Full XCUITest needs a booted simulator with codesign; CI proves the
+        # test target typechecks and links against the app.
+        run: |
+          xcodebuild \
+            -project Apps/Carve.xcodeproj \
+            -scheme Carve \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath .build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY= \
+            build-for-testing

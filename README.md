@@ -7,14 +7,16 @@ further as you find things. Then you answer for what you believe — and you can
 
 ## Status
 
-**Core engine and the damage renderer are complete; the game shell is next.** The game rules —
-domain models, six-predicate unlock grammar wired into `hiddenUntil`, JSON loader, validator
-(INV-3…INV-5 + unlock-cycle detection), discovery-gated carve engine, forced complete verdict
-scoring — ship as a Swift package (`Sources/CarveCore`) with a validation CLI (`CarveCLI`). The
-five damage profiles render as deterministic Metal shaders (`Sources/CarveDamage`). The SwiftUI
-shell is the next phase.
+**Playable foundation is in place on iOS.** `CarveCore` holds pure game rules (six-predicate
+unlocks, discovery-gated browsing, forced complete verdict scoring). `CarveDamage` renders
+deterministic Metal degradation from clean sources. `CarveShell` owns themes, case loading,
+and versioned session persistence. `CarveUI` is an iOS-lookalike phone shell with Messages,
+Notes, Photos, Phone, Google Maps–style location history, Instagram, Snapchat, the link board,
+and the Decide → file → results flow. Progress survives process death; cold launch uses
+phone-matched chrome rather than a raw white flash.
 
-Sample case: `cases/five_minutes` (ordinary relationship drama; no horror).
+Sample case: `cases/five_minutes` (ordinary relationship drama; no horror). Cross-app gates
+and social/location evidence are authored as declarative `surface` data (DR-13).
 
 > The directory is named `stalkie/` — that predates the concept. The project is CARVE.
 
@@ -37,9 +39,13 @@ rendering is Metal. See DR-8/DR-9/DR-11 in the design spec.
 ## Getting started
 
 ```bash
-swift build                                            # builds CarveCore + CarveDamage + CarveCLI
+swift build                                            # package targets
 swift test                                             # all suites
 swift run CarveCLI cases/five_minutes                  # validate a case
+swift build --target CarveUI                           # phone shell typecheck
+xcodebuild -project Apps/Carve.xcodeproj -scheme Carve \
+  -destination 'generic/platform=iOS Simulator' \
+  CODE_SIGNING_ALLOWED=NO build                        # iOS app
 ```
 
 The invariants (INV-3…INV-5) are enforced by tests and run against every case in CI

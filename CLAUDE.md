@@ -199,13 +199,18 @@ case.
 
 ## Project state
 
-**The core engine is complete as a Swift package** — CI enforced (`.github/workflows/ci.yml`),
-`swift run CarveCLI cases/five_minutes` exits 0. The Swift package (`Sources/CarveCore`) is the
-SPM library target the iOS app will depend on: domain models, six-predicate unlock grammar wired
-into `hiddenUntil`, Codable JSON loader, validator (INV-3…INV-5 + unlock-cycle detection),
-carve engine (discovery-gated free browsing, DR-11), forced complete verdict scoring, the
-`five_minutes` sample case, and the author-facing `CarveCLI` validator.
+**Engine, damage, phone shell, link board, verdict, and session persistence are in place.**
+
+| Layer | Status |
+|---|---|
+| `CarveCore` | Domain models, six-predicate unlocks, loader, validator (INV-3…INV-5 + cycles), discovery-gated engine (DR-11), forced complete verdict scoring. Foundation-only. |
+| `CarveDamage` | Deterministic Metal damage from clean sources |
+| `CarveShell` | Theme layer (DR-8 retreat), case bundle load, `GameSession`, versioned session snapshots (IO outside Core), brand labels (DR-12) |
+| `CarveUI` | iOS-lookalike SpringBoard shell, Messages / Notes / Photos / Phone / Maps / Instagram / Snapchat surfaces, link board, Decide → results |
+| App | `Apps/Carve` — launch chrome, restore-or-fail progress, case bundle copy, XCUITest full loop |
+| Sample | `cases/five_minutes` — relationship drama; Messages + Instagram + Snapchat + Maps evidence |
+
+CI: `swift test`, `CarveCLI` on every case, `swift build --target CarveUI`, iOS simulator
+`xcodebuild` (`.github/workflows/ci.yml`).
 
 `riverside` (drowned-brother / client premise) was retired with DR-11 — off-premise under DR-10.
-
-Nothing renders yet — the SwiftUI shell is Plan 3.

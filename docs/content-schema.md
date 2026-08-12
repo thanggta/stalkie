@@ -87,6 +87,7 @@ All fragments share an envelope:
   "id": "thread_sable",
   "type": "thread",
   "label": "Messages — Sable",
+  "surface": "messages",
   "damage": { "profile": "block-loss", "intensity": 0.35, "seed": 2201 },
   "hiddenUntil": { "carved": "thread_theo" },
   "revealTiers": [ ... ],
@@ -99,8 +100,27 @@ All fragments share an envelope:
 | `damage.profile` | One of `block-loss`, `scanline-tear`, `partial-decode`, `chroma-bleed`, `overwrite` |
 | `damage.intensity` | float 0–1 |
 | `damage.seed` | int — **required**. Damage must be deterministic; the same fragment looks the same every session and on every device. |
+| `surface` | Optional stable presentation surface (DR-13). Never a brand string. When omitted, defaulted from `type` / record `kind`. |
 | `hiddenUntil` | Optional. Declarative unlock gate (§4). Absent + on sector map ⇒ visible at open. |
 | `revealTiers[]` | Optional. Progressive reveal on the same fragment. |
+
+### Surfaces (DR-13)
+
+Medium type stays orthogonal to **where** content is hosted. Case JSON never embeds
+"Instagram", "Snapchat", or "Google Maps" — those display names live only in
+`PhoneAppLabels` (CarveShell).
+
+| `surface` | Allowed types | Default when omitted |
+|---|---|---|
+| `messages` | `thread` | `thread` |
+| `notes` | `note` | `note` |
+| `photos` | `image` | `image` |
+| `phone` | `record` (`call_log`, `transaction`) | `record` non-location |
+| `maps` | `record` (`location`) | `record` kind `location` |
+| `photo_social` | `thread`, `image`, `record` (`social_profile`) | — (must be explicit) |
+| `ephemeral_chat` | `thread` | — (must be explicit) |
+
+Unknown surfaces and invalid type/surface pairs are hard loader failures.
 
 `damage.seed` being required is deliberate: random damage would make screenshots
 irreproducible and bug reports useless.

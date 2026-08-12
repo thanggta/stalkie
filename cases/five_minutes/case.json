@@ -58,7 +58,7 @@
         "answerType": "entity",
         "options": ["office", "sable_place", "gym", "unknown"],
         "correct": "sable_place",
-        "supportedBy": ["thread_sable", "record_places"]
+        "supportedBy": ["thread_sable", "record_places", "ig_post_thursday"]
       },
       {
         "id": "q_rae_mentioned",
@@ -114,7 +114,7 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_sable", "calls_recent", "record_places"]
+        "supportedBy": ["thread_sable", "calls_recent", "record_places", "snap_sable"]
       },
       {
         "id": "q_mom_related",
@@ -130,7 +130,7 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["note_unsent", "thread_sable"]
+        "supportedBy": ["note_unsent", "thread_sable", "ig_dm_sable"]
       }
     ]
   }

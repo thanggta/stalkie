@@ -110,5 +110,20 @@ public func validateCase(_ c: CaseFile) -> [String] {
     problems.append("A case needs at least one verdict question.")
   }
 
+  // DR-13: every fragment surface must be a known type/surface pair.
+  for id in c.fragments.keys.sorted() {
+    guard let fragment = c.fragments[id] else { continue }
+    if !ContentSurface.isAllowed(
+      type: fragment.type,
+      surface: fragment.surface,
+      recordKind: fragment.recordKind)
+    {
+      let kindText = fragment.recordKind.map { " kind=\($0)" } ?? ""
+      problems.append(
+        "Fragment \"\(id)\" has invalid type/surface combination: "
+          + "type=\(fragment.type.rawValue)\(kindText) surface=\(fragment.surface.rawValue).")
+    }
+  }
+
   return problems
 }

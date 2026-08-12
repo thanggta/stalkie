@@ -1,7 +1,8 @@
 {
   "id": "record_places",
   "type": "record",
-  "label": "Places — recent",
+  "label": "Location history",
+  "surface": "maps",
   "damage": { "profile": "chroma-bleed", "intensity": 0.4, "seed": 2204 },
   "hiddenUntil": {
     "all": [
@@ -11,6 +12,33 @@
   },
   "content": {
     "kind": "location",
+    "region": { "name": "Eastbridge" },
+    "visits": [
+      {
+        "at": "2026-08-07T18:21:00+07:00",
+        "placeId": "river_court",
+        "label": "River Court — east wing",
+        "durationMin": 214,
+        "x": 0.62,
+        "y": 0.38
+      },
+      {
+        "at": "2026-08-07T22:12:00+07:00",
+        "placeId": "home",
+        "label": "Home",
+        "durationMin": null,
+        "x": 0.28,
+        "y": 0.72
+      },
+      {
+        "at": "2026-08-11T13:45:00+07:00",
+        "placeId": "river_court",
+        "label": "River Court — east wing",
+        "durationMin": 12,
+        "x": 0.62,
+        "y": 0.38
+      }
+    ],
     "columns": ["at", "label", "durationMin"],
     "rows": [
       ["2026-08-07T18:21:00+07:00", "River Court — east wing", 214],

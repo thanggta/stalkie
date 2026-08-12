@@ -10,8 +10,8 @@ struct AppContainerView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      // Messages owns large-title chrome; others use compact nav.
-      if appId != .messages {
+      // Messages / camera-first Snapchat own their chrome; Instagram has its own header.
+      if showsCompactNav {
         AppNavBar(title: appId.title, backLabel: "Home") {
           path = []
         }
@@ -28,7 +28,11 @@ struct AppContainerView: View {
         case .photos:
           PhotosGridView(path: $path)
         case .places:
-          RecordListView(appId: .places, path: $path)
+          MapsAppView(path: $path)
+        case .photoSocial:
+          InstagramAppView(path: $path)
+        case .ephemeralChat:
+          SnapchatAppView(path: $path)
         case .board:
           LinkBoardView()
         case .decide:
@@ -41,12 +45,21 @@ struct AppContainerView: View {
       }
     }
     .background(
-      (appId == .messages
+      (appId == .messages || appId == .photoSocial || appId == .ephemeralChat
         ? theme.palette.elevatedBackground.color
         : theme.palette.groupedBackground.color)
         .ignoresSafeArea()
     )
     .hideSystemNavigationChrome()
+  }
+
+  private var showsCompactNav: Bool {
+    switch appId {
+    case .messages, .photoSocial, .ephemeralChat:
+      return false
+    default:
+      return true
+    }
   }
 }
 
@@ -78,6 +91,7 @@ struct AppNavBar: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(backLabel)")
+        .accessibilityIdentifier(backLabel == "Home" ? "nav-home" : "nav-back")
         Spacer(minLength: 0)
       }
     }
@@ -163,6 +177,7 @@ struct MessagesListView: View {
                   .padding(.vertical, theme.spacing.sm + 2)
               }
               .buttonStyle(.plain)
+              .accessibilityIdentifier("messages-thread-\(item.id)")
 
               Rectangle()
                 .fill(theme.palette.separator.color)
@@ -192,6 +207,7 @@ struct MessagesListView: View {
       }
       .buttonStyle(.plain)
       .accessibilityLabel("Home")
+      .accessibilityIdentifier("nav-home")
 
       Spacer()
 

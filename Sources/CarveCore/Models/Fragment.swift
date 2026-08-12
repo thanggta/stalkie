@@ -21,6 +21,8 @@ public struct Fragment: Codable, Equatable, Sendable {
   /// (or always once reachability has admitted it). Evaluated via the six
   /// predicates in `Predicate.swift` — never an expression string (INV-5).
   public let hiddenUntil: [String: JSONValue]?
+  /// Stable presentation surface (DR-13). Never a brand string.
+  public let surface: ContentSurface
   public let content: [String: JSONValue]
 
   public init(
@@ -29,6 +31,7 @@ public struct Fragment: Codable, Equatable, Sendable {
     label: String,
     damage: DamageSpec,
     hiddenUntil: [String: JSONValue]? = nil,
+    surface: ContentSurface? = nil,
     content: [String: JSONValue]
   ) {
     self.id = id
@@ -36,6 +39,16 @@ public struct Fragment: Codable, Equatable, Sendable {
     self.label = label
     self.damage = damage
     self.hiddenUntil = hiddenUntil
+    let kind: String? = {
+      guard type == .record, case .string(let k) = content["kind"] else { return nil }
+      return k
+    }()
+    self.surface = surface ?? ContentSurface.defaultSurface(for: type, recordKind: kind)
     self.content = content
+  }
+
+  public var recordKind: String? {
+    guard type == .record, case .string(let k) = content["kind"] else { return nil }
+    return k
   }
 }

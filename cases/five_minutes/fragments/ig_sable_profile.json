@@ -1,0 +1,19 @@
+{
+  "id": "ig_sable_profile",
+  "type": "record",
+  "label": "Profile — sable.m",
+  "surface": "photo_social",
+  "damage": { "profile": "partial-decode", "intensity": 0.2, "seed": 3301 },
+  "hiddenUntil": { "carved": "thread_sable" },
+  "content": {
+    "kind": "social_profile",
+    "entityId": "sable",
+    "handle": "sable.m",
+    "displayName": "Sable",
+    "bio": "design · late nights · don't text after 1",
+    "posts": 47,
+    "followers": 812,
+    "following": 203,
+    "hasStory": true
+  }
+}

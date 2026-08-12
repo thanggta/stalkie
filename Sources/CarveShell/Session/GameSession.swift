@@ -22,6 +22,8 @@ public struct UnlockNotice: Equatable, Sendable, Identifiable {
 /// every brand string must live in one config file so reverting to invented names is a config
 /// edit rather than a rewrite — that is DR-12's only retreat path. Add the case here, the label
 /// there.
+///
+/// Content routing uses `ContentSurface` (DR-13), not fragment ids or brand strings.
 public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
   // Case content apps
   case messages
@@ -29,6 +31,8 @@ public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
   case phone
   case photos
   case places
+  case photoSocial = "photo_social"
+  case ephemeralChat = "ephemeral_chat"
   case board
   case decide
   // Shell fillers — real phones are dense; these open empty diegetic shells.
@@ -61,7 +65,7 @@ public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
   /// Apps that carry case fragments / game systems.
   public var isGameApp: Bool {
     switch self {
-    case .messages, .notes, .phone, .photos, .places, .board, .decide:
+    case .messages, .notes, .phone, .photos, .places, .photoSocial, .ephemeralChat, .board, .decide:
       return true
     case .calendar, .camera, .browser, .mail, .settings, .music, .clock, .reminders,
       .weather, .facetime, .appstore, .health, .wallet, .files, .books,
@@ -70,20 +74,31 @@ public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
     }
   }
 
-  public static func hosting(type: FragmentType, recordKind: String? = nil) -> PhoneAppId {
-    switch type {
-    case .thread: return .messages
-    case .note: return .notes
-    case .image: return .photos
-    case .record:
-      if recordKind == "location" { return .places }
-      return .phone
-    case .audio: return .phone
+  /// Map declarative surface → home-screen app. Brand strings stay in PhoneAppLabels.
+  public static func hosting(surface: ContentSurface) -> PhoneAppId {
+    switch surface {
+    case .messages: return .messages
+    case .notes: return .notes
+    case .photos: return .photos
+    case .phone: return .phone
+    case .maps: return .places
+    case .photoSocial: return .photoSocial
+    case .ephemeralChat: return .ephemeralChat
     }
+  }
+
+  /// Legacy helper — prefer `hosting(surface:)` once surface is known.
+  public static func hosting(type: FragmentType, recordKind: String? = nil) -> PhoneAppId {
+    hosting(surface: ContentSurface.defaultSurface(for: type, recordKind: recordKind))
+  }
+
+  public static func hosting(fragment: Fragment) -> PhoneAppId {
+    hosting(surface: fragment.surface)
   }
 }
 
 /// Single config for in-game app display names (DR-12 retreat path).
+/// Real platform brands live ONLY here — never in case JSON or views.
 public enum PhoneAppLabels {
   public static func title(for app: PhoneAppId) -> String {
     switch app {
@@ -91,7 +106,9 @@ public enum PhoneAppLabels {
     case .notes: return "Notes"
     case .phone: return "Phone"
     case .photos: return "Photos"
-    case .places: return "Maps"
+    case .places: return "Google Maps"
+    case .photoSocial: return "Instagram"
+    case .ephemeralChat: return "Snapchat"
     case .board: return "Links"
     case .decide: return "Decide"
     case .calendar: return "Calendar"
@@ -143,6 +160,8 @@ public final class GameSession: ObservableObject {
   /// Set once `fileVerdict` accepts a complete answer set.
   @Published public private(set) var filedReport: VerdictReport?
   @Published public private(set) var isFiled: Bool = false
+  /// Called after every meaningful mutation so the app can persist.
+  public var onMutation: ((GameSession) -> Void)?
 
   public init(caseFile: CaseFile, themeId: String = Theme.iosLookalike.id) {
     self.caseFile = caseFile
@@ -150,10 +169,48 @@ public final class GameSession: ObservableObject {
     self.themeId = themeId
   }
 
+  /// Restore shell + engine progress from a compatible snapshot.
+  public init(caseFile: CaseFile, snapshot: SessionSnapshot) throws {
+    guard snapshot.caseId == caseFile.id else {
+      throw SessionPersistenceError.caseMismatch(
+        snapshotCase: snapshot.caseId, loadedCase: caseFile.id)
+    }
+    guard snapshot.schemaVersion == caseFile.schemaVersion else {
+      throw SessionPersistenceError.schemaMismatch(
+        snapshot: snapshot.schemaVersion, caseSchema: caseFile.schemaVersion)
+    }
+    guard snapshot.snapshotVersion == SessionSnapshot.currentVersion else {
+      throw SessionPersistenceError.snapshotVersionMismatch(
+        found: snapshot.snapshotVersion, expected: SessionSnapshot.currentVersion)
+    }
+    self.caseFile = caseFile
+    self.engine = CarveEngine(
+      caseFile: caseFile,
+      carved: Set(snapshot.carvedIds),
+      links: Set(snapshot.linkedPairs),
+      answered: Set(snapshot.answeredQuestionIds))
+    self.openedIds = Set(snapshot.openedIds)
+    self.unreadUnlockIds = Set(snapshot.unreadUnlockIds)
+    self.draftAnswers = snapshot.draftAnswers
+    self.filedReport = snapshot.filedReport
+    self.isFiled = snapshot.isFiled
+    self.themeId = snapshot.themeId
+    // Rebuild notices for unread unlocks still visible.
+    self.pendingNotices = snapshot.unreadUnlockIds.compactMap { id in
+      guard let fragment = caseFile.fragments[id], engine.isVisible(id) else { return nil }
+      return UnlockNotice(
+        fragmentId: id,
+        label: fragment.label,
+        type: fragment.type,
+        appId: PhoneAppId.hosting(fragment: fragment))
+    }
+  }
+
   public var theme: Theme { Theme.builtIn(id: themeId) }
 
   public func setTheme(_ id: String) {
     themeId = id
+    persist()
   }
 
   public var visibleFragments: [VisibleFragmentItem] {
@@ -161,12 +218,11 @@ public final class GameSession: ObservableObject {
       .filter { engine.isVisible($0.id) }
       .sorted { $0.label < $1.label }
       .map { fragment in
-        let kind = recordKind(of: fragment)
-        return VisibleFragmentItem(
+        VisibleFragmentItem(
           fragment: fragment,
           isCarved: engine.carvedIds.contains(fragment.id),
           isUnreadUnlock: unreadUnlockIds.contains(fragment.id),
-          appId: PhoneAppId.hosting(type: fragment.type, recordKind: kind))
+          appId: PhoneAppId.hosting(fragment: fragment))
       }
   }
 
@@ -177,8 +233,25 @@ public final class GameSession: ObservableObject {
   public func badgeCount(for app: PhoneAppId) -> Int {
     unreadUnlockIds.filter { id in
       guard let fragment = caseFile.fragments[id] else { return false }
-      return PhoneAppId.hosting(type: fragment.type, recordKind: recordKind(of: fragment)) == app
+      return PhoneAppId.hosting(fragment: fragment) == app
     }.count
+  }
+
+  /// Versioned snapshot of all progress the player would lose on process death.
+  public func makeSnapshot() -> SessionSnapshot {
+    SessionSnapshot(
+      snapshotVersion: SessionSnapshot.currentVersion,
+      caseId: caseFile.id,
+      schemaVersion: caseFile.schemaVersion,
+      carvedIds: Array(engine.carvedIds).sorted(),
+      linkedPairs: Array(engine.state.linkedPairs).sorted(),
+      answeredQuestionIds: Array(engine.state.answeredQuestionIds).sorted(),
+      openedIds: Array(openedIds).sorted(),
+      unreadUnlockIds: Array(unreadUnlockIds).sorted(),
+      draftAnswers: draftAnswers,
+      filedReport: filedReport,
+      isFiled: isFiled,
+      themeId: themeId)
   }
 
   /// Entities known from carved fragment content (link board input).
@@ -204,6 +277,7 @@ public final class GameSession: ObservableObject {
     next.link(a, b)
     engine = next
     recordUnlocks(before: before, excluding: nil)
+    persist()
   }
 
   /// Open a fragment: carve if needed, clear its unread state, return outcome.
@@ -230,6 +304,7 @@ public final class GameSession: ObservableObject {
     openedIds.insert(fragmentId)
     unreadUnlockIds.remove(fragmentId)
     recordUnlocks(before: before, excluding: fragmentId)
+    persist()
     return result
   }
 
@@ -241,6 +316,7 @@ public final class GameSession: ObservableObject {
     var next = engine
     next.markAnswered(questionId)
     engine = next
+    persist()
   }
 
   public var answeredCount: Int {
@@ -267,6 +343,7 @@ public final class GameSession: ObservableObject {
     if case .filed(let report) = result {
       filedReport = report
       isFiled = true
+      persist()
     }
     return result
   }
@@ -280,14 +357,20 @@ public final class GameSession: ObservableObject {
 
   public func dismissNotice(_ fragmentId: String) {
     pendingNotices.removeAll { $0.fragmentId == fragmentId }
+    persist()
   }
 
   public func dismissAllNotices() {
     pendingNotices.removeAll()
+    persist()
   }
 
   public func isVisible(_ fragmentId: String) -> Bool {
     engine.isVisible(fragmentId)
+  }
+
+  private func persist() {
+    onMutation?(self)
   }
 
   private func visibleIdSet() -> Set<String> {
@@ -301,21 +384,14 @@ public final class GameSession: ObservableObject {
       guard let fragment = caseFile.fragments[id] else { continue }
       if id == excluding { continue }
       unreadUnlockIds.insert(id)
-      let kind = recordKind(of: fragment)
       let notice = UnlockNotice(
         fragmentId: id,
         label: fragment.label,
         type: fragment.type,
-        appId: PhoneAppId.hosting(type: fragment.type, recordKind: kind))
+        appId: PhoneAppId.hosting(fragment: fragment))
       if !pendingNotices.contains(where: { $0.fragmentId == id }) {
         pendingNotices.append(notice)
       }
     }
-  }
-
-  private func recordKind(of fragment: Fragment) -> String? {
-    guard fragment.type == .record else { return nil }
-    if case .string(let kind) = fragment.content["kind"] { return kind }
-    return nil
   }
 }

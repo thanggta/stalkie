@@ -97,6 +97,7 @@ struct LinkBoardView: View {
             : theme.palette.elevatedBackground.color,
           in: Capsule()
         )
+        .accessibilityIdentifier("link-entity-\(entity.entityId)")
         .overlay(
           Capsule()
             .stroke(

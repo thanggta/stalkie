@@ -1,4 +1,4 @@
-public struct QuestionResult: Equatable, Sendable {
+public struct QuestionResult: Equatable, Sendable, Codable {
   public let questionId: String
   public let given: String
   public let correct: String
@@ -12,7 +12,7 @@ public struct QuestionResult: Equatable, Sendable {
   }
 }
 
-public struct VerdictReport: Equatable, Sendable {
+public struct VerdictReport: Equatable, Sendable, Codable {
   public let results: [QuestionResult]
 
   public init(results: [QuestionResult]) {

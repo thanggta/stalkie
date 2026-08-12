@@ -113,6 +113,7 @@ struct VerdictFlowView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("verdict-ready")
         .padding(.top, theme.spacing.md)
       }
       .padding(theme.spacing.lg)
@@ -179,6 +180,7 @@ struct VerdictFlowView: View {
           theme.palette.accent.color,
           in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
         )
+        .accessibilityIdentifier("verdict-next")
       }
       .padding(theme.spacing.md)
       .background(theme.palette.elevatedBackground.color)
@@ -246,6 +248,7 @@ struct VerdictFlowView: View {
           )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("verdict-option-\(question.id)-\(option)")
       }
     }
     .padding(theme.spacing.md)
@@ -299,6 +302,7 @@ struct VerdictFlowView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("verdict-review-continue")
         .padding(.top, theme.spacing.md)
 
         Button("Go back and change something") {
@@ -351,6 +355,7 @@ struct VerdictFlowView: View {
           )
       }
       .buttonStyle(.plain)
+      .accessibilityIdentifier("verdict-file")
       .disabled(!session.allQuestionsAnswered)
       .opacity(session.allQuestionsAnswered ? 1 : 0.5)
 

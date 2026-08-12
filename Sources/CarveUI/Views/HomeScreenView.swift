@@ -18,13 +18,14 @@ struct HomeScreenView: View {
   private static let dockApps: [PhoneAppId] = [.phone, .messages, .photos, .browser]
 
   private static let pageOrder: [PhoneAppId] = [
+    // Case-critical apps early so they stay within maxPageIcons on short phones.
     .facetime, .calendar, .photos, .camera,
-    .mail, .clock, .weather, .notes,
-    .reminders, .places, .health, .wallet,
+    .mail, .notes, .places, .photoSocial,
+    .ephemeralChat, .board, .decide, .clock,
+    .weather, .reminders, .health, .wallet,
     .settings, .appstore, .files, .books,
     .music, .podcasts, .tv, .homekit,
-    .contacts, .calculator, .stocks, .board,
-    .decide,
+    .contacts, .calculator, .stocks,
   ]
 
   private func pageApps(maxIcons: Int) -> [PhoneAppId] {
@@ -180,6 +181,7 @@ struct HomeScreenView: View {
     }
     .buttonStyle(IconPressStyle())
     .accessibilityElement(children: .ignore)
+    .accessibilityIdentifier("app-\(app.rawValue)")
     .accessibilityLabel(app.title)
     .accessibilityAddTraits(.isButton)
   }

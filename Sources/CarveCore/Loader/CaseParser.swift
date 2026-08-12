@@ -74,6 +74,8 @@ public func parseCase(
       throw CaseFormatError("Fragment \"\(id)\" damage.intensity must be a number 0..1.")
     }
 
+    let surface = try parseSurface(wire.surface, type: type, content: wire.content, fragmentId: id)
+
     fragments[id] = Fragment(
       id: id,
       type: type,
@@ -83,6 +85,7 @@ public func parseCase(
         intensity: wire.damage.intensity,
         seed: wire.damage.seed),
       hiddenUntil: wire.hiddenUntil,
+      surface: surface,
       content: wire.content)
   }
 
@@ -119,6 +122,8 @@ private struct FragmentWire: Decodable {
   let label: String
   let damage: DamageWire
   let hiddenUntil: [String: JSONValue]?
+  /// Optional. When absent, defaulted from type/kind (DR-13).
+  let surface: String?
   let content: [String: JSONValue]
 }
 
@@ -172,6 +177,38 @@ private func parseType(_ raw: String, fragmentId: String) throws -> FragmentType
     throw CaseFormatError(
       "Fragment \"\(fragmentId)\" has unknown type \"\(raw)\". Allowed: thread, image, record, note.")
   }
+}
+
+private func parseSurface(
+  _ raw: String?,
+  type: FragmentType,
+  content: [String: JSONValue],
+  fragmentId: String
+) throws -> ContentSurface {
+  let recordKind: String? = {
+    if case .string(let k) = content["kind"] { return k }
+    return nil
+  }()
+
+  let surface: ContentSurface
+  if let raw {
+    guard let parsed = ContentSurface(rawValue: raw) else {
+      let allowed = ContentSurface.allCases.map(\.rawValue).joined(separator: ", ")
+      throw CaseFormatError(
+        "Fragment \"\(fragmentId)\" has unknown surface \"\(raw)\". Allowed: \(allowed).")
+    }
+    surface = parsed
+  } else {
+    surface = ContentSurface.defaultSurface(for: type, recordKind: recordKind)
+  }
+
+  guard ContentSurface.isAllowed(type: type, surface: surface, recordKind: recordKind) else {
+    let kindText = recordKind.map { " kind=\($0)" } ?? ""
+    throw CaseFormatError(
+      "Fragment \"\(fragmentId)\" has invalid type/surface combination: "
+        + "type=\(type.rawValue)\(kindText) surface=\(surface.rawValue).")
+  }
+  return surface
 }
 
 private func missingSeedError(_ error: DecodingError, fragmentId: String) -> CaseFormatError? {

@@ -1,0 +1,22 @@
+{
+  "id": "ig_post_thursday",
+  "type": "image",
+  "label": "Post — thursday light",
+  "surface": "photo_social",
+  "damage": { "profile": "block-loss", "intensity": 0.25, "seed": 3302 },
+  "hiddenUntil": { "carved": "ig_sable_profile" },
+  "content": {
+    "source": "media/img_ig_thursday_source.png",
+    "capturedAt": "2026-08-07T21:04:00+07:00",
+    "exifIntact": true,
+    "depicts": ["sable", "location_river_court"],
+    "authorEntityId": "sable",
+    "handle": "sable.m",
+    "caption": "golden hour at the usual. you know where.",
+    "likes": 128,
+    "comments": [
+      { "from": "mara.k", "text": "jealous of that light" },
+      { "from": "jules_n", "text": "east wing still open late?" }
+    ]
+  }
+}

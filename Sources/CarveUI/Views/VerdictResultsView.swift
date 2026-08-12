@@ -40,6 +40,7 @@ struct VerdictResultsView: View {
         Text("What you decided")
           .font(theme.fonts.titleFont)
           .foregroundStyle(theme.palette.primaryText.color)
+          .accessibilityIdentifier("verdict-results-title")
 
         // No percentage. Accuracy is felt, not printed.
         if wrong.isEmpty {

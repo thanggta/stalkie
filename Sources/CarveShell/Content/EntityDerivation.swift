@@ -44,9 +44,24 @@ public enum EntityDerivation {
               displayById: &displayById,
               order: &order)
           }
+          if let author = content.authorEntityId {
+            insert(
+              author,
+              preferredDisplay: content.handle,
+              displayById: &displayById,
+              order: &order)
+          }
         }
       case .record:
-        if let content = try? FragmentContent.record(fragment) {
+        if fragment.recordKind == "social_profile",
+          let profile = try? FragmentContent.socialProfile(fragment)
+        {
+          insert(
+            profile.entityId,
+            preferredDisplay: profile.displayName,
+            displayById: &displayById,
+            order: &order)
+        } else if let content = try? FragmentContent.record(fragment) {
           harvestRecord(content, displayById: &displayById, order: &order)
         }
       case .note, .audio:

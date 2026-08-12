@@ -30,6 +30,19 @@ public struct CarveEngine: Equatable, Codable, Sendable {
     self.answered = []
   }
 
+  /// Restore pure engine progress onto a freshly loaded case (persistence).
+  public init(
+    caseFile: CaseFile,
+    carved: Set<String>,
+    links: Set<String>,
+    answered: Set<String>
+  ) {
+    self.caseFile = caseFile
+    self.carved = carved
+    self.links = links
+    self.answered = answered
+  }
+
   public var carvedIds: Set<String> { carved }
 
   public var state: GameState {

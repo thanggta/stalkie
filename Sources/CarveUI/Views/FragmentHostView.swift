@@ -42,7 +42,7 @@ struct FragmentHostView: View {
 
   @ViewBuilder
   private func fragmentChrome(for fragment: Fragment) -> some View {
-    if fragment.type == .thread {
+    if fragment.type == .thread && fragment.surface == .messages {
       ThreadNavBar(
         title: shortTitle(fragment),
         onBack: {
@@ -58,19 +58,29 @@ struct FragmentHostView: View {
 
   @ViewBuilder
   private func content(for fragment: Fragment) -> some View {
-    switch fragment.type {
-    case .thread:
-      ThreadDetailView(fragment: fragment)
-    case .note:
-      NoteDetailView(fragment: fragment)
-    case .record:
+    switch fragment.surface {
+    case .ephemeralChat:
+      SnapchatThreadDetailView(fragment: fragment)
+    case .photoSocial where fragment.type == .record:
+      InstagramProfileDetailView(fragment: fragment)
+    case .maps where fragment.type == .record:
+      // Full maps UX is the app shell; detail reuses timeline table as fallback.
       RecordDetailView(fragment: fragment)
-    case .image:
-      ImageDetailView(fragment: fragment)
-    case .audio:
-      Text("Audio not supported in v1")
-        .font(theme.fonts.bodyFont)
-        .foregroundStyle(theme.palette.secondaryText.color)
+    default:
+      switch fragment.type {
+      case .thread:
+        ThreadDetailView(fragment: fragment)
+      case .note:
+        NoteDetailView(fragment: fragment)
+      case .record:
+        RecordDetailView(fragment: fragment)
+      case .image:
+        ImageDetailView(fragment: fragment)
+      case .audio:
+        Text("Audio not supported in v1")
+          .font(theme.fonts.bodyFont)
+          .foregroundStyle(theme.palette.secondaryText.color)
+      }
     }
   }
 
@@ -80,6 +90,8 @@ struct FragmentHostView: View {
       return (try? FragmentContent.thread(fragment))?.counterpartyDisplay ?? fragment.label
     case .note:
       return (try? FragmentContent.note(fragment))?.title ?? fragment.label
+    case .record where fragment.recordKind == "social_profile":
+      return (try? FragmentContent.socialProfile(fragment))?.displayName ?? fragment.label
     default:
       return fragment.label
     }
@@ -103,6 +115,7 @@ struct ThreadNavBar: View {
       }
       .buttonStyle(.plain)
       .accessibilityLabel("Back")
+      .accessibilityIdentifier("nav-back")
 
       Spacer(minLength: 0)
 

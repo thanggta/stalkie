@@ -1,0 +1,47 @@
+{
+  "id": "ig_dm_sable",
+  "type": "thread",
+  "label": "DM — Sable",
+  "surface": "photo_social",
+  "damage": { "profile": "block-loss", "intensity": 0.15, "seed": 3303 },
+  "hiddenUntil": { "carved": "ig_post_thursday" },
+  "content": {
+    "handle": "sable.m",
+    "participants": [
+      { "entityId": "eli", "display": "Eli" },
+      { "entityId": "sable", "display": "Sable" }
+    ],
+    "messages": [
+      {
+        "at": "2026-08-07T21:12:00+07:00",
+        "from": "eli",
+        "text": "don't post the window. someone will recognize the brick",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-07T21:14:00+07:00",
+        "from": "sable",
+        "text": "too late. and it's just a building",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-07T21:16:00+07:00",
+        "from": "eli",
+        "text": "please. Rae follows half your friends",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-07T21:19:00+07:00",
+        "from": "sable",
+        "text": "then tell her. or don't. I'm not a secret on my own phone",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-11T09:02:00+07:00",
+        "from": "sable",
+        "text": "streak's almost dead. open the snap when you can",
+        "corrupt": false
+      }
+    ]
+  }
+}

@@ -322,6 +322,18 @@ requirement — see `docs/compliance.md`.
 | DR-10 | **Relationship-suspicion drama for women; drama tone, no horror.** "You have his phone." | Forensic investigation framing (the original premise); horror/supernatural framing (the genre default) | The audience doesn't respond, or playtests show the drama can't carry it without a genre hook |
 | DR-11 | **Discovery-gated free browsing.** No cycle budget. Structure is `hiddenUntil`. Ending is a forced, scored verdict (~15 concise questions). | Cycle-budget scarcity (INV-1/INV-2); unscored ending; no ending | Playtests show free browsing without scarcity feels empty *and* discovery gates fail to replace it |
 | DR-12 | **Real platform brands as in-game apps** — Instagram, Snapchat, Google Maps by name. Realism is the product. | Invented in-fiction brands (the genre's universal convention — Jabbr, Spark, Surfer); invented names held in a swappable config | Apple rejects at review, a rights-holder makes contact, or realism proves not to be what players are paying for |
+| DR-13 | **Declarative `surface` routing** — fragments declare a stable surface id (`messages`, `photo_social`, `ephemeral_chat`, `maps`, …); brands map only through `PhoneAppLabels` | Hardcode routing on fragment ids/labels; scatter brand strings in case JSON | Surface grammar proves too coarse for a real case author |
+
+### DR-13 — surface routing (app presentation)
+
+**Decision (2026-08-12):** Keep medium types (`thread`, `image`, `note`, `record`) intact.
+Add an optional declarative `surface` on every fragment. The shell hosts content by surface,
+not by fragment id. Real platform display names stay in exactly one config file
+(`PhoneAppLabels`). Case authors add Instagram / Snapchat / Maps evidence as data; unknown
+surface values and illegal type×surface pairs fail validation.
+
+This preserves the case definition of done: write JSON → `CarveCLI` → play. No Swift change
+to author more social/location evidence once the surface is in the allowed set.
 
 ### DR-12 — the reasoning, and the exposure
 

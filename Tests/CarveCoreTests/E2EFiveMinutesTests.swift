@@ -65,6 +65,24 @@ struct E2EFiveMinutesTests {
     #expect(engine.carve("image_counter").outcome == .ok)
     #expect(engine.isVisible("image_jacket"))
     #expect(engine.carve("image_jacket").outcome == .ok)
+
+    // Cross-app discovery: Messages → Instagram profile → post → DM → Snapchat.
+    #expect(engine.isVisible("ig_sable_profile"))
+    #expect(engine.carve("ig_sable_profile").outcome == .ok)
+    #expect(engine.isVisible("ig_post_thursday"))
+    #expect(engine.carve("ig_post_thursday").outcome == .ok)
+    #expect(engine.isVisible("ig_dm_sable"))
+    #expect(engine.carve("ig_dm_sable").outcome == .ok)
+    #expect(engine.isVisible("snap_sable"))
+    #expect(engine.carve("snap_sable").outcome == .ok)
+  }
+
+  @Test func fiveMinutesSurfacesRouteDeclaratively() throws {
+    let c = try loadFiveMinutes()
+    #expect(c.fragments["ig_dm_sable"]?.surface == .photoSocial)
+    #expect(c.fragments["snap_sable"]?.surface == .ephemeralChat)
+    #expect(c.fragments["record_places"]?.surface == .maps)
+    #expect(c.fragments["thread_sable"]?.surface == .messages)
   }
 
   @Test func fiveMinutesPerfectFilingScoresOne() throws {
