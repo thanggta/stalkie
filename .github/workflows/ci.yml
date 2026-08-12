@@ -50,8 +50,8 @@ jobs:
             CODE_SIGN_IDENTITY= \
             build
       - name: Build UI test target (compile only)
-        # Full XCUITest needs a booted simulator with codesign; CI proves the
-        # test target typechecks and links against the app.
+        # Kept until the executing job below is proven green in CI.
+        # FullLoopUITests is also executed by the `uitest` job.
         run: |
           xcodebuild \
             -project Apps/Carve.xcodeproj \
@@ -61,3 +61,23 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY= \
             build-for-testing
+
+  uitest:
+    name: Execute FullLoopUITests
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Execute FullLoopUITests
+        run: |
+          chmod +x scripts/ci-run-ui-tests.sh
+          scripts/ci-run-ui-tests.sh
+      - name: Upload xcresult
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: FullLoop-xcresult
+          path: |
+            TestResults/FullLoop.xcresult
+            TestResults/xcodebuild.log
+          if-no-files-found: warn

@@ -115,14 +115,7 @@ struct VerdictResultsView: View {
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.primaryText.color)
 
-      if result.questionId == "q_ivy_party" {
-        Text(
-          "Ivy's bakery thread was always about bread and a party date. It was written to look like a gift for you. You made it mean something else."
-        )
-        .font(theme.fonts.subheadlineFont)
-        .foregroundStyle(theme.palette.secondaryText.color)
-        .padding(.top, theme.spacing.xs)
-      }
+
     }
     .padding(theme.spacing.md)
     .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,7 +155,9 @@ struct VerdictResultsView: View {
           .foregroundStyle(theme.palette.secondaryText.color)
       } else {
         Text(
-          "\(missed.count) fragment\(missed.count == 1 ? "" : "s") stayed closed. A second pass starts here."
+          missed.count == 1
+            ? "One thing on this phone you never opened. A second look starts there."
+            : "\(missed.count) things on this phone you never opened. A second look starts there."
         )
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.secondaryText.color)
@@ -173,7 +168,7 @@ struct VerdictResultsView: View {
               .font(theme.fonts.subheadlineFont)
               .foregroundStyle(theme.palette.primaryText.color)
             Spacer()
-            Text(fragment.type.rawValue)
+            Text(PhoneAppId.hosting(fragment: fragment).title)
               .font(theme.fonts.captionFont)
               .foregroundStyle(theme.palette.tertiaryText.color)
           }

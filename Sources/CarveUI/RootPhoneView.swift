@@ -49,6 +49,7 @@ public struct RootPhoneView: View {
       VStack(spacing: 0) {
         StatusBarView(lightContent: statusBarLight)
           .allowsHitTesting(false)
+        PersistenceWarningBanner()
         UnlockBannerStack(path: $path)
         Spacer(minLength: 0)
           .allowsHitTesting(false)
@@ -64,6 +65,37 @@ public struct RootPhoneView: View {
     if onHome { return true }
     if case .some(.verdict) = path.first { return false }
     return false
+  }
+}
+
+struct PersistenceWarningBanner: View {
+  @EnvironmentObject private var session: GameSession
+  @Environment(\.carveTheme) private var theme
+
+  var body: some View {
+    if let failure = session.persistenceFailure {
+      VStack(alignment: .leading, spacing: theme.spacing.xs) {
+        Text(failure.playerMessage)
+          .font(theme.fonts.footnoteFont)
+          .foregroundStyle(theme.palette.unlockBannerText.color)
+          .fixedSize(horizontal: false, vertical: true)
+        Button(PlayerFacingCopy.saveFailedRetry) {
+          session.retryPersistence()
+        }
+        .font(theme.fonts.captionFont)
+        .foregroundStyle(theme.palette.badgeText.color)
+        .accessibilityIdentifier("persistence-retry")
+      }
+      .padding(theme.spacing.sm)
+      .frame(maxWidth: .infinity, alignment: .leading)
+      .background(
+        theme.palette.destructive.color.opacity(0.92),
+        in: RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
+      )
+      .padding(.horizontal, theme.spacing.md)
+      .padding(.top, theme.spacing.xs)
+      .accessibilityIdentifier("persistence-warning")
+    }
   }
 }
 

@@ -153,12 +153,36 @@ struct SessionPersistenceTests {
     let caseFile = try loadFiveMinutes()
     let store = MemorySessionStore()
     let session = GameSession(caseFile: caseFile)
-    session.onMutation = { s in
-      try? store.save(s.makeSnapshot())
-    }
+    SessionPersistence.attach(store: store, to: session)
     #expect(session.openFragment("thread_theo").outcome == .ok)
     let saved = try #require(try store.load())
     #expect(saved.carvedIds.contains("thread_theo"))
+    #expect(session.persistenceFailure == nil)
+  }
+
+  @Test func saveFailureIsVisibleAndDoesNotReportSuccess() throws {
+    // A disk write that throws must not look like progress was saved.
+    // The player gets a recovery warning; the developer error is preserved; retry works.
+    let caseFile = try loadFiveMinutes()
+    let store = ThrowingSessionStore(error: TestSaveError.diskFull)
+    let session = GameSession(caseFile: caseFile)
+    SessionPersistence.attach(store: store, to: session)
+
+    #expect(session.openFragment("thread_theo").outcome == .ok)
+    #expect(session.engine.carvedIds.contains("thread_theo"))
+
+    let failure = try #require(session.persistenceFailure)
+    #expect(store.savedSnapshots.isEmpty, "a throwing store must not be treated as saved")
+    #expect(failure.playerMessage == PlayerFacingCopy.saveFailed)
+    #expect(failure.developerDetail.contains("diskFull"))
+    #expect(PlayerFacingCopy.containsEngineVocabulary(failure.playerMessage) == false)
+
+    store.error = nil
+    session.retryPersistence()
+
+    #expect(session.persistenceFailure == nil)
+    #expect(store.savedSnapshots.count == 1)
+    #expect(store.savedSnapshots[0].carvedIds.contains("thread_theo"))
   }
 
   @Test func fileStoreRoundTrip() throws {
@@ -174,5 +198,33 @@ struct SessionPersistenceTests {
     try store.save(session.makeSnapshot())
     try store.clear()
     #expect(try store.load() == nil)
+  }
+}
+
+private enum TestSaveError: Error, CustomStringConvertible {
+  case diskFull
+  var description: String { "diskFull" }
+}
+
+/// Store that can be told to throw on save so the session boundary is testable.
+private final class ThrowingSessionStore: SessionStore {
+  var error: Error?
+  private(set) var savedSnapshots: [SessionSnapshot] = []
+
+  init(error: Error?) {
+    self.error = error
+  }
+
+  func load() throws -> SessionSnapshot? { savedSnapshots.last }
+
+  func save(_ snapshot: SessionSnapshot) throws {
+    if let error {
+      throw error
+    }
+    savedSnapshots.append(snapshot)
+  }
+
+  func clear() throws {
+    savedSnapshots.removeAll()
   }
 }

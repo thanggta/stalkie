@@ -160,6 +160,8 @@ public final class GameSession: ObservableObject {
   /// Set once `fileVerdict` accepts a complete answer set.
   @Published public private(set) var filedReport: VerdictReport?
   @Published public private(set) var isFiled: Bool = false
+  /// Last failed save. Nil means the most recent persist succeeded or was never attempted.
+  @Published public private(set) var persistenceFailure: PersistenceFailure?
   /// Called after every meaningful mutation so the app can persist.
   public var onMutation: ((GameSession) -> Void)?
 
@@ -362,6 +364,20 @@ public final class GameSession: ObservableObject {
 
   public func dismissAllNotices() {
     pendingNotices.removeAll()
+    persist()
+  }
+
+  /// Record a failed save without crashing and without pretending it worked.
+  public func recordPersistenceFailure(_ failure: PersistenceFailure) {
+    persistenceFailure = failure
+  }
+
+  public func clearPersistenceFailure() {
+    persistenceFailure = nil
+  }
+
+  /// Re-attempt the last persist. The store decides success or failure.
+  public func retryPersistence() {
     persist()
   }
 

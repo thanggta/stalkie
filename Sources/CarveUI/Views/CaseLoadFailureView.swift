@@ -15,20 +15,13 @@ public struct CaseLoadFailureView: View {
 
   public var body: some View {
     VStack(alignment: .leading, spacing: theme.spacing.lg) {
-      Text("Case failed to load")
+      Text(PlayerFacingCopy.loadFailedTitle)
         .font(theme.fonts.titleFont)
         .foregroundStyle(theme.palette.destructive.color)
 
-      Text(
-        "The phone cannot open without a valid case bundle. This is not an empty case — load failed."
-      )
-      .font(theme.fonts.bodyFont)
-      .foregroundStyle(theme.palette.primaryText.color)
-
       Text(message)
-        .font(theme.fonts.monoFont)
-        .foregroundStyle(theme.palette.secondaryText.color)
-        .textSelection(.enabled)
+        .font(theme.fonts.bodyFont)
+        .foregroundStyle(theme.palette.primaryText.color)
 
       Spacer()
     }
