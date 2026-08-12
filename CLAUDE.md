@@ -91,8 +91,35 @@ Three rules still bind, and these are not negotiable:
 2. **The visual language is a swappable theme layer.** Fonts, bubble geometry, corner radii,
    icon shapes, status-bar layout are data, not hardcoded constants. A reviewer flag must cost
    a reskin, not a rewrite.
-3. **Fictional characters and brands only.** INV-6 is unchanged and unaffected. No real brand,
-   logo, or trademark in any shipped asset.
+3. **Fictional *people*, real *platforms*.** Changed by DR-12 on 2026-08-12 — see rule 1b below.
+   Every character, handle, number and photographed subject is invented. In-game apps carry real
+   platform names.
+
+### 1b. Real platform brands in-game are a second accepted risk (DR-12)
+
+**Added 2026-08-12. Earlier docs saying "every brand is invented" are superseded.** In-game apps
+carry real names — Instagram, Snapchat, Google Maps. Realism is the experience being sold.
+
+The owner was shown that `research-findings.md` §2 records Guideline 4.1(b) as covering
+"in-game WhatsApp/Instagram/TikTok lookalikes" at **ASR & NR** — the same account-removal
+severity as the 5.2.5 risk in rule 1 — and chose this anyway. **This is the project's second,
+independent account-removal trigger.** Do not relitigate it. Say so once if you disagree, then
+build it.
+
+Unlike rule 1's risk, this one is visible in App Store screenshots, so the realistic failure
+mode is rejection at review rather than removal later.
+
+Three things bind, and DR-12 does not cover any of them:
+
+1. **Never ship another company's actual asset files.** Draw every icon and wordmark
+   originally, even when drawing it to be recognisable. Reproducing a mark is the trademark
+   risk that was accepted; bundling Meta's or Snap's PNG adds a separate **copyright** claim
+   for zero extra realism.
+2. **Brand names live in ONE config file.** Never scattered through views or case JSON.
+   Reverting to invented names must cost a config edit, not a rewrite — the same retreat
+   mechanism as rule 1's theme layer, and the only thing that makes DR-12 reversible.
+3. **People stay fictional.** Real platforms do not come with real users. Every character,
+   handle, number and photographed subject is invented. Rule 6 is untouched by this.
 
 ### 2. Content is data, never script
 
@@ -154,7 +181,7 @@ The design invariants (design spec §7) are the highest-value tests in the proje
 | INV-3 | Every verdict question is answerable from fragments reachable through unlocks |
 | INV-4 | No orphan or unreachable fragments (sector map **or** `hiddenUntil` path) |
 | INV-5 | Unlock rules are declarative data only (six predicates; no eval) |
-| INV-6 | No real brand, logo, or trademark in any shipped asset |
+| INV-6 | **Narrowed by DR-12.** Real *platform* brands are allowed as in-game apps. No other real brand, logo or trademark ships, no third party's actual asset files are ever bundled, and every person is fictional |
 
 INV-1 and INV-2 (cycle-budget solvability / scarcity) were removed by DR-11. Run every
 surviving invariant in CI against every case. Unlock cycles are a hard validator failure.

@@ -16,7 +16,12 @@ public struct UnlockNotice: Equatable, Sendable, Identifiable {
   public let appId: PhoneAppId
 }
 
-/// Home-screen / in-app destinations. Fictional labels only (INV-6).
+/// Home-screen / in-app destinations.
+///
+/// Display names are NOT declared here. Per DR-12 in-game apps carry real platform brands, and
+/// every brand string must live in one config file so reverting to invented names is a config
+/// edit rather than a rewrite — that is DR-12's only retreat path. Add the case here, the label
+/// there.
 public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
   case messages
   case notes

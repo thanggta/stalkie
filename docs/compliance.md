@@ -41,7 +41,9 @@ iMessage-style thread.
 > - **The visual language ships as a swappable theme layer** — fonts, geometry, radii, icon
 >   shapes and status-bar layout as data, so a reviewer flag costs a reskin, not a rewrite.
 >   This is the entire retreat plan; if it is not built, there is no retreat.
-> - **INV-6 is unchanged.** No real brand, logo, or trademark in any shipped asset.
+> - **INV-6** — narrowed later the same day by DR-12 (§2.1): real *platform* brands are now
+>   permitted as in-game apps. Everything else still holds: no other real brand or trademark
+>   ships, no third party's actual asset files are bundled, and every person stays fictional.
 >
 > **Re-verify 5.2.5's live text before every submission.** With this shell, that checklist item
 > stops being routine and becomes the highest-value line in §8.
@@ -76,11 +78,43 @@ licensed open set, never the system emoji font, in any authored content.**
 
 Applies to in-fiction apps and services appearing inside a case.
 
-**Mitigation:** every brand appearing in content is invented. This is the shipped convention in
-the genre (*Simulacra* used Jabbr for Twitter, Spark for Tinder, Surfer for a browser).
+> ## ⚠ 2.1 — SUPERSEDED ON 2026-08-12 (DR-12). READ BEFORE THE REST OF §2.
+>
+> **The mitigation below was deliberately abandoned.** In-game apps now carry **real brand
+> names** — Instagram, Snapchat, Google Maps and similar — because realism is the experience
+> being sold. `docs/research-findings.md` §2 records that 4.1(b) explicitly covers
+> "in-game WhatsApp/Instagram/TikTok lookalikes" at **ASR & NR** severity, and the owner was
+> shown that before deciding. Recorded as DR-12.
+>
+> **This is the project's SECOND account-removal trigger,** stacked on the 5.2.5 one accepted
+> in DR-8. They are independent: fixing one does not fix the other. Unlike 5.2.5, this one is
+> visible in App Store screenshots, so the realistic failure mode is **rejection at review**
+> rather than removal later.
+>
+> **One thing the research says in the owner's favour, recorded honestly:**
+> `research-findings.md` line 164 notes invented brands are "evidence of *convention*, not of
+> legal necessity" — no source established that real brands are legally required to be avoided
+> here. The 4.1(b) exposure is verified; the trademark-law exposure is genuinely unestablished.
+>
+> **What still binds and is NOT covered by DR-12:**
+> - **Never ship another company's actual asset files.** Icons, logos and wordmarks are drawn
+>   originally, even when they are drawn to be recognisable. Reproducing a mark is the
+>   trademark risk that was accepted; shipping Meta's or Snap's PNG adds a separate and clean
+>   **copyright** claim on top, for no extra realism. Free to avoid — so avoid it.
+> - **Fictional people, always.** Real brands do not license real people. Every character,
+>   handle, number and photo subject stays invented (CLAUDE.md rule 6).
+> - **Keep brand strings in one place.** Names live in a single config, never scattered through
+>   views or case JSON, so reverting to invented names is a config change and not a rewrite.
+>   This is the same retreat mechanism as the DR-8 theme layer, and it is worth as much.
 
-Enforced as **INV-6**: no real brand, logo, wordmark, or trademark in any shipped asset.
-Reviewed per case before merge.
+**The original mitigation, now abandoned:** every brand appearing in content is invented. This
+is the shipped convention in the genre (*Simulacra* used Jabbr for Twitter, Spark for Tinder,
+Surfer for a browser), and no shipped title in the cluster uses a real platform brand as a
+functional in-game app.
+
+**INV-6 is narrowed, not deleted** (see DR-12): real *platform* brands are permitted as in-game
+apps; no other real brand, logo, wordmark or trademark appears in any shipped asset, and no
+third party's actual asset files are ever bundled. Reviewed per case before merge.
 
 Also 4.1(c): cannot use another developer's icon, brand, or product name in our app icon or
 name.
@@ -206,7 +240,11 @@ Run before every submission.
       discovery gates opening new content, forced filed verdict scored on accuracy. "Phone
       shell" and cycle-budget scarcity are no longer differentiators (DR-8, DR-11).
 - [ ] INV-6 asset review passed for every case in the build
-- [ ] No real brand, logo, or wordmark in screenshots or the App Store listing
+- [ ] **Real platform brands appear in the screenshots (DR-12) — accept that this is the most
+      likely rejection trigger, and re-read 4.1(b)'s live text before submitting.** No brand
+      beyond the in-game platforms; no third party's actual asset files bundled anywhere
+- [ ] Brand strings still confined to their single config file — verify reverting to invented
+      names is genuinely a config edit. That is DR-12's only retreat path
 - [ ] Free first case complete and playable to a filed verdict without payment
 - [ ] IAP is one-time unlock only; no cycle purchases exist anywhere in the build
 - [ ] Age rating matches actual content

@@ -299,7 +299,7 @@ Testable properties. A violation is a bug, not a balance issue.
 | INV-3 | Every verdict question is answerable from fragments reachable through unlocks | Every `supportedBy` id exists and is in the unlock reachability set |
 | INV-4 | No orphan fragments | Every fragment is on the sector map or reachable via `hiddenUntil` |
 | INV-5 | Unlock rules are declarative data, never executable script | Schema validation rejects non-declarative rules |
-| INV-6 | No real brand, logo, or trademark in any shipped asset | Asset review checklist per case |
+| INV-6 | **Narrowed by DR-12.** Real *platform* brands allowed as in-game apps. No other real brand or trademark ships; no third party's actual asset files are bundled; every person is fictional | Asset review checklist per case |
 
 Also hard-fail: **no unlock cycle** (A hidden until B, B hidden until A). INV-5 is a compliance
 requirement — see `docs/compliance.md`.
@@ -321,6 +321,62 @@ requirement — see `docs/compliance.md`.
 | DR-9 | **Swift / SwiftUI, iOS only**; damage via Metal | Flutter (the original DR-2, retains Android) | Android returns to scope — and note that is a rewrite, not a recompile |
 | DR-10 | **Relationship-suspicion drama for women; drama tone, no horror.** "You have his phone." | Forensic investigation framing (the original premise); horror/supernatural framing (the genre default) | The audience doesn't respond, or playtests show the drama can't carry it without a genre hook |
 | DR-11 | **Discovery-gated free browsing.** No cycle budget. Structure is `hiddenUntil`. Ending is a forced, scored verdict (~15 concise questions). | Cycle-budget scarcity (INV-1/INV-2); unscored ending; no ending | Playtests show free browsing without scarcity feels empty *and* discovery gates fail to replace it |
+| DR-12 | **Real platform brands as in-game apps** — Instagram, Snapchat, Google Maps by name. Realism is the product. | Invented in-fiction brands (the genre's universal convention — Jabbr, Spark, Surfer); invented names held in a swappable config | Apple rejects at review, a rights-holder makes contact, or realism proves not to be what players are paying for |
+
+### DR-12 — the reasoning, and the exposure
+
+**The bet:** what is being sold is *this is exactly what going through his phone feels like*. A
+photo app called "Halo" is a game asset; Instagram is his actual life. The owner judges that the
+recognition gap is where this genre's immersion leaks, and that closing it is worth the exposure.
+
+**The exposure, plainly.** `docs/research-findings.md` §2 records 4.1(b) verbatim and verified:
+it covers "in-game WhatsApp/Instagram/TikTok lookalikes" at **ASR & NR** — App Store Removal
+*and* Developer Program Removal. This is the project's **second** account-removal trigger,
+independent of the 5.2.5 one accepted in DR-8. Fixing either does not fix the other.
+
+**Two asymmetries that make this heavier than DR-8:**
+
+- **It is visible before install.** 5.2.5 exposure lives inside the app; a real logo shows up in
+  the App Store screenshots. The realistic failure is rejection at review rather than removal
+  later — so the practical risk is that it never ships at all.
+- **The rights-holders are not the platform.** DR-8 accepted risk from Apple, who at least has
+  a submission process to appeal within. Meta, Snap and Google are third parties with
+  independent enforcement and no relationship to appeal to.
+
+**One point in the decision's favour, recorded honestly:** `research-findings.md` line 164 notes
+invented brands are "evidence of *convention*, not of legal necessity" — the research found no
+source establishing that real brands must be avoided here. The 4.1(b) policy exposure is
+verified; the trademark-law exposure is genuinely unestablished, not established-and-ignored.
+
+**What DR-12 does NOT cover, and therefore still binds:**
+
+- **No third party's actual asset files ship, ever.** Icons and wordmarks are drawn originally,
+  even when drawn to be recognisable. Reproducing a mark is the trademark risk that was
+  accepted; bundling Meta's PNG adds a clean, separate **copyright** claim for zero extra
+  realism.
+- **People stay fictional.** Real platforms do not come with real users. Every character,
+  handle, number and photographed subject remains invented (rule 6).
+- **Brand strings live in exactly one config file** — never scattered through views or case
+  JSON. Reverting to invented names must cost a config edit, not a rewrite. This is the same
+  retreat mechanism as DR-8's theme layer, and it is the only thing that makes DR-12 reversible.
+
+### The app set (DR-12)
+
+Derived from what the premise needs — the places people actually hide things — not from what is
+cheap to build. Shapes already in the schema are marked.
+
+| App | What it carries | Schema |
+|---|---|---|
+| Messages | the spine of the case | `thread` ✅ |
+| Photos | what he kept, and what he deleted | `image` ✅ |
+| Notes | drafts he never sent | `note` ✅ |
+| Calls | who, when, how long | `record kind: call_log` ✅ |
+| **Maps — location history** | the hardest evidence in the game: *he said he was at his brother's* | `record kind: location` ✅ |
+| **Instagram** | DMs, follows, what he liked at 1am | new type needed |
+| **Snapchat** | streaks and disappearing messages — *why her, every day* | new type needed |
+| **Payments** | a transfer with no explanation | `record kind: transaction` ✅ |
+| Browser history | what he searched at 2am | new type needed |
+| Dating app | the smoking gun, if a case wants one | new type needed |
 
 ### DR-11 — the reasoning
 
@@ -418,7 +474,10 @@ the whole differentiated loop without paying.
 1. One complete case, free, start to filed verdict, ~45–90 minutes
 2. Surviving invariants INV-3…INV-6 enforced by automated tests (INV-1/INV-2 removed by DR-11)
 3. Ships on iOS only (DR-9; Android removed from scope 2026-08-12)
-4. Zero simulated Apple interfaces, zero real brands (INV-6)
+4. ~~Zero simulated Apple interfaces, zero real brands~~ — **both reversed.** The shell simulates
+   iOS (DR-8) and in-game apps carry real platform brands (DR-12). Two independent ASR & NR
+   triggers, accepted knowingly. INV-6 survives only as: no *other* real brand, no bundled
+   third-party asset files, every person fictional
 5. A second case authorable **without an engineer** — the real test of the content pipeline
 
 Item 5 is the one that decides whether this scales past one case. If authoring case 2 needs
