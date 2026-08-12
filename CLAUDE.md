@@ -6,8 +6,13 @@ this project.
 ## What this is
 
 A narrative investigation game. The player is a data-recovery technician who carves fragments
-out of damaged device images, links them, and files a verdict. **Not** a phone simulator — that
-distinction is a legal requirement, not a stylistic preference (see `docs/compliance.md` §1).
+out of damaged device images, links them, and files a verdict.
+
+The *loop* is the product: constrained recovery under a cycle budget, ending in a filed verdict
+scored on accuracy. That loop — not the shell around it — is what makes this different from the
+genre (`docs/compliance.md` §3). Since DR-8 the shell is an iOS lookalike, which means the loop
+now carries the entire 4.3(b) differentiation argument by itself. Read rule 1 below before
+touching any UI.
 
 ## Read in this order
 
@@ -66,11 +71,15 @@ script interpreter wearing a hat, and it moves us to the wrong side of Guideline
 
 Adding a predicate requires a decision record in the design spec.
 
-### 3. `carve_engine` and `verdict` stay pure
+### 3. `CarveEngine` and `Verdict` stay pure
 
-No Flutter imports, no IO, no platform calls. They hold the actual game rules and are the two
-modules where a bug silently corrupts play. Purity is what makes them testable without a widget
-harness. If you need Flutter in one of them, the boundary is wrong — fix the boundary.
+**No SwiftUI, no UIKit, no IO, no platform calls.** `Sources/CarveCore` imports `Foundation` and
+nothing else — verify with `grep -rh "^import" Sources/CarveCore/`. These hold the actual game
+rules and are the two modules where a bug silently corrupts play. Purity is what makes them
+testable without booting a simulator, which is what keeps the suite fast. If you need a UI type
+in one of them, the boundary is wrong — fix the boundary, don't import the framework.
+
+The iOS app target depends on `CarveCore`. Never the reverse.
 
 ### 4. Never sell cycles
 
