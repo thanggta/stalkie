@@ -43,3 +43,29 @@ extension EnvironmentValues {
     set { self[CarveThemeKey.self] = newValue }
   }
 }
+
+extension View {
+  /// Hide UIKit navigation chrome. No-op on macOS (SPM builds CarveUI there for lint).
+  @ViewBuilder
+  public func hideSystemNavigationChrome() -> some View {
+    #if os(iOS)
+    self
+      .navigationBarBackButtonHidden(true)
+      .toolbar(.hidden, for: .navigationBar)
+    #else
+    self
+    #endif
+  }
+
+  /// Suppress the real device status bar so only the in-fiction one shows.
+  @ViewBuilder
+  public func hideSystemStatusChrome() -> some View {
+    #if os(iOS)
+    self
+      .statusBarHidden(true)
+      .persistentSystemOverlays(.hidden)
+    #else
+    self
+    #endif
+  }
+}

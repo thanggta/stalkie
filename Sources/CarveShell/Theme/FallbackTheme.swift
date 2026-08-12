@@ -74,10 +74,10 @@ extension Theme {
       labelSpacing: 8
     ),
     statusBar: ThemeStatusBarLayout(
-      height: 22,
-      horizontalPadding: 12,
+      height: 44,
+      horizontalPadding: 16,
       showsCarrier: false,
-      showsSignalGlyphs: false,
+      showsSignalGlyphs: true,
       timeCentered: true
     ),
     spacing: ThemeSpacing(xxs: 2, xs: 4, sm: 6, md: 10, lg: 14, xl: 20, xxl: 28)

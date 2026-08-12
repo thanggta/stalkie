@@ -12,7 +12,8 @@ struct VerdictResultsView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      AppNavBar(title: "Filed") {
+      Spacer().frame(height: theme.statusBar.height)
+      AppNavBar(title: "Filed", backLabel: "Home") {
         path = []
       }
 

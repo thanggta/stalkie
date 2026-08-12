@@ -1,4 +1,4 @@
-// Apps/Carve/Views/FragmentHostView.swift
+// Sources/CarveUI/Views/FragmentHostView.swift
 import SwiftUI
 import CarveCore
 import CarveShell
@@ -15,17 +15,20 @@ struct FragmentHostView: View {
         session.isVisible(fragmentId)
       {
         VStack(spacing: 0) {
-          AppNavBar(title: shortTitle(fragment)) {
+          Spacer().frame(height: theme.statusBar.height)
+          AppNavBar(title: shortTitle(fragment), backLabel: "Back") {
             if path.count > 1 { path.removeLast() } else { path = [] }
           }
           content(for: fragment)
         }
         .background(theme.palette.screenBackground.color.ignoresSafeArea())
+        .hideSystemNavigationChrome()
         .onAppear {
           session.openFragment(fragmentId)
         }
       } else {
         VStack(spacing: theme.spacing.md) {
+          Spacer().frame(height: theme.statusBar.height)
           Text("Not recovered")
             .font(theme.fonts.headlineFont)
             .foregroundStyle(theme.palette.secondaryText.color)

@@ -46,7 +46,8 @@ struct VerdictFlowView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      AppNavBar(title: navTitle) {
+      Spacer().frame(height: theme.statusBar.height)
+      AppNavBar(title: navTitle, backLabel: "Home") {
         goBack()
       }
 

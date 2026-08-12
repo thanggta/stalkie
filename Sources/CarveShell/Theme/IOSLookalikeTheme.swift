@@ -27,22 +27,24 @@ extension Theme {
       unlockBannerBackground: ThemeColor(r: 0.15, g: 0.15, b: 0.18),
       unlockBannerText: ThemeColor.gray(1.0),
       corruptGlyph: ThemeColor.gray(0.55),
-      homeWallpaperTop: ThemeColor(r: 0.15, g: 0.22, b: 0.45),
-      homeWallpaperBottom: ThemeColor(r: 0.45, g: 0.35, b: 0.55),
-      iconMessages: ThemeColor(r: 0.04, g: 0.52, b: 1.0),
-      iconNotes: ThemeColor(r: 0.98, g: 0.82, b: 0.2),
-      iconPhone: ThemeColor(r: 0.2, g: 0.78, b: 0.35),
-      iconPhotos: ThemeColor(r: 0.95, g: 0.4, b: 0.55),
-      iconPlaces: ThemeColor(r: 0.25, g: 0.55, b: 0.95),
-      photoPlaceholder: ThemeColor.gray(0.85)
+      // Abstract wallpaper — multi-stop, not a flat purple void.
+      homeWallpaperTop: ThemeColor(r: 0.18, g: 0.28, b: 0.55),
+      homeWallpaperBottom: ThemeColor(r: 0.55, g: 0.28, b: 0.42),
+      iconMessages: ThemeColor(r: 0.18, g: 0.82, b: 0.35),
+      iconNotes: ThemeColor(r: 0.98, g: 0.84, b: 0.18),
+      iconPhone: ThemeColor(r: 0.22, g: 0.80, b: 0.38),
+      iconPhotos: ThemeColor(r: 0.95, g: 0.35, b: 0.55),
+      iconPlaces: ThemeColor(r: 0.20, g: 0.55, b: 0.95),
+      photoPlaceholder: ThemeColor.gray(0.88)
     ),
     radii: ThemeRadii(
-      appIcon: 13.5,
+      // ~22.37% of 60pt — continuous squircle feel without shipping Apple assets.
+      appIcon: 13.4,
       bubble: 18,
       bubbleTail: 4,
       card: 12,
       chip: 8,
-      banner: 14
+      banner: 20
     ),
     fonts: ThemeFonts(
       family: ".AppleSystemUIFont",
@@ -55,7 +57,7 @@ extension Theme {
       subheadline: 15,
       footnote: 13,
       caption: 12,
-      statusBar: 12,
+      statusBar: 16,
       iconLabel: 11,
       bubble: 17
     ),
@@ -70,13 +72,13 @@ extension Theme {
     icon: ThemeIconShape(
       kind: .roundedSquare,
       size: 60,
-      gridSpacing: 16,
-      labelSpacing: 6
+      gridSpacing: 28,
+      labelSpacing: 7
     ),
     statusBar: ThemeStatusBarLayout(
-      height: 24,
-      horizontalPadding: 16,
-      showsCarrier: true,
+      height: 54,
+      horizontalPadding: 28,
+      showsCarrier: false,
       showsSignalGlyphs: true,
       timeCentered: false
     ),

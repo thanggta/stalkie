@@ -1,4 +1,4 @@
-// Apps/Carve/Views/AppContainerView.swift
+// Sources/CarveUI/Views/AppContainerView.swift
 import SwiftUI
 import CarveShell
 
@@ -10,13 +10,16 @@ struct AppContainerView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      AppNavBar(title: appId.title) {
-        if path.count > 1 {
-          path.removeLast()
-        } else {
-          path = []
-        }
+      // Status bar clearance — real phone apps draw under the status area.
+      Spacer().frame(height: theme.statusBar.height)
+
+      AppNavBar(
+        title: appId.title,
+        backLabel: "Home"
+      ) {
+        path = []
       }
+
       Group {
         switch appId {
         case .messages:
@@ -35,37 +38,48 @@ struct AppContainerView: View {
       }
     }
     .background(theme.palette.groupedBackground.color.ignoresSafeArea())
+    .hideSystemNavigationChrome()
   }
 }
 
+/// iOS-style top bar: chevron + back label, centered title, hairline rule.
 struct AppNavBar: View {
   @Environment(\.carveTheme) private var theme
   let title: String
+  var backLabel: String = "Back"
   let onBack: () -> Void
 
   var body: some View {
-    HStack {
-      Button(action: onBack) {
-        Text("‹ Home")
-          .font(theme.fonts.bodyFont)
-          .foregroundStyle(theme.palette.accent.color)
-      }
-      Spacer()
+    ZStack {
       Text(title)
         .font(theme.fonts.headlineFont)
+        .fontWeight(.semibold)
         .foregroundStyle(theme.palette.primaryText.color)
-      Spacer()
-      Text("‹ Home")
-        .font(theme.fonts.bodyFont)
-        .foregroundStyle(theme.palette.accent.color.opacity(0))
+        .lineLimit(1)
+
+      HStack(spacing: theme.spacing.xxs) {
+        Button(action: onBack) {
+          HStack(spacing: 2) {
+            Text("‹")
+              .font(theme.fonts.titleFont)
+              .fontWeight(.regular)
+            Text(backLabel)
+              .font(theme.fonts.bodyFont)
+          }
+          .foregroundStyle(theme.palette.accent.color)
+        }
+        .buttonStyle(.plain)
+        Spacer(minLength: 0)
+      }
     }
     .padding(.horizontal, theme.spacing.md)
     .padding(.vertical, theme.spacing.sm)
-    .background(theme.palette.elevatedBackground.color)
+    .frame(minHeight: 44)
+    .background(theme.palette.elevatedBackground.color.opacity(0.94))
     .overlay(alignment: .bottom) {
       Rectangle()
         .fill(theme.palette.separator.color)
-        .frame(height: 0.5)
+        .frame(height: 0.33)
     }
   }
 }
@@ -167,21 +181,22 @@ struct PhotosGridView: View {
   @Binding var path: [PhoneRoute]
 
   private let columns = [
-    GridItem(.flexible(), spacing: 4),
-    GridItem(.flexible(), spacing: 4),
-    GridItem(.flexible(), spacing: 4),
+    GridItem(.flexible(), spacing: 2),
+    GridItem(.flexible(), spacing: 2),
+    GridItem(.flexible(), spacing: 2),
   ]
 
   var body: some View {
     let items = session.visibleFragments(in: .photos)
     ScrollView {
       if items.isEmpty {
-        Text("No photos recovered yet")
+        Text("No Photos")
           .font(theme.fonts.bodyFont)
           .foregroundStyle(theme.palette.secondaryText.color)
+          .frame(maxWidth: .infinity)
           .padding(theme.spacing.xl)
       } else {
-        LazyVGrid(columns: columns, spacing: 4) {
+        LazyVGrid(columns: columns, spacing: 2) {
           ForEach(items) { item in
             Button {
               path.append(.fragment(item.id))
@@ -194,9 +209,6 @@ struct PhotosGridView: View {
                       .font(theme.fonts.captionFont)
                       .foregroundStyle(theme.palette.secondaryText.color)
                   }
-                  .clipShape(
-                    RoundedRectangle(cornerRadius: theme.radii.card * 0.3, style: .continuous)
-                  )
                 if item.isUnreadUnlock {
                   Circle()
                     .fill(theme.palette.badge.color)
@@ -208,7 +220,6 @@ struct PhotosGridView: View {
             .buttonStyle(.plain)
           }
         }
-        .padding(theme.spacing.sm)
       }
     }
   }
