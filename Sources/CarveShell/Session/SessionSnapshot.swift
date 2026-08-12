@@ -87,8 +87,16 @@ public final class FileSessionStore: SessionStore {
   private let encoder = JSONEncoder()
   private let decoder = JSONDecoder()
 
+  public static func snapshotFileName(caseId: String) -> String {
+    "session_\(caseId)_v1.json"
+  }
+
   public init(directory: URL, fileName: String = "session_snapshot_v1.json") {
     self.fileURL = directory.appendingPathComponent(fileName)
+  }
+
+  public convenience init(directory: URL, caseId: String) {
+    self.init(directory: directory, fileName: FileSessionStore.snapshotFileName(caseId: caseId))
   }
 
   public convenience init(fileURL: URL) {

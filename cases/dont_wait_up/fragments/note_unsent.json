@@ -1,0 +1,12 @@
+{
+  "id": "note_unsent",
+  "type": "note",
+  "label": "Notes — draft",
+  "damage": { "profile": "partial-decode", "intensity": 0.5, "seed": 4204 },
+  "hiddenUntil": { "carved": "thread_mara" },
+  "content": {
+    "title": "mina",
+    "body": "I didn't know how to say I might have to leave Kingswell.\n\nIt isn't about you. I keep starting there because I need you to believe it and I'm not sure I would, if I were you.\n\nThere is a woman who set the meetings. That is the whole sentence. I still haven't said the rest out loud.\n\nIf you're still up — ███████",
+    "modifiedAt": "2026-08-13T01:06:00-07:00"
+  }
+}

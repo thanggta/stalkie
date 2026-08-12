@@ -1,0 +1,13 @@
+{
+  "id": "image_bar",
+  "type": "image",
+  "label": "Photos — glasses",
+  "damage": { "profile": "chroma-bleed", "intensity": 0.33, "seed": 4504 },
+  "hiddenUntil": { "carved": "ig_post_wren" },
+  "content": {
+    "source": "media/img_bar_source.png",
+    "capturedAt": "2026-08-11T21:36:00-07:00",
+    "exifIntact": false,
+    "depicts": ["mara", "location_wren"]
+  }
+}

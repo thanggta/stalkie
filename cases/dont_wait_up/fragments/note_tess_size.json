@@ -1,0 +1,12 @@
+{
+  "id": "note_tess_size",
+  "type": "note",
+  "label": "Notes — cal",
+  "damage": { "profile": "partial-decode", "intensity": 0.2, "seed": 4701 },
+  "hiddenUntil": { "answered": "q_cal_ring" },
+  "content": {
+    "title": "cal — don't lose",
+    "body": "5.5\nwhite gold\nresize receipt in email from Bell Street Jewelers\nhand it over before she sits down\nthis is Cal's night",
+    "modifiedAt": "2026-08-03T21:10:00-07:00"
+  }
+}

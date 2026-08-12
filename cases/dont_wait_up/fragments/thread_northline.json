@@ -1,0 +1,23 @@
+{
+  "id": "thread_northline",
+  "type": "thread",
+  "label": "Messages — Rafi",
+  "damage": { "profile": "block-loss", "intensity": 0.1, "seed": 4802 },
+  "hiddenUntil": { "carved": "note_calendar" },
+  "content": {
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "rafi", "display": "Rafi" }
+    ],
+    "messages": [
+      { "at": "2026-08-10T09:06:00-07:00", "from": "rafi", "text": "you still on the Harboridge vendor walk Thursday? I can take your 10am", "corrupt": false },
+      { "at": "2026-08-10T09:14:00-07:00", "from": "jonah", "text": "yes. thanks. I'll be back Friday, late", "corrupt": false },
+      { "at": "2026-08-10T09:16:00-07:00", "from": "rafi", "text": "if it's the same shop as last quarter tell them the invoice is still wrong", "corrupt": false },
+      { "at": "2026-08-10T09:22:00-07:00", "from": "jonah", "text": "I'll mention it", "corrupt": false },
+      { "at": "2026-08-12T17:40:00-07:00", "from": "rafi", "text": "how was it. they still pretending the SLA is a personality", "corrupt": false },
+      { "at": "2026-08-12T18:03:00-07:00", "from": "jonah", "text": "long day. I'll write it up Monday", "corrupt": false },
+      { "at": "2026-08-12T18:05:00-07:00", "from": "rafi", "text": "cool. Mina still coming to the picnic or are you two skipping again", "corrupt": false },
+      { "at": "2026-08-12T18:11:00-07:00", "from": "jonah", "text": "I'll ask her", "corrupt": false }
+    ]
+  }
+}

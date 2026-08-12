@@ -208,7 +208,7 @@ case.
 | `CarveShell` | Theme layer (DR-8 retreat), case bundle load, `GameSession`, versioned session snapshots (IO outside Core), brand labels (DR-12) |
 | `CarveUI` | iOS-lookalike SpringBoard shell, Messages / Notes / Photos / Phone / Maps / Instagram / Snapchat surfaces, link board, Decide → results |
 | App | `Apps/Carve` — launch chrome, restore-or-fail progress, case bundle copy, XCUITest full loop |
-| Sample | `cases/five_minutes` — relationship drama; Messages + Instagram + Snapchat + Maps evidence |
+| Sample | `cases/five_minutes` and `cases/dont_wait_up` — both relationship drama; authorable as data |
 
 CI: `swift test`, `CarveCLI` on every case, `swift build --target CarveUI`, iOS simulator
 `xcodebuild` (`.github/workflows/ci.yml`).

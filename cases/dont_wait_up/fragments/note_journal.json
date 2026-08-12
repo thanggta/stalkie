@@ -1,0 +1,12 @@
+{
+  "id": "note_journal",
+  "type": "note",
+  "label": "Notes — july–aug",
+  "damage": { "profile": "partial-decode", "intensity": 0.28, "seed": 4801 },
+  "hiddenUntil": { "carved": "note_unsent" },
+  "content": {
+    "title": "scratch",
+    "body": "22 Jul\nNorthline froze hiring. Dex says wait it out. I keep refreshing the all-hands deck like it will grow a paragraph that includes me.\n\n29 Jul\nHarbor Path found me. I didn't look. That's the sentence I want to be able to say later and I'm already not sure it's true. I opened their site after the all-hands.\n\n4 Aug\nTold Mina I was tired. I was. Also I had a call in a stairwell like a person who has already decided something and is pretending he hasn't.\n\n8 Aug\nThey want me in Harboridge. I said vendor overnight. The lie was ready before I needed it. That should have been the moment.\n\n11 Aug, 1:13a, The Wren\nThe room is fine. The city looks like a place people stay. I thought about calling her and I opened Mara's thread instead. I don't know what that means and I hate that I don't.\n\n12 Aug, airport\nPriya said no Kingswell split, kindly. I nodded like a man considering commutes. I am considering leaving. Those are not the same and I keep using one word for both.\n\n13 Aug, 12:50a\nShe's asleep. The draft is still a draft. If she asks in the morning I will say I was at a vendor thing. I can hear how it sounds and I'm still going to say it.",
+    "modifiedAt": "2026-08-13T00:52:00-07:00"
+  }
+}

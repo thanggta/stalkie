@@ -1,0 +1,25 @@
+{
+  "id": "thread_priya",
+  "type": "thread",
+  "label": "Messages — Priya Shah",
+  "damage": { "profile": "block-loss", "intensity": 0.15, "seed": 4601 },
+  "hiddenUntil": {
+    "any": [
+      { "carved": "image_badge" },
+      { "carved": "note_comp" }
+    ]
+  },
+  "content": {
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "priya", "display": "Priya Shah" }
+    ],
+    "messages": [
+      { "at": "2026-08-12T14:22:00-07:00", "from": "priya", "text": "Jonah — thank you for making the trip to Harboridge. The team was impressed. You asked the right questions about the Kingswell split.", "corrupt": false },
+      { "at": "2026-08-12T14:40:00-07:00", "from": "jonah", "text": "thank you for having me. I need a few days", "corrupt": false },
+      { "at": "2026-08-12T14:43:00-07:00", "from": "priya", "text": "Understood. Offer letter is with Mara. We need a yes or no by the 20th so we can stop the other search.", "corrupt": false },
+      { "at": "2026-08-12T14:51:00-07:00", "from": "jonah", "text": "I'll be in touch. Please don't loop anyone at Northline", "corrupt": false },
+      { "at": "2026-08-12T14:52:00-07:00", "from": "priya", "text": "We won't. That's why we used Harbor Path.", "corrupt": false }
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "id": "thread_mom",
+  "type": "thread",
+  "label": "Messages — Mom",
+  "damage": { "profile": "block-loss", "intensity": 0.05, "seed": 4103 },
+  "content": {
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "ruth", "display": "Mom" }
+    ],
+    "messages": [
+      { "at": "2026-08-08T10:14:00-07:00", "from": "ruth", "text": "Your father wants to know if you and Mina are coming for Labor Day. He is hovering.", "corrupt": false },
+      { "at": "2026-08-08T10:31:00-07:00", "from": "jonah", "text": "I think so. I'll ask her tonight", "corrupt": false },
+      { "at": "2026-08-08T10:32:00-07:00", "from": "ruth", "text": "Bring the lemon bars she made at Christmas. He still talks about them", "corrupt": false },
+      { "at": "2026-08-12T18:40:00-07:00", "from": "ruth", "text": "Cal says Saturday is important. Wear a shirt with buttons", "corrupt": false },
+      { "at": "2026-08-12T20:55:00-07:00", "from": "jonah", "text": "I know. I'll be there", "corrupt": false }
+    ]
+  }
+}

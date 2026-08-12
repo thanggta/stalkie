@@ -1,0 +1,13 @@
+{
+  "id": "image_badge",
+  "type": "image",
+  "label": "Photos — badge",
+  "damage": { "profile": "block-loss", "intensity": 0.4, "seed": 4503 },
+  "hiddenUntil": { "carved": "image_hotel" },
+  "content": {
+    "source": "media/img_badge_source.png",
+    "capturedAt": "2026-08-12T08:47:00-07:00",
+    "exifIntact": true,
+    "depicts": ["jonah", "location_lumen"]
+  }
+}

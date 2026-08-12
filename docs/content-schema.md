@@ -63,6 +63,7 @@ one source image serving many reveal states.
 | `schemaVersion` | int | Must be `1`. Loader rejects unknown versions rather than guessing. |
 | `id` | string | `^[a-z0-9_]+$`, unique across all cases |
 | `title` | string | Display name |
+| `ownerEntityId` | string | Optional. The device owner's entity id. Threads treat this person as "me". When omitted, the first authored participant is the owner. |
 | `briefing` | string | Optional author/store copy. Ignored by the engine; shell may show it. |
 | `sectorMap[]` | array | Fragments visible at case open (no gate, or gate true on empty state) |
 | `sectorMap[].integrity` | float 0–1 | Drives default damage intensity **and** is shown to the player as a hint |

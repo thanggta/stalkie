@@ -191,15 +191,15 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/../cases/five_minutes/case.json",
+				"${SRCROOT}/../cases",
 			);
 			name = "Copy Case Bundle";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases/five_minutes/case.json",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nCASE_SRC=\"${SRCROOT}/../cases/five_minutes\"\nCASE_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases/five_minutes\"\nmkdir -p \"${CASE_DST}\"\nrsync -a --delete \"${CASE_SRC}/\" \"${CASE_DST}/\"\nRES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nWP_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/Wallpapers\"\nif [ -d \"${WP_SRC}\" ]; then\n  cp -f \"${WP_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\nICON_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/AppIcons\"\nif [ -d \"${ICON_SRC}\" ]; then\n  cp -f \"${ICON_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\n";
+			shellScript = "set -e\nCASES_SRC=\"${SRCROOT}/../cases\"\nCASES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases\"\nmkdir -p \"${CASES_DST}\"\nfor d in \"${CASES_SRC}\"/*/; do\n  [ -f \"${d}case.json\" ] || continue\n  name=$(basename \"$d\")\n  mkdir -p \"${CASES_DST}/${name}\"\n  rsync -a --delete \"$d\" \"${CASES_DST}/${name}/\"\ndone\nRES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nWP_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/Wallpapers\"\nif [ -d \"${WP_SRC}\" ]; then\n  cp -f \"${WP_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\nICON_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/AppIcons\"\nif [ -d \"${ICON_SRC}\" ]; then\n  cp -f \"${ICON_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -267,6 +267,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Carve/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = CARVE;
@@ -293,6 +294,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Carve/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = CARVE;

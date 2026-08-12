@@ -28,7 +28,7 @@ struct ImageDetailView: View {
             .font(theme.fonts.bodyFont)
             .foregroundStyle(theme.palette.destructive.color)
         } else {
-          Text("Recovering…")
+          Text(PlayerFacingCopy.imageRecovering)
             .font(theme.fonts.bodyFont)
             .foregroundStyle(theme.palette.secondaryText.color)
         }
@@ -39,9 +39,7 @@ struct ImageDetailView: View {
               .font(theme.fonts.captionFont)
               .foregroundStyle(theme.palette.secondaryText.color)
           }
-          Text("damage \(fragment.damage.profile) · seed \(fragment.damage.seed)")
-            .font(theme.fonts.captionFont)
-            .foregroundStyle(theme.palette.tertiaryText.color)
+
         }
       }
       .padding(theme.spacing.md)
@@ -55,23 +53,23 @@ struct ImageDetailView: View {
   @MainActor
   private func renderDamage() async {
     guard let content = try? FragmentContent.image(fragment) else {
-      errorText = "Missing image content"
+      errorText = PlayerFacingCopy.imageMissing
       return
     }
     guard let caseDir = CaseBundleLoader.resolveCaseDirectory(id: session.caseFile.id) else {
-      errorText = "Case directory not found"
+      errorText = PlayerFacingCopy.imageMissing
       return
     }
     let mediaURL = CaseBundleLoader.mediaURL(caseDirectory: caseDir, source: content.source)
     guard let sourceCG = loadCGImage(url: mediaURL) else {
-      errorText = "Source media missing: \(content.source)"
+      errorText = PlayerFacingCopy.imageMissing
       return
     }
 
     let width = sourceCG.width
     let height = sourceCG.height
     guard let sourceBytes = rgbaBytes(from: sourceCG) else {
-      errorText = "Could not read source pixels"
+      errorText = PlayerFacingCopy.imageMissing
       return
     }
 
@@ -84,7 +82,7 @@ struct ImageDetailView: View {
         height: height)
       cgImage = cgImageFromRGBA(damaged, width: width, height: height)
     } catch {
-      errorText = "Damage render failed: \(error)"
+      errorText = PlayerFacingCopy.imageMissing
     }
   }
 }

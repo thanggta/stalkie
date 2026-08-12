@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "id": "dont_wait_up",
+  "title": "Don't Wait Up",
+  "ownerEntityId": "jonah",
+  "briefing": "He said dentist. He said don't wait up. The water is still running.",
+  "sectorMap": [
+    { "fragmentId": "thread_dex", "typeHint": "thread", "integrity": 0.94 },
+    { "fragmentId": "thread_cal", "typeHint": "thread", "integrity": 0.97 },
+    { "fragmentId": "thread_mom", "typeHint": "thread", "integrity": 0.98 },
+    { "fragmentId": "note_lists", "typeHint": "note", "integrity": 0.9 },
+    { "fragmentId": "calls_recent", "typeHint": "record", "integrity": 0.86 },
+    { "fragmentId": "image_counter", "typeHint": "image", "integrity": 0.72 }
+  ],
+  "verdict": {
+    "questions": [
+      {
+        "id": "q_mara_who",
+        "prompt": "Who is Mara to Jonah?",
+        "answerType": "entity",
+        "options": ["coworker", "affair", "recruiter", "unknown"],
+        "correct": "recruiter",
+        "supportedBy": ["thread_mara", "note_comp", "thread_priya"]
+      },
+      {
+        "id": "q_thursday_dentist",
+        "prompt": "Was Jonah at the dentist on Thursday?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "no",
+        "supportedBy": ["thread_dex", "note_calendar"]
+      },
+      {
+        "id": "q_thursday_where",
+        "prompt": "Where was Jonah Thursday night?",
+        "answerType": "entity",
+        "options": ["home", "northline", "harboridge", "unknown"],
+        "correct": "harboridge",
+        "supportedBy": ["thread_mara", "record_places", "image_hotel"]
+      },
+      {
+        "id": "q_trip_reason",
+        "prompt": "Why did he go to Harboridge?",
+        "answerType": "entity",
+        "options": ["affair", "interview", "family", "unknown"],
+        "correct": "interview",
+        "supportedBy": ["thread_priya", "image_badge", "note_comp"]
+      },
+      {
+        "id": "q_dex_cover",
+        "prompt": "Did Dex help Jonah hide something from Mina?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_dex", "snap_dex"]
+      },
+      {
+        "id": "q_cal_ring",
+        "prompt": "Is the ring Cal mentioned for Mina?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "no",
+        "supportedBy": ["thread_cal", "note_lists"]
+      },
+      {
+        "id": "q_cal_knows_job",
+        "prompt": "Does Cal know about Harboridge?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["thread_cal"]
+      },
+      {
+        "id": "q_mara_dinner",
+        "prompt": "Was dinner with Mara romantic?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["thread_mara", "ig_post_wren", "image_bar"]
+      },
+      {
+        "id": "q_has_offer",
+        "prompt": "Does Jonah have a job offer?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["note_offer", "thread_priya"]
+      },
+      {
+        "id": "q_told_mina",
+        "prompt": "Has Jonah told Mina any of this?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "no",
+        "supportedBy": ["note_unsent", "snap_dex", "thread_dex"]
+      },
+      {
+        "id": "q_leaving_mina",
+        "prompt": "Is Jonah leaving Mina?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["note_unsent", "snap_dex"]
+      },
+      {
+        "id": "q_will_take_job",
+        "prompt": "Is he going to take the Harboridge job?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["note_offer", "note_unsent", "snap_dex"]
+      },
+      {
+        "id": "q_mom_related",
+        "prompt": "Is the mom thread about Harboridge?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "no",
+        "supportedBy": ["thread_mom"]
+      },
+      {
+        "id": "q_still_hiding",
+        "prompt": "Is he still hiding it today?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_dex", "note_unsent", "calls_recent"]
+      },
+      {
+        "id": "q_mara_wants_him",
+        "prompt": "Does Mara want more than a placement?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["thread_mara", "ig_dm_mara"]
+      }
+    ]
+  }
+}

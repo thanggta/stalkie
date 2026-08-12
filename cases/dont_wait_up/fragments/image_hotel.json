@@ -1,0 +1,13 @@
+{
+  "id": "image_hotel",
+  "type": "image",
+  "label": "Photos — window",
+  "damage": { "profile": "scanline-tear", "intensity": 0.42, "seed": 4502 },
+  "hiddenUntil": { "carved": "record_places" },
+  "content": {
+    "source": "media/img_hotel_source.png",
+    "capturedAt": "2026-08-11T23:08:00-07:00",
+    "exifIntact": true,
+    "depicts": ["location_wren"]
+  }
+}

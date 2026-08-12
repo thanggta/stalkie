@@ -1,0 +1,62 @@
+{
+  "id": "snap_dex",
+  "type": "thread",
+  "label": "Snap — Dex",
+  "surface": "ephemeral_chat",
+  "damage": { "profile": "scanline-tear", "intensity": 0.2, "seed": 4401 },
+  "hiddenUntil": { "carved": "ig_dm_mara" },
+  "content": {
+    "streakDays": 19,
+    "handle": "dex.h",
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "dex", "display": "Dex" }
+    ],
+    "messages": [
+      {
+        "at": "2026-08-12T12:11:00-07:00",
+        "from": "dex",
+        "text": "",
+        "corrupt": false,
+        "ephemeral": true,
+        "state": "opened"
+      },
+      {
+        "at": "2026-08-12T12:13:00-07:00",
+        "from": "jonah",
+        "text": "I think I want it. I haven't told her.",
+        "corrupt": false,
+        "ephemeral": false
+      },
+      {
+        "at": "2026-08-12T12:14:00-07:00",
+        "from": "dex",
+        "text": "that's the actual problem",
+        "corrupt": false,
+        "ephemeral": false
+      },
+      {
+        "at": "2026-08-12T12:16:00-07:00",
+        "from": "jonah",
+        "text": "",
+        "corrupt": false,
+        "ephemeral": true,
+        "state": "screenshot"
+      },
+      {
+        "at": "2026-08-12T12:17:00-07:00",
+        "from": "dex",
+        "text": "why screenshot my face",
+        "corrupt": false,
+        "ephemeral": false
+      },
+      {
+        "at": "2026-08-12T12:18:00-07:00",
+        "from": "jonah",
+        "text": "forgot. deleted. I just needed to see I said it out loud",
+        "corrupt": false,
+        "ephemeral": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "id": "thread_cal",
+  "type": "thread",
+  "label": "Messages — Cal",
+  "damage": { "profile": "block-loss", "intensity": 0.08, "seed": 4102 },
+  "content": {
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "cal", "display": "Cal" }
+    ],
+    "messages": [
+      { "at": "2026-08-03T19:06:00-07:00", "from": "cal", "text": "you still have the box right. the small one. do not put it in a jacket", "corrupt": false },
+      { "at": "2026-08-03T19:11:00-07:00", "from": "jonah", "text": "it's in the sock drawer like a normal adult", "corrupt": false },
+      { "at": "2026-08-03T19:12:00-07:00", "from": "cal", "text": "Saturday. Tess still thinks we're just doing dinner at Bell Street", "corrupt": false },
+      { "at": "2026-08-03T19:14:00-07:00", "from": "jonah", "text": "I will be there. I will hand it to you. I will not make a speech", "corrupt": false },
+      { "at": "2026-08-09T12:02:00-07:00", "from": "cal", "text": "if Mina sees the receipt I will actually die. it has Tess's name on the resize", "corrupt": false },
+      { "at": "2026-08-09T12:08:00-07:00", "from": "jonah", "text": "she isn't going through my email Cal", "corrupt": false },
+      { "at": "2026-08-09T12:09:00-07:00", "from": "cal", "text": "people go through things. that's why I'm texting you from the parking lot", "corrupt": false },
+      { "at": "2026-08-11T14:02:00-07:00", "from": "cal", "text": "you going somewhere? mom said you sounded weird", "corrupt": false },
+      { "at": "2026-08-11T14:20:00-07:00", "from": "jonah", "text": "vendor overnight. I'll be back for Saturday. I wouldn't miss you making a fool of yourself", "corrupt": false },
+      { "at": "2026-08-11T14:22:00-07:00", "from": "cal", "text": "good. Tess still thinks it's dinner. if you bail I will tell Mina about the lake incident", "corrupt": false },
+      { "at": "2026-08-12T22:01:00-07:00", "from": "cal", "text": "you home? you sound like dad when he used to come back from those trips and not say anything", "corrupt": false },
+      { "at": "2026-08-12T22:18:00-07:00", "from": "jonah", "text": "I'm home. Saturday. I have the box. that's all I can do this week", "corrupt": false }
+    ]
+  }
+}

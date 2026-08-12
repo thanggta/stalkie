@@ -1,0 +1,12 @@
+{
+  "id": "note_calendar",
+  "type": "note",
+  "label": "Notes — thursday",
+  "damage": { "profile": "partial-decode", "intensity": 0.3, "seed": 4202 },
+  "hiddenUntil": { "carved": "thread_dex" },
+  "content": {
+    "title": "thu 11",
+    "body": "tell Mina: vendor overnight, Northline covering the hotel\nactual: 7:40 flight, The Wren, dinner 7, panel 9am\ndentist story is used. do not reuse it\n\nSat — Cal. be present. this is not about you",
+    "modifiedAt": "2026-08-11T08:04:00-07:00"
+  }
+}

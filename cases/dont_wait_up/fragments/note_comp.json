@@ -1,0 +1,12 @@
+{
+  "id": "note_comp",
+  "type": "note",
+  "label": "Notes — numbers",
+  "damage": { "profile": "overwrite", "intensity": 0.35, "seed": 4203 },
+  "hiddenUntil": { "carved": "thread_mara" },
+  "content": {
+    "title": "do not leave open",
+    "body": "Lumen North — Harboridge\nsenior analyst\nbase ████ against Northline 78\nrelocation: they said yes\nstart: late Sept if I say yes by the 20th\n\nMina's job is here. I keep writing that like it settles it and it doesn't.",
+    "modifiedAt": "2026-08-10T23:18:00-07:00"
+  }
+}
