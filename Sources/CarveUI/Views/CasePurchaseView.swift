@@ -85,7 +85,9 @@ public struct CasePurchaseView: View {
       }
       .buttonStyle(.plain)
       .disabled(!canBuy)
+      .accessibilityElement(children: .ignore)
       .accessibilityIdentifier("purchase-buy")
+      .accessibilityLabel(buyTitle)
       .accessibilityHint("One-time purchase. Not a subscription.")
 
       Button("Restore Purchases", action: onRestore)

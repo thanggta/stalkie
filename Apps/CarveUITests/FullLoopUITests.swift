@@ -59,8 +59,8 @@ final class FullLoopUITests: XCTestCase {
 
     goHome(app)
 
-    // Decide flow — answer all 15.
-    tapIdentifier(app, "app-decide")
+    // Decide flow — answer all 15. Decide is hidden until Sable is carved.
+    tapIdentifier(app, "app-decide", timeout: 10)
     tapIdentifier(app, "verdict-ready")
 
     let answers: [(String, String)] = [

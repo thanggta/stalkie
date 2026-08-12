@@ -10,7 +10,11 @@ final class StoreKitPurchaseUITests: XCTestCase {
 
   override func setUpWithError() throws {
     continueAfterFailure = false
-    let session = try SKTestSession(configurationFileNamed: "Carve")
+    let bundle = Bundle(for: StoreKitPurchaseUITests.self)
+    let url = try XCTUnwrap(
+      bundle.url(forResource: "Carve", withExtension: "storekit"),
+      "Carve.storekit must be copied into the UI test bundle")
+    let session = try SKTestSession(contentsOf: url)
     session.resetToDefaultState()
     session.disableDialogs = true
     storeSession = session
@@ -34,7 +38,14 @@ final class StoreKitPurchaseUITests: XCTestCase {
       "locked paid case must open purchase, not the phone")
     XCTAssertFalse(app.descendants(matching: .any)["phone-root"].exists)
 
-    tapIdentifier(app, "purchase-buy", timeout: 10)
+    let buy = app.descendants(matching: .any)["purchase-buy"]
+    XCTAssertTrue(buy.waitForExistence(timeout: 15), "missing purchase-buy")
+    // Price/product load is async; keep retrying until the control is enabled.
+    let deadline = Date().addingTimeInterval(15)
+    while Date() < deadline, !buy.firstMatch.isHittable {
+      RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+    }
+    tapIdentifier(app, "purchase-buy", timeout: 5)
     XCTAssertTrue(
       app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 20),
       "verified purchase should launch the case without restart")
