@@ -27,7 +27,7 @@ final class StoreKitPurchaseUITests: XCTestCase {
 
     XCTAssertTrue(app.descendants(matching: .any)["case-library"].waitForExistence(timeout: 15))
     XCTAssertTrue(app.descendants(matching: .any)["case-card-five_minutes"].exists)
-    tapIdentifier(app, "case-open-dont_wait_up")
+    tapIdentifier(app, "case-card-dont_wait_up")
 
     XCTAssertTrue(
       app.descendants(matching: .any)["purchase-screen"].waitForExistence(timeout: 10),
@@ -49,7 +49,7 @@ final class StoreKitPurchaseUITests: XCTestCase {
 
     XCTAssertTrue(app.descendants(matching: .any)["case-library"].waitForExistence(timeout: 15))
     tapIdentifier(app, "restore-purchases")
-    tapIdentifier(app, "case-open-dont_wait_up", timeout: 10)
+    tapIdentifier(app, "case-card-dont_wait_up", timeout: 10)
     XCTAssertTrue(
       app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 15),
       "restored entitlement should launch the paid case")

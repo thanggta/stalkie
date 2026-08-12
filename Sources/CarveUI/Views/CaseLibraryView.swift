@@ -64,13 +64,18 @@ public struct CaseLibraryView: View {
           .foregroundStyle(theme.palette.secondaryText.color)
 
         ForEach(catalog.entries) { entry in
-          CaseCardView(
-            entry: entry,
-            access: accessCopy(entry),
-            progress: progress(entry.caseId),
-            onPrimary: { handlePrimary(entry) },
-            onReplay: { replayTarget = entry }
-          )
+          Button {
+            handlePrimary(entry)
+          } label: {
+            CaseCardView(
+              entry: entry,
+              access: accessCopy(entry),
+              progress: progress(entry.caseId),
+              onReplay: { replayTarget = entry }
+            )
+          }
+          .buttonStyle(.plain)
+          .accessibilityIdentifier("case-card-\(entry.caseId)")
         }
 
         Button("Restore Purchases", action: onRestore)
@@ -131,9 +136,10 @@ public struct CaseLibraryView: View {
 
   private func handlePrimary(_ entry: CatalogEntry) {
     if entry.availability == .comingSoon { return }
-    if canLaunch(entry) {
+    // Free cases always request launch; AppBootstrap still enforces entitlement.
+    if entry.access == .free || canLaunch(entry) {
       onOpen(entry)
-    } else if entry.access == .paid {
+    } else {
       onPurchase(entry)
     }
   }
@@ -173,7 +179,6 @@ struct CaseCardView: View {
   let entry: CatalogEntry
   let access: String
   let progress: CaseProgress
-  let onPrimary: () -> Void
   let onReplay: () -> Void
 
   @Environment(\.carveTheme) private var theme
@@ -209,7 +214,7 @@ struct CaseCardView: View {
       }
 
       HStack(spacing: theme.spacing.sm) {
-        Button(primaryTitle, action: onPrimary)
+        Text(primaryTitle)
           .font(theme.fonts.headlineFont)
           .foregroundStyle(theme.palette.badgeText.color)
           .frame(maxWidth: .infinity, minHeight: 44)
@@ -217,7 +222,6 @@ struct CaseCardView: View {
             theme.palette.accent.color,
             in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
           )
-          .accessibilityIdentifier("case-open-\(entry.caseId)")
 
         if progress != .notStarted && (access == "Owned" || access == "Free") {
           Button("Replay", action: onReplay)
@@ -233,8 +237,7 @@ struct CaseCardView: View {
       theme.palette.elevatedBackground.color,
       in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
     )
-    .accessibilityElement(children: .contain)
-    .accessibilityIdentifier("case-card-\(entry.caseId)")
+    .contentShape(Rectangle())
     .accessibilityLabel(entry.title)
     .accessibilityValue("\(progressLabel). \(access). \(entry.summary)")
   }

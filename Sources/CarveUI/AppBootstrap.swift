@@ -85,6 +85,12 @@ public final class AppBootstrap: ObservableObject {
       try? CaseProgressStore.clearAll(in: supportDirectory)
     }
 
+    // Always re-resolve the catalog from disk/bundle at start so the
+    // simulator app sees Cases/catalog.json after the copy phase.
+    if let loaded = try? CatalogLoader.load() {
+      catalog = loaded
+    }
+
     if let requested = explicitLaunchCaseId() {
       openCase(requested)
     }

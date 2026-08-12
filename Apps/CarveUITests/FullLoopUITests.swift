@@ -17,7 +17,7 @@ final class FullLoopUITests: XCTestCase {
     XCTAssertTrue(
       app.descendants(matching: .any)["case-library"].waitForExistence(timeout: 15),
       "library should appear on first launch")
-    tapIdentifier(app, "case-open-five_minutes")
+    tapIdentifier(app, "case-card-five_minutes")
 
     // Home shell is up (not the white failure screen).
     XCTAssertTrue(
@@ -106,7 +106,7 @@ final class FullLoopUITests: XCTestCase {
     XCTAssertTrue(
       app2.descendants(matching: .any)["case-library"].waitForExistence(timeout: 15),
       "relaunch returns to the library")
-    tapIdentifier(app2, "case-open-five_minutes")
+    tapIdentifier(app2, "case-card-five_minutes")
 
     XCTAssertTrue(
       app2.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 15))

@@ -15,6 +15,7 @@
 		B1A01ASSET00000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1A01ASSET00000000000002 /* Assets.xcassets */; };
 		B1A01UITEST0000000000001 /* FullLoopUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A01UITEST0000000000002 /* FullLoopUITests.swift */; };
 		C7A1UITEST0000000000001 /* StoreKitPurchaseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */; };
+		C7A1SKRES0000000000001 /* Carve.storekit in Resources */ = {isa = PBXBuildFile; fileRef = C7A1SKITUI0000000000001 /* Carve.storekit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,6 +35,7 @@
 		B1A01ASSET00000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1A01UITEST0000000000002 /* FullLoopUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullLoopUITests.swift; sourceTree = "<group>"; };
 		C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitPurchaseUITests.swift; sourceTree = "<group>"; };
+		C7A1SKITUI0000000000001 /* Carve.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Carve.storekit; sourceTree = "<group>"; };
 		B1A01UITEST0000000000003 /* CarveUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarveUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A1SKIT00000000000001 /* Carve.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Carve.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -95,6 +97,7 @@
 			children = (
 				B1A01UITEST0000000000002 /* FullLoopUITests.swift */,
 				C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */,
+				C7A1SKITUI0000000000001 /* Carve.storekit */,
 			);
 			path = CarveUITests;
 			sourceTree = "<group>";
@@ -133,6 +136,7 @@
 			buildPhases = (
 				B1A01SRCUI0000000000001 /* Sources */,
 				B1A01FWUI00000000000001 /* Frameworks */,
+				C7A1RESUI0000000000001 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -187,6 +191,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1A01ASSET00000000000001 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7A1RESUI0000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7A1SKRES0000000000001 /* Carve.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
