@@ -12,6 +12,13 @@ public func parseCase(
   manifestData: Data,
   fragmentFiles: [(name: String, data: Data)]
 ) throws -> CaseFile {
+  // Strict JSON first: Foundation's decoder tolerates trailing commas and
+  // duplicate keys, so it alone would let a permissively-written case ship.
+  do {
+    try validateStrictJSON(manifestData)
+  } catch let error as StrictJSONError {
+    throw CaseFormatError("case.json: \(strictJSONErrorText(error))")
+  }
   try rejectFloatSchemaVersion(manifestData)
 
   let decoder = JSONDecoder()
@@ -39,6 +46,11 @@ public func parseCase(
 
   var fragments: [String: Fragment] = [:]
   for file in fragmentFiles {
+    do {
+      try validateStrictJSON(file.data)
+    } catch let error as StrictJSONError {
+      throw CaseFormatError("\(file.name): \(strictJSONErrorText(error))")
+    }
     let fallbackID = file.name.hasSuffix(".json") ? String(file.name.dropLast(5)) : file.name
     let probe = try? decoder.decode(FragmentIDProbe.self, from: file.data)
     let id = probe?.id ?? fallbackID
@@ -176,6 +188,19 @@ private func missingSeedError(_ error: DecodingError, fragmentId: String) -> Cas
         + "screenshots and bug reports reproduce.")
   default:
     return nil
+  }
+}
+
+// MARK: - Strict JSON error text
+
+private func strictJSONErrorText(_ error: StrictJSONError) -> String {
+  switch error {
+  case .trailingCommaAt(let index):
+    return "strict JSON check failed at character \(index): trailing comma."
+  case .duplicateKeyAt(let index, let key):
+    return "strict JSON check failed at character \(index): duplicate key \"\(key)\"."
+  case .syntaxErrorAt(let index, let detail):
+    return "strict JSON check failed at character \(index): \(detail)."
   }
 }
 

@@ -124,6 +124,42 @@ struct CaseParserTests {
     }
   }
 
+  @Test func rejectsManifestWithTrailingComma() {
+    // Foundation's JSONDecoder tolerates trailing commas, so this used to
+    // parse and exit 0. The strict check must reject it before decoding.
+    let manifest = """
+    { "schemaVersion": 1, "id": "test", "title": "Test Case", "cycleBudget": 10,
+      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9, "carveCost": 4 } ],
+      "verdict": { "questions": [ { "id": "q1", "prompt": "Who?", "answerType": "entity",
+        "options": ["a","b"], "correct": "a", "supportedBy": ["note_001"] } ] }, }
+    """
+    expectCaseFormatError(
+      manifest: manifest,
+      files: fragmentFiles(["note_001.json": minimalFragmentJSON]),
+      messageContaining: "strict JSON")
+  }
+
+  @Test func rejectsFragmentWithTrailingComma() {
+    let fragment = """
+    { "id": "note_001", "type": "note", "label": "A note",
+    "damage": { "profile": "block-loss", "intensity": 0.2, "seed": 7 },
+    "content": { "title": "x", "body": "y" }, }
+    """
+    expectCaseFormatError(
+      manifest: minimalManifestJSON,
+      files: fragmentFiles(["note_001.json": fragment]),
+      messageContaining: "strict JSON")
+  }
+
+  @Test func rejectsManifestWithDuplicateKey() {
+    let manifest = minimalManifestJSON.replacingOccurrences(
+      of: "\"cycleBudget\": 10", with: "\"cycleBudget\": 10, \"cycleBudget\": 10")
+    expectCaseFormatError(
+      manifest: manifest,
+      files: fragmentFiles(["note_001.json": minimalFragmentJSON]),
+      messageContaining: "duplicate key")
+  }
+
   @Test func rejectsFragmentMissingID() {
     let noID = minimalFragmentJSON.replacingOccurrences(of: "\"id\": \"note_001\", ", with: "")
     #expect(throws: CaseFormatError.self) {

@@ -59,6 +59,31 @@ struct CLILogicTests {
     #expect(!err.text.contains("Fatal error"))
   }
 
+  @Test func trailingCommaInCaseJSONFailsStrictCheck() throws {
+    // Regression: Foundation's JSONDecoder tolerates trailing commas, so this
+    // used to validate and exit 0. "CarveCLI passed" must mean the JSON is
+    // actually valid — the strict check makes that true.
+    let tempRoot = FileManager.default.temporaryDirectory
+      .appendingPathComponent("carve-cli-trailing-comma-\(UUID().uuidString)")
+    defer { try? FileManager.default.removeItem(at: tempRoot) }
+    try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
+
+    let sloppyJSON = #"""
+    {"schemaVersion":1,"id":"sloppy","title":"Sloppy","cycleBudget":5,
+     "sectorMap":[],"verdict":{"questions":[]},}
+    """#
+    try Data(sloppyJSON.utf8).write(to: tempRoot.appendingPathComponent("case.json"))
+
+    let out = StreamCapture()
+    let err = StreamCapture()
+    let code = CLIRunner.run(
+      arguments: [tempRoot.path],
+      stdout: { out.text.append($0) },
+      stderr: { err.text.append($0) })
+    #expect(code == 1)
+    #expect(err.text.contains("strict JSON"))
+  }
+
   @Test func validationProblemsReturnOneAndListThem() throws {
     // Rule 9: the valid-case test would still pass if CLIRunner stopped
     // calling validateCase. This fixture parses but FAILS validation, so the

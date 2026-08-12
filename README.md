@@ -12,10 +12,13 @@ damaged device images, you carve out what's recoverable, link the fragments, and
 
 ## Status
 
-**Core engine complete, nothing renders yet.** The game rules — domain models, six-predicate
-unlock grammar, JSON loader, validator (INV-1…INV-4), solvability solver, carve engine, verdict
-scoring — ship as a Swift package (`Sources/CarveCore`) with a validation CLI (`CarveCLI`).
-The SwiftUI shell is the next phase.
+**Core engine and the damage renderer are complete; the game shell is next.** The game rules —
+domain models, six-predicate unlock grammar, JSON loader, validator (INV-1…INV-4), solvability
+solver, carve engine, verdict scoring — ship as a Swift package (`Sources/CarveCore`) with a
+validation CLI (`CarveCLI`). The five damage profiles (block-loss, scanline-tear,
+partial-decode, chroma-bleed, overwrite) render as deterministic Metal shaders in a second
+target (`Sources/CarveDamage`) that the app will depend on. The SwiftUI shell is the next
+phase.
 
 > The directory is named `stalkie/` — that predates the concept, from when this began as
 > research into cloning *Stalkie · Mobile Detective*. The project is CARVE and is deliberately
@@ -58,8 +61,8 @@ rendering is Metal (Plan 2). See DR-8/DR-9 in the design spec for the decision r
 ## Getting started
 
 ```bash
-swift build                                            # builds CarveCore + CarveCLI
-swift test                                             # all suites (57 tests)
+swift build                                            # builds CarveCore + CarveDamage + CarveCLI
+swift test                                             # all suites (92 tests)
 swift run CarveCLI cases/riverside                     # validate a case
 ```
 

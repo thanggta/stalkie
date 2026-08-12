@@ -8,6 +8,20 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Metal availability
+        # The GPU determinism tests skip when no Metal device exists. This
+        # probe makes that explicit rather than silent: a NONE here means the
+        # renderer tests were skipped, and the report must say so.
+        run: |
+          cat > /tmp/metalcheck.swift <<'EOF'
+          import Metal
+          if let device = MTLCreateSystemDefaultDevice() {
+            print("METAL_DEVICE=\(device.name)")
+          } else {
+            print("METAL_DEVICE=NONE")
+          }
+          EOF
+          swift /tmp/metalcheck.swift
       - name: Build
         run: swift build
       - name: Test
