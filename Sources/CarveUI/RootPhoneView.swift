@@ -49,8 +49,19 @@ struct UnlockBannerStack: View {
   @Environment(\.carveTheme) private var theme
   @Binding var path: [PhoneRoute]
 
+  /// Filing must not be interrupted — jumping to an app mid-verdict drops answers
+  /// and breaks the commit sequence (compliance §3: committing feels heavy).
+  private var isFiling: Bool {
+    path.contains {
+      switch $0 {
+      case .verdict, .verdictResults: return true
+      default: return false
+      }
+    }
+  }
+
   var body: some View {
-    if let notice = session.pendingNotices.first {
+    if let notice = session.pendingNotices.first, !isFiling {
       Button {
         session.dismissNotice(notice.fragmentId)
         path = [.app(notice.appId)]
