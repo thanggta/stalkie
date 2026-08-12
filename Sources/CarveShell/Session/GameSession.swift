@@ -265,6 +265,17 @@ public final class GameSession: ObservableObject {
     engine.state.linkedPairs
   }
 
+  /// Links is a phone app only after two named people exist (DR-14).
+  public var isLinksVisible: Bool {
+    AppReadiness.linksReady(entities: boardEntities)
+  }
+
+  /// Decide appears when the case's readiness predicate (or the generic
+  /// supporting-fragment default) is true. Never case-id specific.
+  public var isDecideVisible: Bool {
+    AppReadiness.decideReady(caseFile: caseFile, state: engine.state)
+  }
+
   public func hasLink(_ a: String, _ b: String) -> Bool {
     engine.state.hasLink(a, b)
   }

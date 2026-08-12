@@ -10,6 +10,17 @@ final class StreamCapture {
 }
 
 struct CLILogicTests {
+  @Test func catalogValidationReturnsZeroForShippedManifest() {
+    let out = StreamCapture()
+    let err = StreamCapture()
+    let code = CLIRunner.run(
+      arguments: ["--catalog", "cases/catalog.json"],
+      stdout: { out.text.append($0) },
+      stderr: { err.text.append($0) })
+    #expect(code == 0)
+    #expect(out.text.contains("OK  catalog"))
+  }
+
   @Test func validCaseReturnsZeroAndPrintsOk() {
     let out = StreamCapture()
     let err = StreamCapture()

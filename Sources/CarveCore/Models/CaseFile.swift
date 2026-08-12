@@ -19,6 +19,8 @@ public struct CaseFile: Codable, Equatable, Sendable {
   /// Device owner entity id. Threads treat this person as "me". Optional for
   /// older cases; when absent, the first authored participant is the owner.
   public let ownerEntityId: String?
+  /// Optional six-predicate that must be true before Decide appears (DR-14).
+  public let decideReadyWhen: [String: JSONValue]?
   public let sectorMap: [SectorEntry]
   public let questions: [VerdictQuestion]
   public let fragments: [String: Fragment]
@@ -28,6 +30,7 @@ public struct CaseFile: Codable, Equatable, Sendable {
     id: String,
     title: String,
     ownerEntityId: String? = nil,
+    decideReadyWhen: [String: JSONValue]? = nil,
     sectorMap: [SectorEntry],
     questions: [VerdictQuestion],
     fragments: [String: Fragment]
@@ -36,6 +39,7 @@ public struct CaseFile: Codable, Equatable, Sendable {
     self.id = id
     self.title = title
     self.ownerEntityId = ownerEntityId
+    self.decideReadyWhen = decideReadyWhen
     self.sectorMap = sectorMap
     self.questions = questions
     self.fragments = fragments

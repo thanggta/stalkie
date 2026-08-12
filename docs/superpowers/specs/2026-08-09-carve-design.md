@@ -323,6 +323,7 @@ requirement — see `docs/compliance.md`.
 | DR-11 | **Discovery-gated free browsing.** No cycle budget. Structure is `hiddenUntil`. Ending is a forced, scored verdict (~15 concise questions). | Cycle-budget scarcity (INV-1/INV-2); unscored ending; no ending | Playtests show free browsing without scarcity feels empty *and* discovery gates fail to replace it |
 | DR-12 | **Real platform brands as in-game apps** — Instagram, Snapchat, Google Maps by name. Realism is the product. | Invented in-fiction brands (the genre's universal convention — Jabbr, Spark, Surfer); invented names held in a swappable config | Apple rejects at review, a rights-holder makes contact, or realism proves not to be what players are paying for |
 | DR-13 | **Declarative `surface` routing** — fragments declare a stable surface id (`messages`, `photo_social`, `ephemeral_chat`, `maps`, …); brands map only through `PhoneAppLabels` | Hardcode routing on fragment ids/labels; scatter brand strings in case JSON | Surface grammar proves too coarse for a real case author |
+| DR-14 | **Catalog + one-time StoreKit entitlement; diegetic Links/Decide.** Library is declarative `cases/catalog.json`. Paid access is a verified StoreKit 2 non-consumable. Links appears after two discovered entities. Decide uses optional `decideReadyWhen` (existing six predicates; `answered` forbidden). | Hardcoded case-id shop; subscription; selling cycles; seventh predicate; Links/Decide always on the grid | Reviewer flags 3.1.2, or playtests show Decide appears too early/late |
 
 ### DR-13 — surface routing (app presentation)
 
@@ -478,6 +479,23 @@ Rationale, from research:
 
 A free, complete first case is also the strongest possible 4.3(b) answer: a reviewer can play
 the whole differentiated loop without paying.
+
+### DR-14 — catalog, entitlement, diegetic game apps
+
+**Decision (2026-08-13):** Production discovers its library from `cases/catalog.json`. Access
+is `free` or `paid` plus a StoreKit product id. Prices are never stored in JSON. `CarveCommerce`
+owns StoreKit 2 verification; `CarveCore` stays Foundation-only; `CarveShell` stays StoreKit-
+and SwiftUI-free. Entitlement gates launch, not fragment visibility. Progress is per-case and
+survives revocation.
+
+**Links / Decide (playtest rec 4):** Links is a generic threshold — two linkable entities from
+carved content. Decide is an optional `decideReadyWhen` six-predicate on `case.json`. The
+grammar already expresses "after she has this evidence." A seventh predicate is forbidden.
+`answered` is forbidden in `decideReadyWhen` so hiding Decide cannot deadlock filing.
+
+**Product id for Case 2 (StoreKit testing):** `games.carve.case.dont_wait_up`. The local
+`.storekit` file is not proof that the App Store Connect product exists. Don't Wait Up is a
+paid-case *candidate*; observed internal playtime was 32 minutes.
 
 ---
 

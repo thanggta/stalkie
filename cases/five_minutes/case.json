@@ -3,6 +3,7 @@
   "id": "five_minutes",
   "title": "Five Minutes",
   "ownerEntityId": "eli",
+  "decideReadyWhen": { "carved": "thread_sable" },
   "briefing": "His phone is unlocked on the counter. The shower is still running. You told yourself you wouldn't.",
   "sectorMap": [
     { "fragmentId": "thread_theo", "typeHint": "thread", "integrity": 0.95 },

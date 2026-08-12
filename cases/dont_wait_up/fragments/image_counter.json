@@ -7,6 +7,7 @@
     "source": "media/img_counter_source.png",
     "capturedAt": "2026-08-12T21:16:00-07:00",
     "exifIntact": true,
-    "depicts": ["jonah", "location_wren"]
+    "depicts": ["jonah", "location_wren"],
+    "accessibilityDescription": "A boarding pass and a keycard left on a kitchen counter."
   }
 }

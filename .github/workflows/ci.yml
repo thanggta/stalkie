@@ -33,6 +33,10 @@ jobs:
             echo "== $d"
             swift run CarveCLI "$d" >/dev/null || exit 1
           done
+      - name: Validate catalog
+        run: swift run CarveCLI --catalog cases/catalog.json
+      - name: Release bypass cannot grant entitlement
+        run: swift test -c release --filter EntitlementBypassReleaseTests
       - name: Build phone shell UI (SPM)
         # Compiles SwiftUI shell + viewers on the host. Proves the theme layer
         # and fragment wiring typecheck without a simulator.
@@ -63,7 +67,7 @@ jobs:
             build-for-testing
 
   uitest:
-    name: Execute FullLoopUITests
+    name: Execute UI tests
     runs-on: macos-latest
     timeout-minutes: 30
     steps:

@@ -10,13 +10,13 @@ further as you find things. Then you answer for what you believe — and you can
 **Playable foundation is in place on iOS.** `CarveCore` holds pure game rules (six-predicate
 unlocks, discovery-gated browsing, forced complete verdict scoring). `CarveDamage` renders
 deterministic Metal degradation from clean sources. `CarveShell` owns themes, case loading,
-and versioned session persistence. `CarveUI` is an iOS-lookalike phone shell with Messages,
-Notes, Photos, Phone, Google Maps–style location history, Instagram, Snapchat, the link board,
-and the Decide → file → results flow. Progress survives process death; cold launch uses
-phone-matched chrome rather than a raw white flash.
+the production catalog, and versioned session persistence. `CarveCommerce` owns StoreKit 2
+one-time entitlements. `CarveUI` is an iOS-lookalike phone shell plus a game-layer case
+library. Progress is per-case and survives process death.
 
-Sample case: `cases/five_minutes` (ordinary relationship drama; no horror). Cross-app gates
-and social/location evidence are authored as declarative `surface` data (DR-13).
+Cases: `cases/five_minutes` is free and complete. `cases/dont_wait_up` is the first paid-case
+candidate (observed internal playtime 32 minutes — not commercially polished). The library
+is `cases/catalog.json`. Product IDs live only there.
 
 > The directory is named `stalkie/` — that predates the concept. The project is CARVE.
 
@@ -30,6 +30,8 @@ and social/location evidence are authored as declarative `surface` data (DR-13).
 | [`docs/compliance.md`](docs/compliance.md) | App Store constraints that override product preference |
 | [`docs/superpowers/plans/2026-08-09-carve-core-plan.md`](docs/superpowers/plans/2026-08-09-carve-core-plan.md) | Task-by-task implementation plan for the core engine |
 | [`docs/research-findings.md`](docs/research-findings.md) | Why the design is shaped this way, with evidence tags |
+| [`docs/storekit.md`](docs/storekit.md) | Local StoreKit testing and App Store Connect product setup |
+| [`docs/accessibility.md`](docs/accessibility.md) | Accessibility baseline and manual VoiceOver checks |
 
 ## Stack
 
@@ -42,6 +44,7 @@ rendering is Metal. See DR-8/DR-9/DR-11 in the design spec.
 swift build                                            # package targets
 swift test                                             # all suites
 swift run CarveCLI cases/five_minutes                  # validate a case
+swift run CarveCLI --catalog cases/catalog.json        # validate the production library
 swift build --target CarveUI                           # phone shell typecheck
 xcodebuild -project Apps/Carve.xcodeproj -scheme Carve \
   -destination 'generic/platform=iOS Simulator' \

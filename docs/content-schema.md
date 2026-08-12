@@ -1,3 +1,21 @@
+# Catalog (production library)
+
+`cases/catalog.json` is the only source of library order and access. Case bundles stay
+independently valid. Product IDs live here, never in views. Prices do not.
+
+| Field | Rules |
+|---|---|
+| `schemaVersion` | Must be `1` |
+| `cases[].id` | Must match a bundled `case.json` id when `availability` is `available` |
+| `cases[].access` | `free` or `paid`. Free cannot carry `productId`; paid must |
+| `cases[].productId` | StoreKit product id. Unique. Absent on free entries |
+| `cases[].availability` | `available` or `comingSoon` |
+| unknown fields | Hard failure |
+
+Validate with `swift run CarveCLI --catalog cases/catalog.json`.
+
+---
+
 # Case Bundle Schema v1
 
 The contract between authors and the engine. **An agent implementing `case_loader` should be
@@ -64,6 +82,7 @@ one source image serving many reveal states.
 | `id` | string | `^[a-z0-9_]+$`, unique across all cases |
 | `title` | string | Display name |
 | `ownerEntityId` | string | Optional. The device owner's entity id. Threads treat this person as "me". When omitted, the first authored participant is the owner. |
+| `decideReadyWhen` | predicate | Optional. Six-predicate gate for when Decide appears (DR-14). Must not use `answered`. If omitted, Decide appears after any verdict-supporting fragment is recovered. |
 | `briefing` | string | Optional author/store copy. Ignored by the engine; shell may show it. |
 | `sectorMap[]` | array | Fragments visible at case open (no gate, or gate true on empty state) |
 | `sectorMap[].integrity` | float 0–1 | Drives default damage intensity **and** is shown to the player as a hint |
@@ -171,13 +190,15 @@ lost is the puzzle.
     "source": "media/img_004_source.webp",
     "capturedAt": "2026-03-14T21:47:00+07:00",
     "exifIntact": true,
-    "depicts": ["sable", "location_river_court"]
+    "depicts": ["sable", "location_river_court"],
+    "accessibilityDescription": "A jacket draped over a chair in dim indoor light."
   }
 }
 ```
 
 `depicts` is metadata for the link board and for INV-3 validation. It is **never shown as a
-label** — the player identifies people themselves. That's the game.
+label** — the player identifies people themselves. That's the game. `accessibilityDescription`
+is VoiceOver text for a damaged image and must not name `depicts`.
 
 ### 3.3 `note`
 

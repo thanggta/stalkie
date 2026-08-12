@@ -32,13 +32,23 @@ struct HomeScreenView: View {
     var seen = Set(Self.dockApps)
     var out: [PhoneAppId] = []
     for app in Self.pageOrder where !seen.contains(app) {
+      guard isVisibleOnHome(app) else { continue }
       out.append(app)
       seen.insert(app)
     }
     for app in PhoneAppId.allCases where !seen.contains(app) {
+      guard isVisibleOnHome(app) else { continue }
       out.append(app)
     }
     return Array(out.prefix(max(0, maxIcons)))
+  }
+
+  private func isVisibleOnHome(_ app: PhoneAppId) -> Bool {
+    switch app {
+    case .board: return session.isLinksVisible
+    case .decide: return session.isDecideVisible
+    default: return true
+    }
   }
 
   var body: some View {
@@ -183,7 +193,9 @@ struct HomeScreenView: View {
     .accessibilityElement(children: .ignore)
     .accessibilityIdentifier("app-\(app.rawValue)")
     .accessibilityLabel(app.title)
+    .accessibilityHint(app == .decide ? "File what you believe" : "")
     .accessibilityAddTraits(.isButton)
+    .frame(minWidth: 44, minHeight: 44)
   }
 
   private func badge(for app: PhoneAppId) -> Int {

@@ -248,7 +248,10 @@ struct VerdictFlowView: View {
           )
         }
         .buttonStyle(.plain)
+        .frame(minHeight: 44)
         .accessibilityIdentifier("verdict-option-\(question.id)-\(option)")
+        .accessibilityLabel(option.replacingOccurrences(of: "_", with: " "))
+        .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
       }
     }
     .padding(theme.spacing.md)

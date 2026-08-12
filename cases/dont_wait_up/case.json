@@ -3,6 +3,7 @@
   "id": "dont_wait_up",
   "title": "Don't Wait Up",
   "ownerEntityId": "jonah",
+  "decideReadyWhen": { "carved": "thread_mara" },
   "briefing": "He said dentist. He said don't wait up. The water is still running.",
   "sectorMap": [
     { "fragmentId": "thread_dex", "typeHint": "thread", "integrity": 0.94 },

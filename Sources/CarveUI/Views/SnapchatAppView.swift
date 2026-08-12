@@ -171,7 +171,7 @@ struct SnapchatAppView: View {
         Circle()
           .fill(theme.palette.iconNotes.color)
           .frame(width: 48, height: 48)
-        Text(String((thread?.counterpartyDisplay ?? "?").prefix(1)))
+        Text(String((thread?.counterpartyDisplay(ownerEntityId: session.caseFile.ownerEntityId) ?? "?").prefix(1)))
           .font(theme.fonts.headlineFont)
           .fontWeight(.bold)
           .foregroundStyle(theme.palette.primaryText.color)
@@ -179,7 +179,7 @@ struct SnapchatAppView: View {
 
       VStack(alignment: .leading, spacing: 2) {
         HStack {
-          Text(thread?.counterpartyDisplay ?? item.fragment.label)
+          Text(thread?.counterpartyDisplay(ownerEntityId: session.caseFile.ownerEntityId) ?? item.fragment.label)
             .font(theme.fonts.headlineFont)
             .foregroundStyle(theme.palette.primaryText.color)
           if let streak = thread?.streakDays, streak > 0 {

@@ -11,8 +11,10 @@
 		F459AAE35A5E484BA7D76AA1 /* CarveDamage in Frameworks */ = {isa = PBXBuildFile; productRef = 0F2B957145084A41AA17C0A9 /* CarveDamage */; };
 		D7277735F688409988C63210 /* CarveShell in Frameworks */ = {isa = PBXBuildFile; productRef = 32B469BA14344365B31F452A /* CarveShell */; };
 		D9B6D5C746EE41E9939C16CF /* CarveUI in Frameworks */ = {isa = PBXBuildFile; productRef = 027E892A13AA4CD58960BB55 /* CarveUI */; };
+		C7A1C0MM00000000000001 /* CarveCommerce in Frameworks */ = {isa = PBXBuildFile; productRef = C7A1C0PD00000000000001 /* CarveCommerce */; };
 		B1A01ASSET00000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1A01ASSET00000000000002 /* Assets.xcassets */; };
 		B1A01UITEST0000000000001 /* FullLoopUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A01UITEST0000000000002 /* FullLoopUITests.swift */; };
+		C7A1UITEST0000000000001 /* StoreKitPurchaseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,7 +33,9 @@
 		D006CEC3752E41B8882EFF6A /* CarveApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CarveApp.swift; path = ../Apps/Carve/CarveApp.swift; sourceTree = SOURCE_ROOT; };
 		B1A01ASSET00000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1A01UITEST0000000000002 /* FullLoopUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullLoopUITests.swift; sourceTree = "<group>"; };
+		C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitPurchaseUITests.swift; sourceTree = "<group>"; };
 		B1A01UITEST0000000000003 /* CarveUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarveUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7A1SKIT00000000000001 /* Carve.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Carve.storekit; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +47,7 @@
 				F459AAE35A5E484BA7D76AA1 /* CarveDamage in Frameworks */,
 				D7277735F688409988C63210 /* CarveShell in Frameworks */,
 				D9B6D5C746EE41E9939C16CF /* CarveUI in Frameworks */,
+				C7A1C0MM00000000000001 /* CarveCommerce in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +85,7 @@
 				EE5D863CD33F4CCEBD4C679B /* Info.plist */,
 				D006CEC3752E41B8882EFF6A /* CarveApp.swift */,
 				B1A01ASSET00000000000002 /* Assets.xcassets */,
+				C7A1SKIT00000000000001 /* Carve.storekit */,
 			);
 			path = Carve;
 			sourceTree = "<group>";
@@ -88,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				B1A01UITEST0000000000002 /* FullLoopUITests.swift */,
+				C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */,
 			);
 			path = CarveUITests;
 			sourceTree = "<group>";
@@ -114,6 +121,7 @@
 				0F2B957145084A41AA17C0A9 /* CarveDamage */,
 				32B469BA14344365B31F452A /* CarveShell */,
 				027E892A13AA4CD58960BB55 /* CarveUI */,
+				C7A1C0PD00000000000001 /* CarveCommerce */,
 			);
 			productName = Carve;
 			productReference = 2921BCDCBB6C4422B81D3F5C /* Carve.app */;
@@ -199,7 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -e\nCASES_SRC=\"${SRCROOT}/../cases\"\nCASES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases\"\nmkdir -p \"${CASES_DST}\"\nfor d in \"${CASES_SRC}\"/*/; do\n  [ -f \"${d}case.json\" ] || continue\n  name=$(basename \"$d\")\n  mkdir -p \"${CASES_DST}/${name}\"\n  rsync -a --delete \"$d\" \"${CASES_DST}/${name}/\"\ndone\nRES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nWP_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/Wallpapers\"\nif [ -d \"${WP_SRC}\" ]; then\n  cp -f \"${WP_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\nICON_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/AppIcons\"\nif [ -d \"${ICON_SRC}\" ]; then\n  cp -f \"${ICON_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\n";
+			shellScript = "set -e\nCASES_SRC=\"${SRCROOT}/../cases\"\nCASES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Cases\"\nmkdir -p \"${CASES_DST}\"\nfor d in \"${CASES_SRC}\"/*/; do\n  [ -f \"${d}case.json\" ] || continue\n  name=$(basename \"$d\")\n  mkdir -p \"${CASES_DST}/${name}\"\n  rsync -a --delete --exclude '*.md' \"$d\" \"${CASES_DST}/${name}/\"\ndone\nif [ -f \"${CASES_SRC}/catalog.json\" ]; then\n  cp -f \"${CASES_SRC}/catalog.json\" \"${CASES_DST}/catalog.json\"\nfi\nRES_DST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}\"\nWP_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/Wallpapers\"\nif [ -d \"${WP_SRC}\" ]; then\n  cp -f \"${WP_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\nICON_SRC=\"${SRCROOT}/../Sources/CarveUI/Resources/AppIcons\"\nif [ -d \"${ICON_SRC}\" ]; then\n  cp -f \"${ICON_SRC}/\"*.png \"${RES_DST}/\" 2>/dev/null || true\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -217,6 +225,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1A01UITEST0000000000001 /* FullLoopUITests.swift in Sources */,
+				C7A1UITEST0000000000001 /* StoreKitPurchaseUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,6 +422,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */;
 			productName = CarveUI;
+		};
+		C7A1C0PD00000000000001 /* CarveCommerce */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D79F11E947D41AE88E26E1A /* XCLocalSwiftPackageReference ".." */;
+			productName = CarveCommerce;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

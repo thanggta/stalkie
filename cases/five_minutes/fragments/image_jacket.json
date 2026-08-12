@@ -8,6 +8,7 @@
     "source": "media/img_jacket_source.png",
     "capturedAt": "2026-07-22T21:18:00+07:00",
     "exifIntact": true,
-    "depicts": ["sable", "location_river_court"]
+    "depicts": ["sable", "location_river_court"],
+    "accessibilityDescription": "A jacket draped over a chair in dim indoor light."
   }
 }

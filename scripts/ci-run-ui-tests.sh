@@ -114,13 +114,13 @@ if ! xcrun simctl bootstatus "$UDID" -b >/tmp/carve-sim-bootstatus.log 2>&1; the
   infra "simulator $UDID never reached Booted"
 fi
 
-echo "== Running FullLoopUITests"
+echo "== Running CarveUITests"
 set +e
 xcodebuild test \
   -project Apps/Carve.xcodeproj \
   -scheme Carve \
   -destination "platform=iOS Simulator,id=${UDID}" \
-  -only-testing:CarveUITests/FullLoopUITests \
+  -only-testing:CarveUITests \
   -resultBundlePath "$RESULT_BUNDLE" \
   -derivedDataPath .build/DerivedData-UITest \
   CODE_SIGN_IDENTITY=- \
@@ -130,7 +130,7 @@ STATUS=${PIPESTATUS[0]}
 set -e
 
 if [ "$STATUS" -eq 0 ]; then
-  echo "OK: FullLoopUITests passed"
+  echo "OK: CarveUITests passed"
   exit 0
 fi
 
@@ -144,4 +144,4 @@ if [ "$STATUS" -eq 70 ]; then
   infra "xcodebuild destination error (exit 70)"
 fi
 
-testfail "FullLoopUITests failed (xcodebuild exit ${STATUS})"
+testfail "CarveUITests failed (xcodebuild exit ${STATUS})"
