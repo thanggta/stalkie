@@ -38,6 +38,21 @@ public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
   case mail
   case settings
   case music
+  case clock
+  case reminders
+  case weather
+  case facetime
+  case appstore
+  case health
+  case wallet
+  case files
+  case books
+  case podcasts
+  case tv
+  case homekit
+  case contacts
+  case calculator
+  case stocks
 
   public var title: String {
     PhoneAppLabels.title(for: self)
@@ -48,7 +63,9 @@ public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
     switch self {
     case .messages, .notes, .phone, .photos, .places, .board, .decide:
       return true
-    case .calendar, .camera, .browser, .mail, .settings, .music:
+    case .calendar, .camera, .browser, .mail, .settings, .music, .clock, .reminders,
+      .weather, .facetime, .appstore, .health, .wallet, .files, .books,
+      .podcasts, .tv, .homekit, .contacts, .calculator, .stocks:
       return false
     }
   }
@@ -83,6 +100,21 @@ public enum PhoneAppLabels {
     case .mail: return "Mail"
     case .settings: return "Settings"
     case .music: return "Music"
+    case .clock: return "Clock"
+    case .reminders: return "Reminders"
+    case .weather: return "Weather"
+    case .facetime: return "FaceTime"
+    case .appstore: return "App Store"
+    case .health: return "Health"
+    case .wallet: return "Wallet"
+    case .files: return "Files"
+    case .books: return "Books"
+    case .podcasts: return "Podcasts"
+    case .tv: return "TV"
+    case .homekit: return "Home"
+    case .contacts: return "Contacts"
+    case .calculator: return "Calculator"
+    case .stocks: return "Stocks"
     }
   }
 }

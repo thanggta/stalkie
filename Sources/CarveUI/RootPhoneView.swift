@@ -24,7 +24,6 @@ public struct RootPhoneView: View {
 
   public var body: some View {
     ZStack(alignment: .top) {
-      // App / home content fills the device.
       NavigationStack(path: $path) {
         HomeScreenView(path: $path)
           .navigationDestination(for: PhoneRoute.self) { route in
@@ -44,18 +43,17 @@ public struct RootPhoneView: View {
       }
       .hideSystemNavigationChrome()
 
+      // In-fiction status chrome sits in the hardware safe area (next to
+      // Dynamic Island), not *below* it — ignoresSafeArea is required.
+      // Transparent regions must not steal taps from the home grid/dock.
       VStack(spacing: 0) {
         StatusBarView(lightContent: statusBarLight)
           .allowsHitTesting(false)
         UnlockBannerStack(path: $path)
         Spacer(minLength: 0)
           .allowsHitTesting(false)
-        if !onHome {
-          HomeIndicator()
-            .padding(.bottom, theme.spacing.xs)
-            .allowsHitTesting(false)
-        }
       }
+      .ignoresSafeArea(edges: .top)
     }
     .background(theme.palette.screenBackground.color.ignoresSafeArea())
     .environment(\.carveTheme, session.theme)
@@ -63,21 +61,9 @@ public struct RootPhoneView: View {
   }
 
   private var statusBarLight: Bool {
-    // Wallpaper home + dark unlock surfaces use light glyphs.
     if onHome { return true }
     if case .some(.verdict) = path.first { return false }
     return false
-  }
-}
-
-/// Thin home-indicator capsule — original geometry, not Apple artwork.
-struct HomeIndicator: View {
-  @Environment(\.carveTheme) private var theme
-
-  var body: some View {
-    Capsule()
-      .fill(theme.palette.primaryText.color.opacity(0.22))
-      .frame(width: 128, height: 5)
   }
 }
 
@@ -102,36 +88,45 @@ struct UnlockBannerStack: View {
         session.dismissNotice(notice.fragmentId)
         path = [.app(notice.appId)]
       } label: {
-        // Compact floating notification — must not bury the app nav bar.
+        // Compact floating notification — iOS lock-screen banner language.
         HStack(spacing: theme.spacing.sm) {
           AppGlyph(appId: notice.appId)
-            .frame(width: 28, height: 28)
+            .frame(width: 36, height: 36)
             .clipShape(
-              RoundedRectangle(cornerRadius: theme.radii.appIcon * 0.4, style: .continuous)
+              RoundedRectangle(cornerRadius: theme.radii.appIcon * 0.45, style: .continuous)
             )
 
           VStack(alignment: .leading, spacing: 1) {
-            Text(notice.appId.title)
-              .font(theme.fonts.captionFont)
-              .fontWeight(.semibold)
-              .foregroundStyle(theme.palette.unlockBannerText.color.opacity(0.75))
+            HStack {
+              Text(notice.appId.title)
+                .font(theme.fonts.captionFont)
+                .fontWeight(.semibold)
+                .foregroundStyle(theme.palette.unlockBannerText.color.opacity(0.7))
+              Spacer(minLength: 0)
+              Text("now")
+                .font(theme.fonts.captionFont)
+                .foregroundStyle(theme.palette.unlockBannerText.color.opacity(0.45))
+            }
             Text(notice.label)
               .font(theme.fonts.footnoteFont)
               .fontWeight(.semibold)
               .foregroundStyle(theme.palette.unlockBannerText.color)
-              .lineLimit(1)
+              .lineLimit(2)
           }
-          Spacer(minLength: 0)
         }
-        .padding(.horizontal, theme.spacing.sm)
-        .padding(.vertical, theme.spacing.xs + 2)
-        .background(
-          theme.palette.unlockBannerBackground.color.opacity(0.94),
-          in: RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
-        )
+        .padding(.horizontal, theme.spacing.sm + 2)
+        .padding(.vertical, theme.spacing.sm)
+        .background {
+          RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
+            .fill(.ultraThinMaterial)
+        }
+        .background {
+          RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
+            .fill(theme.palette.unlockBannerBackground.color.opacity(0.55))
+        }
         .overlay(
           RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
-            .stroke(theme.palette.badgeText.color.opacity(0.1), lineWidth: 0.5)
+            .stroke(theme.palette.badgeText.color.opacity(0.12), lineWidth: 0.5)
         )
         .padding(.horizontal, theme.spacing.md)
         .padding(.top, theme.spacing.xs)

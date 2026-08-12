@@ -10,9 +10,7 @@ struct AppContainerView: View {
 
   var body: some View {
     VStack(spacing: 0) {
-      Spacer().frame(height: theme.statusBar.height)
-
-      // Messages owns its large-title chrome; other apps use the compact bar.
+      // Messages owns large-title chrome; others use compact nav.
       if appId != .messages {
         AppNavBar(title: appId.title, backLabel: "Home") {
           path = []
@@ -35,7 +33,9 @@ struct AppContainerView: View {
           LinkBoardView()
         case .decide:
           EmptyShellAppView(appId: appId)
-        case .calendar, .camera, .browser, .mail, .settings, .music:
+        case .calendar, .camera, .browser, .mail, .settings, .music, .clock, .reminders,
+          .weather, .facetime, .appstore, .health, .wallet, .files, .books,
+          .podcasts, .tv, .homekit, .contacts, .calculator, .stocks:
           EmptyShellAppView(appId: appId)
         }
       }
@@ -67,16 +67,17 @@ struct AppNavBar: View {
 
       HStack(spacing: theme.spacing.xxs) {
         Button(action: onBack) {
-          HStack(spacing: 2) {
-            Text("‹")
-              .font(theme.fonts.titleFont)
-              .fontWeight(.regular)
+          HStack(spacing: 3) {
+            Image(systemName: "chevron.left")
+              .font(theme.fonts.bodyFont)
+              .fontWeight(.semibold)
             Text(backLabel)
               .font(theme.fonts.bodyFont)
           }
           .foregroundStyle(theme.palette.accent.color)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("\(backLabel)")
         Spacer(minLength: 0)
       }
     }
@@ -99,10 +100,14 @@ struct EmptyShellAppView: View {
   var body: some View {
     VStack(spacing: theme.spacing.md) {
       Spacer()
+      AppGlyph(appId: appId)
+        .frame(width: theme.icon.size, height: theme.icon.size)
+        .opacity(0.9)
       Text(appId.title)
         .font(theme.fonts.titleFont)
+        .fontWeight(.semibold)
         .foregroundStyle(theme.palette.primaryText.color)
-      Text("Nothing here.")
+      Text("No content")
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.secondaryText.color)
       Spacer()
@@ -141,7 +146,7 @@ struct MessagesListView: View {
             .fontWeight(.bold)
             .foregroundStyle(theme.palette.primaryText.color)
             .padding(.horizontal, theme.spacing.md)
-            .padding(.top, theme.spacing.xs)
+            .padding(.top, theme.spacing.xxs)
             .padding(.bottom, theme.spacing.sm)
 
           searchField
@@ -155,14 +160,14 @@ struct MessagesListView: View {
               } label: {
                 MessagesThreadRow(item: item, preview: threadPreview(item))
                   .padding(.horizontal, theme.spacing.md)
-                  .padding(.vertical, theme.spacing.sm)
+                  .padding(.vertical, theme.spacing.sm + 2)
               }
               .buttonStyle(.plain)
 
               Rectangle()
                 .fill(theme.palette.separator.color)
                 .frame(height: 0.33)
-                .padding(.leading, theme.spacing.md + 48 + theme.spacing.md)
+                .padding(.leading, theme.spacing.md + 56 + theme.spacing.md)
             }
           }
         }
@@ -171,43 +176,37 @@ struct MessagesListView: View {
     .background(theme.palette.elevatedBackground.color)
   }
 
-  /// Edit · (space) · compose — matches Messages top chrome language.
   private var messagesTopBar: some View {
     HStack {
       Button {
         path = []
       } label: {
-        HStack(spacing: 2) {
-          Text("‹")
-            .font(theme.fonts.titleFont)
+        HStack(spacing: 3) {
+          Image(systemName: "chevron.left")
+            .font(theme.fonts.bodyFont)
+            .fontWeight(.semibold)
           Text("Home")
             .font(theme.fonts.bodyFont)
         }
         .foregroundStyle(theme.palette.accent.color)
       }
       .buttonStyle(.plain)
+      .accessibilityLabel("Home")
 
       Spacer()
 
-      // Compose affordance — non-functional (you don't text as him).
-      ZStack {
-        Circle()
-          .fill(theme.palette.accent.color)
-          .frame(width: 30, height: 30)
-        Text("+")
-          .font(theme.fonts.headlineFont)
-          .fontWeight(.semibold)
-          .foregroundStyle(theme.palette.badgeText.color)
-      }
-      .opacity(0.35)
+      Image(systemName: "square.and.pencil")
+        .font(theme.fonts.titleFont)
+        .foregroundStyle(theme.palette.accent.color.opacity(0.35))
     }
     .padding(.horizontal, theme.spacing.md)
     .padding(.vertical, theme.spacing.xs)
+    .frame(minHeight: 44)
   }
 
   private var searchField: some View {
     HStack(spacing: theme.spacing.xs) {
-      Text("⌕")
+      Image(systemName: "magnifyingglass")
         .font(theme.fonts.subheadlineFont)
         .foregroundStyle(theme.palette.tertiaryText.color)
       TextField(
@@ -219,7 +218,7 @@ struct MessagesListView: View {
       .font(theme.fonts.bodyFont)
       .foregroundStyle(theme.palette.primaryText.color)
     }
-    .padding(.horizontal, theme.spacing.sm)
+    .padding(.horizontal, theme.spacing.sm + 2)
     .padding(.vertical, theme.spacing.sm)
     .background(
       theme.palette.groupedBackground.color,
@@ -244,7 +243,7 @@ struct MessagesListView: View {
   }
 }
 
-/// iMessage-style conversation row: avatar, name, preview, time — no chevron.
+/// iMessage-style conversation row: avatar, name, preview, time.
 struct MessagesThreadRow: View {
   @Environment(\.carveTheme) private var theme
   let item: VisibleFragmentItem
@@ -252,13 +251,14 @@ struct MessagesThreadRow: View {
 
   var body: some View {
     HStack(alignment: .top, spacing: theme.spacing.md) {
+      // Contact monogram avatar
       ZStack {
         Circle()
           .fill(
             LinearGradient(
               colors: [
-                theme.palette.groupedBackground.color,
-                theme.palette.separator.color,
+                theme.palette.secondaryText.color.opacity(0.35),
+                theme.palette.tertiaryText.color.opacity(0.55),
               ],
               startPoint: .topLeading,
               endPoint: .bottomTrailing
@@ -267,7 +267,7 @@ struct MessagesThreadRow: View {
         Text(monogram)
           .font(theme.fonts.headlineFont)
           .fontWeight(.semibold)
-          .foregroundStyle(theme.palette.secondaryText.color)
+          .foregroundStyle(theme.palette.badgeText.color)
       }
       .frame(width: 52, height: 52)
 
@@ -282,9 +282,10 @@ struct MessagesThreadRow: View {
           Text(timeLabel)
             .font(theme.fonts.footnoteFont)
             .foregroundStyle(theme.palette.tertiaryText.color)
-          Text("›")
-            .font(theme.fonts.footnoteFont)
-            .foregroundStyle(theme.palette.tertiaryText.color.opacity(0.7))
+          Image(systemName: "chevron.right")
+            .font(theme.fonts.captionFont)
+            .fontWeight(.semibold)
+            .foregroundStyle(theme.palette.tertiaryText.color.opacity(0.55))
         }
         HStack(alignment: .center, spacing: theme.spacing.xs) {
           Text(preview)
@@ -312,6 +313,9 @@ struct MessagesThreadRow: View {
 
   private var monogram: String {
     let parts = rowTitle.split(separator: " ")
+    if parts.count >= 2, let a = parts[0].first, let b = parts[1].first {
+      return "\(a)\(b)".uppercased()
+    }
     if let first = parts.first?.first {
       return String(first).uppercased()
     }
@@ -345,8 +349,16 @@ struct NotesListView: View {
         Button {
           path.append(.fragment(item.id))
         } label: {
-          let title = (try? FragmentContent.note(item.fragment))?.title ?? item.fragment.label
-          FragmentRow(item: item, subtitle: title)
+          let note = try? FragmentContent.note(item.fragment)
+          let title = note?.title ?? item.fragment.label
+          // Preview = first line of body when it differs from the title.
+          let preview: String = {
+            guard let body = note?.body else { return title }
+            let line = body.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: true)
+              .first.map(String.init) ?? body
+            return line == title ? "" : line
+          }()
+          FragmentRow(item: item, subtitle: preview)
         }
         .listRowBackground(
           item.isUnreadUnlock
@@ -417,8 +429,8 @@ struct PhotosGridView: View {
                 theme.palette.photoPlaceholder.color
                   .aspectRatio(1, contentMode: .fill)
                   .overlay {
-                    Text("IMG")
-                      .font(theme.fonts.captionFont)
+                    Image(systemName: "photo")
+                      .font(theme.fonts.titleFont)
                       .foregroundStyle(theme.palette.secondaryText.color)
                   }
                 if item.isUnreadUnlock {
@@ -467,9 +479,10 @@ struct FragmentRow: View {
           .lineLimit(2)
       }
       Spacer()
-      Text("›")
-        .font(theme.fonts.bodyFont)
-        .foregroundStyle(theme.palette.tertiaryText.color)
+      Image(systemName: "chevron.right")
+        .font(theme.fonts.captionFont)
+        .fontWeight(.semibold)
+        .foregroundStyle(theme.palette.tertiaryText.color.opacity(0.6))
     }
     .padding(.vertical, theme.spacing.xs)
   }
