@@ -1,0 +1,47 @@
+{
+  "id": "ig_dm_mara",
+  "type": "thread",
+  "label": "DM — Mara",
+  "surface": "photo_social",
+  "damage": { "profile": "block-loss", "intensity": 0.16, "seed": 4303 },
+  "hiddenUntil": { "carved": "ig_post_wren" },
+  "content": {
+    "handle": "mara.q",
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "mara", "display": "Mara" }
+    ],
+    "messages": [
+      {
+        "at": "2026-08-11T21:44:00-07:00",
+        "from": "jonah",
+        "text": "can you not post the bar. the glasses look like something they aren't",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-11T21:47:00-07:00",
+        "from": "mara",
+        "text": "it's two glasses and a caption about my job. breathe",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-11T21:49:00-07:00",
+        "from": "jonah",
+        "text": "Mina doesn't follow you. I still felt it",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-11T21:52:00-07:00",
+        "from": "mara",
+        "text": "then tell her the true version before she invents a worse one",
+        "corrupt": false
+      },
+      {
+        "at": "2026-08-12T09:06:00-07:00",
+        "from": "mara",
+        "text": "Dex pinged me. tell him to use snap, not my work email",
+        "corrupt": false
+      }
+    ]
+  }
+}

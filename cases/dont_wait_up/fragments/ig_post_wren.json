@@ -1,0 +1,22 @@
+{
+  "id": "ig_post_wren",
+  "type": "image",
+  "label": "Post — two glasses",
+  "surface": "photo_social",
+  "damage": { "profile": "chroma-bleed", "intensity": 0.24, "seed": 4302 },
+  "hiddenUntil": { "carved": "ig_mara_profile" },
+  "content": {
+    "source": "media/img_ig_wren_source.png",
+    "capturedAt": "2026-08-11T21:38:00-07:00",
+    "exifIntact": true,
+    "depicts": ["mara", "location_wren"],
+    "authorEntityId": "mara",
+    "handle": "mara.q",
+    "caption": "recruiting never stops being dinner.",
+    "likes": 86,
+    "comments": [
+      { "from": "priya.s", "text": "tell me that's not the Wren bar again" },
+      { "from": "n.vale", "text": "get some sleep M" }
+    ]
+  }
+}

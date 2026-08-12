@@ -1,0 +1,12 @@
+{
+  "id": "image_counter",
+  "type": "image",
+  "label": "Photos — counter",
+  "damage": { "profile": "partial-decode", "intensity": 0.38, "seed": 4106 },
+  "content": {
+    "source": "media/img_counter_source.png",
+    "capturedAt": "2026-08-12T21:16:00-07:00",
+    "exifIntact": true,
+    "depicts": ["jonah", "location_wren"]
+  }
+}

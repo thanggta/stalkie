@@ -1,0 +1,32 @@
+{
+  "id": "thread_mara",
+  "type": "thread",
+  "label": "Messages — Mara",
+  "damage": { "profile": "block-loss", "intensity": 0.28, "seed": 4201 },
+  "hiddenUntil": { "carved": "thread_dex" },
+  "content": {
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "mara", "display": "Mara" }
+    ],
+    "messages": [
+      { "at": "2026-08-04T11:03:00-07:00", "from": "mara", "text": "Jonah — Mara at Harbor Path. Priya's team asked me to reach out quietly. are you still open to a conversation?", "corrupt": false },
+      { "at": "2026-08-04T11:41:00-07:00", "from": "jonah", "text": "quietly is the only way I can do this. yes", "corrupt": false },
+      { "at": "2026-08-06T15:58:00-07:00", "from": "mara", "text": "calling in ten. find a door that closes", "corrupt": false },
+      { "at": "2026-08-08T09:20:00-07:00", "from": "mara", "text": "they want you on site. Thursday night into Friday. I booked The Wren — it's two blocks from Lumen", "corrupt": false },
+      { "at": "2026-08-08T09:33:00-07:00", "from": "jonah", "text": "I can do Thursday. I have to be back Friday night", "corrupt": false },
+      { "at": "2026-08-11T17:49:00-07:00", "from": "jonah", "text": "landed. still on for 7?", "corrupt": false },
+      { "at": "2026-08-11T17:51:00-07:00", "from": "mara", "text": "lobby bar. wear whatever. it's a dinner not a panel", "corrupt": false },
+      { "at": "2026-08-11T22:40:00-07:00", "from": "mara", "text": "you were good tonight. they already like you and they haven't even seen you in a room", "corrupt": false },
+      { "at": "2026-08-11T22:47:00-07:00", "from": "jonah", "text": "I keep thinking about how to say this at home and I can't get past the first sentence", "corrupt": false },
+      { "at": "2026-08-11T22:51:00-07:00", "from": "mara", "text": "I liked last night. professionally. mostly. sleep, Jonah", "corrupt": false },
+      { "at": "2026-08-12T16:02:00-07:00", "from": "mara", "text": "offer should land tonight. don't put it on linkedin. tell your person when you're ready", "corrupt": false },
+      { "at": "2026-08-12T16:14:00-07:00", "from": "jonah", "text": "I don't know if I'm ready", "corrupt": false },
+      { "at": "2026-08-12T16:18:00-07:00", "from": "mara", "text": "ready for the job or ready for the conversation. those are different and you keep mixing them", "corrupt": false },
+      { "at": "2026-08-12T16:22:00-07:00", "from": "jonah", "text": "if I say the city she will hear leaving. I don't know if that's what I mean", "corrupt": false },
+      { "at": "2026-08-12T16:25:00-07:00", "from": "mara", "text": "I can't coach you on that. I can get you the letter. the rest is your kitchen", "corrupt": false },
+      { "at": "2026-08-12T23:08:00-07:00", "from": "jonah", "text": "I keep opening the draft and putting the phone face down", "corrupt": false },
+      { "at": "2026-08-12T23:11:00-07:00", "from": "mara", "text": "stop texting me at 11. go sit next to her. even if you don't say it tonight", "corrupt": false }
+    ]
+  }
+}

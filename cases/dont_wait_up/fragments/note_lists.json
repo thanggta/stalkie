@@ -1,0 +1,11 @@
+{
+  "id": "note_lists",
+  "type": "note",
+  "label": "Notes — errands",
+  "damage": { "profile": "partial-decode", "intensity": 0.14, "seed": 4104 },
+  "content": {
+    "title": "errands",
+    "body": "oat milk\ncharger cable (hers)\n—\nCal Saturday — Bell Street 7\nhand him the box before dinner\nTess has no idea, do not joke about it\n—\ndry cleaner: blue shirt",
+    "modifiedAt": "2026-08-10T07:51:00-07:00"
+  }
+}

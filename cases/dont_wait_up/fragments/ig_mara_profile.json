@@ -1,0 +1,19 @@
+{
+  "id": "ig_mara_profile",
+  "type": "record",
+  "label": "Profile — mara.q",
+  "surface": "photo_social",
+  "damage": { "profile": "partial-decode", "intensity": 0.18, "seed": 4301 },
+  "hiddenUntil": { "carved": "thread_mara" },
+  "content": {
+    "kind": "social_profile",
+    "entityId": "mara",
+    "handle": "mara.q",
+    "displayName": "Mara Quinn",
+    "bio": "talent · harboridge · always between gates",
+    "posts": 31,
+    "followers": 640,
+    "following": 388,
+    "hasStory": true
+  }
+}

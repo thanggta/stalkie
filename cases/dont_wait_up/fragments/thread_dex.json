@@ -1,0 +1,28 @@
+{
+  "id": "thread_dex",
+  "type": "thread",
+  "label": "Messages — Dex",
+  "damage": { "profile": "block-loss", "intensity": 0.12, "seed": 4101 },
+  "content": {
+    "participants": [
+      { "entityId": "jonah", "display": "Jonah" },
+      { "entityId": "dex", "display": "Dex" }
+    ],
+    "messages": [
+      { "at": "2026-08-06T16:40:00-07:00", "from": "jonah", "text": "if Mina asks, dentist. the 4:30 one. I already said it once so don't invent a new lie", "corrupt": false },
+      { "at": "2026-08-06T16:41:00-07:00", "from": "dex", "text": "got it. you're a terrible person. I respect it", "corrupt": false },
+      { "at": "2026-08-06T16:43:00-07:00", "from": "jonah", "text": "it's a call. forty minutes. then I'm back", "corrupt": false },
+      { "at": "2026-08-11T09:12:00-07:00", "from": "dex", "text": "Harbor lady still flying you out?", "corrupt": false },
+      { "at": "2026-08-11T09:18:00-07:00", "from": "jonah", "text": "tonight. don't text me on the work thing", "corrupt": false },
+      { "at": "2026-08-11T09:19:00-07:00", "from": "dex", "text": "Mina?", "corrupt": false },
+      { "at": "2026-08-11T09:21:00-07:00", "from": "jonah", "text": "I said overnight for the vendor thing. I can't do this twice", "corrupt": false },
+      { "at": "2026-08-12T21:04:00-07:00", "from": "dex", "text": "you land?", "corrupt": false },
+      { "at": "2026-08-12T21:11:00-07:00", "from": "jonah", "text": "home. she was already asleep. I stood in the kitchen like an idiot", "corrupt": false },
+      { "at": "2026-08-12T21:14:00-07:00", "from": "dex", "text": "did they like you or are you spiraling", "corrupt": false },
+      { "at": "2026-08-12T21:17:00-07:00", "from": "jonah", "text": "they liked me. that's worse. I have until the 20th and I still haven't said the city out loud in this house", "corrupt": false },
+      { "at": "2026-08-13T07:52:00-07:00", "from": "dex", "text": "tell her or don't. just stop making me the dentist", "corrupt": false },
+      { "at": "2026-08-13T07:55:00-07:00", "from": "jonah", "text": "I'm in the shower. phone's on the counter. if she looks I deserve it", "corrupt": false },
+      { "at": "2026-08-13T07:56:00-07:00", "from": "dex", "text": "then lock it like a person who wants to stay married to his own story", "corrupt": false }
+    ]
+  }
+}

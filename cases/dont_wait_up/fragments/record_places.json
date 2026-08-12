@@ -1,0 +1,67 @@
+{
+  "id": "record_places",
+  "type": "record",
+  "label": "Location history",
+  "surface": "maps",
+  "damage": { "profile": "chroma-bleed", "intensity": 0.36, "seed": 4501 },
+  "hiddenUntil": {
+    "all": [
+      { "carved": "thread_mara" },
+      { "linked": ["jonah", "mara"] }
+    ]
+  },
+  "content": {
+    "kind": "location",
+    "region": { "name": "Harboridge" },
+    "visits": [
+      {
+        "at": "2026-07-30T11:20:00-07:00",
+        "placeId": "northline",
+        "label": "Northline — Kingswell",
+        "durationMin": 412,
+        "x": 0.30,
+        "y": 0.68
+      },
+      {
+        "at": "2026-08-06T16:46:00-07:00",
+        "placeId": "parkade",
+        "label": "Bell Street parkade",
+        "durationMin": 48,
+        "x": 0.24,
+        "y": 0.70
+      },
+      {
+        "at": "2026-08-11T19:02:00-07:00",
+        "placeId": "wren",
+        "label": "The Wren — Harboridge",
+        "durationMin": 214,
+        "x": 0.64,
+        "y": 0.34
+      },
+      {
+        "at": "2026-08-12T08:50:00-07:00",
+        "placeId": "lumen",
+        "label": "Lumen North — 400 Market",
+        "durationMin": 186,
+        "x": 0.58,
+        "y": 0.41
+      },
+      {
+        "at": "2026-08-12T21:08:00-07:00",
+        "placeId": "home",
+        "label": "Home — Kingswell",
+        "durationMin": null,
+        "x": 0.26,
+        "y": 0.74
+      }
+    ],
+    "columns": ["at", "label", "durationMin"],
+    "rows": [
+      ["2026-07-30T11:20:00-07:00", "Northline — Kingswell", 412],
+      ["2026-08-06T16:46:00-07:00", "Bell Street parkade", 48],
+      ["2026-08-11T19:02:00-07:00", "The Wren — Harboridge", 214],
+      ["2026-08-12T08:50:00-07:00", "Lumen North — 400 Market", 186],
+      ["2026-08-12T21:08:00-07:00", "home", null]
+    ]
+  }
+}

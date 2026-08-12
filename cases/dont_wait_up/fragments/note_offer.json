@@ -1,0 +1,17 @@
+{
+  "id": "note_offer",
+  "type": "note",
+  "label": "Notes — offer",
+  "damage": { "profile": "overwrite", "intensity": 0.32, "seed": 4602 },
+  "hiddenUntil": {
+    "all": [
+      { "carved": "thread_priya" },
+      { "carved": "note_comp" }
+    ]
+  },
+  "content": {
+    "title": "unsigned",
+    "body": "Lumen North\nSenior Analyst, Harboridge\nstart window: 21 Sept\nreply to Mara Quinn, Harbor Path, by 20 Aug\n\nrelocation assistance: yes\nremote/Kingswell: no. they were kind about it and still said no.\n\nI haven't signed.\nI haven't told her.\nI haven't decided if those are the same thing.",
+    "modifiedAt": "2026-08-13T00:41:00-07:00"
+  }
+}
