@@ -1,0 +1,17 @@
+{
+  "id": "thread_mom",
+  "type": "thread",
+  "label": "Messages — Mom",
+  "damage": { "profile": "block-loss", "intensity": 0.05, "seed": 1102 },
+  "content": {
+    "participants": [
+      { "entityId": "eli", "display": "Eli" },
+      { "entityId": "mom", "display": "Mom" }
+    ],
+    "messages": [
+      { "at": "2026-08-09T09:02:00+07:00", "from": "mom", "text": "Did you and Rae decide on Sunday lunch?", "corrupt": false },
+      { "at": "2026-08-09T09:18:00+07:00", "from": "eli", "text": "think so. I'll confirm tonight", "corrupt": false },
+      { "at": "2026-08-09T09:19:00+07:00", "from": "mom", "text": "Bring that olive bread she likes", "corrupt": false }
+    ]
+  }
+}

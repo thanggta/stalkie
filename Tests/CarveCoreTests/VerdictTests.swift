@@ -7,7 +7,6 @@ struct VerdictTests {
       schemaVersion: 1,
       id: "t",
       title: "T",
-      cycleBudget: 10,
       sectorMap: [],
       questions: [
         VerdictQuestion(
@@ -43,6 +42,35 @@ struct VerdictTests {
 
   @Test func perfectReportScoresOnePointZero() {
     let report = scoreVerdict(fixture(), ["q1": "a", "q2": "y"])
+    #expect(report.accuracy == 1.0)
+  }
+
+  @Test func fileVerdictRefusesIncompleteAnswerSet() {
+    // Owner decision (DR-11): force every question before the story closes.
+    // If this gate is removed, partial filings still score and "force answer" dies.
+    let result = fileVerdict(fixture(), ["q1": "a"])
+    guard case .incomplete(let missing) = result else {
+      Issue.record("expected incomplete, got \(result)")
+      return
+    }
+    #expect(missing == ["q2"])
+  }
+
+  @Test func fileVerdictEmptyStringCountsAsMissing() {
+    let result = fileVerdict(fixture(), ["q1": "a", "q2": ""])
+    guard case .incomplete(let missing) = result else {
+      Issue.record("expected incomplete, got \(result)")
+      return
+    }
+    #expect(missing == ["q2"])
+  }
+
+  @Test func fileVerdictScoresOnlyWhenComplete() {
+    let result = fileVerdict(fixture(), ["q1": "a", "q2": "y"])
+    guard case .filed(let report) = result else {
+      Issue.record("expected filed, got \(result)")
+      return
+    }
     #expect(report.accuracy == 1.0)
   }
 }

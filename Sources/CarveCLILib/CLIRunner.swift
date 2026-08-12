@@ -67,9 +67,11 @@ public enum CLIRunner {
       if problems.isEmpty {
         stdout("OK  \(caseFile.id) — \"\(caseFile.title)\"")
         let questionCount = caseFile.questions.count
+        let gated = caseFile.fragments.values.filter { $0.hiddenUntil != nil }.count
         stdout(
-          "    \(caseFile.fragments.count) fragments, budget \(caseFile.cycleBudget), "
-            + "total cost \(caseFile.totalCarveCost), \(questionCount) question\(questionCount == 1 ? "" : "s")")
+          "    \(caseFile.fragments.count) fragments (\(gated) gated), "
+            + "\(caseFile.sectorMap.count) on sector map, "
+            + "\(questionCount) question\(questionCount == 1 ? "" : "s")")
         return 0
       }
 

@@ -5,11 +5,12 @@ this project.
 
 ## What this is
 
-**You have his phone. You don't have long.**
+**You have his phone.**
 
-A relationship-suspicion drama. The player has her partner's unlocked phone and a limited window
-before he's back. She reads what she can, pieces together what she finds, and decides what she
-believes about him. Then she lives with that call.
+A relationship-suspicion drama. The player has her partner's unlocked phone. She browses freely —
+every open app, every thread she can reach — and the phone opens further as she finds things.
+She pieces together what she finds, answers every question about what she believes, and lives
+with that call.
 
 ### Who this is for
 
@@ -27,14 +28,13 @@ nothing.
 
 ### What makes it better than the competition
 
-Same shelf as the rest of the genre, executed better. Three things they don't do
-(`docs/compliance.md` §3), and since DR-8 made the shell an iOS lookalike, **these three now
-carry the entire product differentiation by themselves:**
+Same shelf as the rest of the genre, executed better. Since DR-8 made the shell an iOS lookalike
+and DR-11 dropped the cycle budget, **differentiation is the ending and the gates:**
 
-1. **You can never read everything.** A hard budget, and the case is authored so the budget
-   cannot cover it (INV-2). Every tap costs you another one you'll never make.
-2. **You have to decide.** The game ends in a filed verdict, scored on accuracy — not in
-   "you've now read all the content."
+1. **Discovery, not scarcity.** Free browsing, but content unlocks as she finds things
+   (`hiddenUntil`). Structure comes from what she notices, not from a resource bar.
+2. **You have to decide.** The game ends in a filed verdict — every question answered, scored
+   on accuracy — not in "you've now read all of the content."
 3. **You can be wrong.** Confidently, and with consequences.
 
 Everyone else ships free exhaustive browsing with no win condition and no way to lose.
@@ -151,15 +151,13 @@ The design invariants (design spec §7) are the highest-value tests in the proje
 
 | ID | Invariant |
 |---|---|
-| INV-1 | Every case is solvable within its cycle budget |
-| INV-2 | No case is fully recoverable within budget |
-| INV-3 | Every verdict question is answerable from carvable fragments |
-| INV-4 | No orphan or unreachable fragments |
-| INV-5 | Unlock rules are declarative data only |
+| INV-3 | Every verdict question is answerable from fragments reachable through unlocks |
+| INV-4 | No orphan or unreachable fragments (sector map **or** `hiddenUntil` path) |
+| INV-5 | Unlock rules are declarative data only (six predicates; no eval) |
 | INV-6 | No real brand, logo, or trademark in any shipped asset |
 
-INV-1 is proved by a **solver** that searches carve orderings — not by a human playing it.
-Run every invariant in CI against every case.
+INV-1 and INV-2 (cycle-budget solvability / scarcity) were removed by DR-11. Run every
+surviving invariant in CI against every case. Unlock cycles are a hard validator failure.
 
 ## Definition of done for a case
 
@@ -174,18 +172,13 @@ case.
 
 ## Project state
 
-**The core engine is complete as a Swift package** — 57 tests green, CI enforced
-(`.github/workflows/ci.yml`), `swift run CarveCLI cases/riverside` exits 0. The Swift package
-(`Sources/CarveCore`) is the SPM library target the iOS app will depend on: domain models,
-the six-predicate grammar, Codable JSON loader, validator (INV-1…INV-4), exact solvability
-solver, carve engine, verdict scoring, the `riverside` sample case, and the author-facing
-`CarveCLI` validator. The Dart implementation that this ported was the reference; it is
-deleted — `git` history at the Plan 1 commits (before 2026-08-12) is the record.
+**The core engine is complete as a Swift package** — CI enforced (`.github/workflows/ci.yml`),
+`swift run CarveCLI cases/five_minutes` exits 0. The Swift package (`Sources/CarveCore`) is the
+SPM library target the iOS app will depend on: domain models, six-predicate unlock grammar wired
+into `hiddenUntil`, Codable JSON loader, validator (INV-3…INV-5 + unlock-cycle detection),
+carve engine (discovery-gated free browsing, DR-11), forced complete verdict scoring, the
+`five_minutes` sample case, and the author-facing `CarveCLI` validator.
 
-The port deliberately FIXED the Dart defects that were logged against Plan 1 rather than
-reproducing them: Codable field-level parsing errors, strict `schemaVersion` integer checking,
-value-type case/engine models, cast-free predicate parsing, canonical link keys, and a
-Codable-restorable `CarveEngine`. `hiddenUntil` is still NOT implemented — it lands with the
-link board (Plan 4), and v1 cases must not use it.
+`riverside` (drowned-brother / client premise) was retired with DR-11 — off-premise under DR-10.
 
 Nothing renders yet — the SwiftUI shell is Plan 3.

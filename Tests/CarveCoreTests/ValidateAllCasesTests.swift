@@ -3,7 +3,7 @@ import Foundation
 import Testing
 @testable import CarveCore
 
-/// Loads one case directory. Same pattern as E2ERiversideTests, generalised to
+/// Loads one case directory. Same pattern as E2EFiveMinutesTests, generalised to
 /// any directory under `cases/`. `swift test` runs with CWD = package root
 /// (verified), which is also the CI precondition.
 private func loadCase(at dir: String) throws -> CaseFile {
@@ -27,9 +27,9 @@ private func loadCase(at dir: String) throws -> CaseFile {
 }
 
 struct ValidateAllCasesTests {
-  /// INV-1..INV-4 run against every case directory, not just riverside, so a
-  /// newly authored case cannot silently break the invariants. Picking up
-  /// future cases is what this test is for — keep it independent of any id.
+  /// INV-3…INV-5 run against every case directory, so a newly authored case
+  /// cannot silently break the invariants. Picking up future cases is what
+  /// this test is for — keep it independent of any id.
   @Test func everyCaseUnderCasesPassesEveryInvariant() throws {
     let casesDir = "cases"
     guard let entries = try? FileManager.default.contentsOfDirectory(atPath: casesDir) else {

@@ -3,33 +3,27 @@
 **Status:** Approved for planning · **Date:** 2026-08-09
 **Reframed 2026-08-12 — read §0.1 before anything else.**
 
-> ## ⚠ 0.1 The premise changed on 2026-08-12 (DR-10)
+> ## ⚠ 0.1 The premise and the scarcity model both moved (DR-10, then DR-11)
 >
-> **This document was written for a forensic-investigation game. That framing is dead.** The
-> product is now a relationship-suspicion drama: *you have your partner's phone and a few
-> minutes before he's back.* Target player is a woman who has felt exactly that, not a
-> detective or a puzzle enthusiast. Tone is jealousy and doubt — **no horror, no supernatural,
-> no ARG.**
->
-> **The mechanics survive the reframe intact; only the fiction around them changes.** This is
-> why the reframe is cheap and why no engine code moved:
+> **This document was written for a forensic-investigation game with a cycle budget.** Both are
+> dead. The product is a relationship-suspicion drama: *you have your partner's unlocked phone.*
+> Target player is a woman who has felt exactly that, not a detective or a puzzle enthusiast.
+> Tone is jealousy and doubt — **no horror, no supernatural, no ARG.**
 >
 > | Built as | Now reads as |
 > |---|---|
-> | Cycle budget | Minutes before he's back. Same scarcity, more natural motivation. |
-> | Carving a fragment | Opening a thread, restoring a deleted photo, scrolling back far enough |
+> | ~~Cycle budget~~ | **Removed (DR-11).** Free browsing; structure is discovery gates. |
+> | Carving a fragment | Opening a thread, scrolling back, noticing a draft |
+> | `hiddenUntil` | Something in one thread reveals another app, contact, or note |
 > | `damage` / partial decode | Deleted and half-overwritten messages, recovered in pieces |
-> | Filed verdict | What she decides she believes, scored on accuracy |
-> | INV-2 (never fully recoverable) | You never get to read all of it. The core feeling. |
+> | Filed verdict | ~15 concise questions, all required, scored on accuracy |
 >
-> **Where the old framing still shows, the framing is wrong, not the mechanic.** Anything below
-> that says "forensic workstation", "data-recovery technician", or "device image" is superseded
-> by this note and by DR-8 (the shell is an iOS lookalike). The invariants, the schema, and the
-> six-predicate grammar are unaffected.
+> **Where the old framing still shows, the framing is wrong.** Anything below that says
+> "forensic workstation", "data-recovery technician", "device image", "cycle budget", or
+> INV-1/INV-2 scarcity is superseded by this note, DR-8, DR-10, and DR-11.
 >
 > **Open, needs the owner:** the name. *File carving* is a forensic term, and the code is
-> `CarveCore` / `CarveEngine` / `CarveCLI` across 30 commits. The mechanic it names is no longer
-> described in forensic language. Renaming is mechanical but not free — flagged, not done.
+> `CarveCore` / `CarveEngine` / `CarveCLI`. Renaming is mechanical but not free — flagged, not done.
 
 ---
 
@@ -67,21 +61,24 @@ A design that only avoids the iPhone shell solves #1 and half of #2. It does not
 
 ## 2. The core idea
 
-**You are not browsing his phone. You are choosing what you'll never get to read.**
+**You are not solving a case. You are deciding what you believe about him.**
 
-*Reframed 2026-08-12 by DR-10. The previous premise — a contract data-recovery technician
-examining client device images — is superseded. The sentence below it, about the verb, was
-always the real idea and survives unchanged.*
+*Rewritten 2026-08-12 for DR-10 and DR-11. Two dead versions preceded this one: a contract
+data-recovery technician examining client device images (DR-10 killed the premise), and a cycle
+budget you spent to recover fragments (DR-11 killed the scarcity). Both are gone from the code.*
 
-He left his phone. He's in the shower, or downstairs, or asleep. You have minutes, not hours,
-and every thread you open is one you didn't. Some of it is deleted and comes back in pieces.
-When you put it down you have to decide what you actually believe — and you might be wrong.
+He left his phone on the counter. The shower is still running. You told yourself you wouldn't.
 
-The verb changes from **browse** to **allocate under scarcity, then infer**.
+You browse it freely — every app opens, every thread is readable, nothing is behind a resource
+bar. But the phone **opens further as you notice things**: a name in one thread makes another
+thread mean something, a date in a note makes a photo matter. Some messages were deleted and
+come back in pieces. Then you put it down and say what you think is true.
 
-That single sentence is the whole product, and it is what every competitor is missing. They
-give you a phone and unlimited time, which is not a game — it is a reading app. The scarcity is
-what turns snooping into a decision, and the verdict is what makes the decision cost something.
+The verb is **browse → notice → decide.**
+
+The last word is the one competitors don't have. They give you a phone and let you read it, and
+then it just ends. Here you have to commit to an answer, on the record, about someone you love —
+and you can be confidently, humiliatingly wrong.
 
 ### Why this specific reframe
 
@@ -108,43 +105,48 @@ starts feeling like the premise.
 
 ## 3. Core loop
 
+*Rewritten 2026-08-12 for DR-11. The previous loop — ingest a sector map, spend cycles to carve
+regions — is deleted, along with the solver and the budget that served it.*
+
 ```
-  INGEST            CARVE              LINK              FILE
-  ──────            ─────              ────              ────
-  Load device   →   Spend cycles   →   Connect       →   Answer the
-  image; see        to recover         fragments on      client's
-  a sector map      fragments          a board           questions
-  of unknown        (messages,         (timeline +
-  recoverable       photos, notes,     relationships)
-  regions           call logs)
+  OPEN              NOTICE             CONNECT           FILE
+  ────              ──────             ───────           ────
+  His phone,    →   Something you  →   Work out      →   Answer all 15
+  unlocked.         read opens         who is who,       questions.
+  Browse           something          what happened     Scored on
+  anything.         else                when             accuracy.
                           ↑                  │
                           └──────────────────┘
-                        new fragments suggest
-                        where to spend next
+                        what you notice decides
+                        what the phone shows next
 ```
 
-1. **Ingest** — the case opens on a *sector map*: a grid of recoverable regions, each showing
-   only a type hint and an integrity score. You don't know what's in them.
-2. **Carve** — spending **cycles** (the scarce resource) recovers a region. Low-integrity
-   regions cost more and come back partial.
-3. **Link** — recovered fragments go to a board where you draw connections: this number is
-   that contact, this photo timestamp contradicts that alibi.
-4. **File** — the win condition. The client asks 3–6 specific questions. You answer. You are
-   scored on **accuracy, not completeness.**
+1. **Open** — the phone is unlocked and yours. Every app on the home screen opens. Nothing costs
+   anything. This is the fantasy, and competitors are right to give it away freely.
+2. **Notice** — the phone **opens further as you read**. A `hiddenUntil` predicate on a fragment
+   makes it appear once you have seen the thing that would have made you look for it. Structure
+   comes from attention, not from a resource bar.
+3. **Connect** — fragments go to a board where you draw connections: this number is that contact,
+   this timestamp contradicts that story.
+4. **File** — the ending. **15 concise questions, all of them required.** Scored on **accuracy,
+   not completeness.**
 
-### The scarcity rule
+### The rule that replaced scarcity
 
-**You always have enough cycles to answer correctly. You never have enough to recover
-everything.** (Design invariant — see §7.)
+**Everything is readable. Not everything is visible yet.**
 
-This is the whole game. It produces:
-- Real decisions (competitors have none — you just read everything)
-- Replay value (a second pass finds a different half)
-- Post-play conversation ("did you find the voicemail?")
-- A reason to *think* rather than exhaustively tap
+Gating is diegetic: you don't see the thread with Sable until you have seen the name Sable. That
+is how noticing works in life, and it is why it doesn't feel like a designer withholding.
 
-Nearest relatives: *Return of the Obra Dinn*'s verdict-based scoring, *Papers, Please*'s
-constrained throughput.
+What this buys, now that the budget is gone:
+- **Progress that feels like insight** rather than expenditure
+- **Replay** — a second pass reaches things a first pass never opened
+- **A reason to read carefully** instead of tapping exhaustively, because attention is the only
+  thing that advances you
+
+The forced verdict is what keeps this from being a reading app. Nearest relative is now *Her
+Story* — free-form searching, no resource, an ending you have to commit to — rather than
+*Papers, Please*'s constrained throughput.
 
 ### What is explicitly NOT in the design
 
@@ -292,15 +294,15 @@ Testable properties. A violation is a bug, not a balance issue.
 
 | ID | Invariant | Test |
 |---|---|---|
-| INV-1 | Every case is solvable with the cycles granted | Solver test: optimal path answers all questions within budget |
-| INV-2 | No case can be fully recovered within budget | Sum of all carve costs > budget, asserted per case |
-| INV-3 | Every verdict question is answerable from carvable fragments | Every answer key entry traces to ≥1 reachable fragment |
-| INV-4 | No orphan fragments | Every fragment is reachable from the initial sector map |
+| ~~INV-1~~ | ~~Every case is solvable with the cycles granted~~ | **Removed by DR-11** (no cycle budget) |
+| ~~INV-2~~ | ~~No case can be fully recovered within budget~~ | **Removed by DR-11** (no cycle budget) |
+| INV-3 | Every verdict question is answerable from fragments reachable through unlocks | Every `supportedBy` id exists and is in the unlock reachability set |
+| INV-4 | No orphan fragments | Every fragment is on the sector map or reachable via `hiddenUntil` |
 | INV-5 | Unlock rules are declarative data, never executable script | Schema validation rejects non-declarative rules |
 | INV-6 | No real brand, logo, or trademark in any shipped asset | Asset review checklist per case |
 
-INV-1 and INV-2 together *are* the scarcity rule (§3). INV-5 is a compliance requirement — see
-`docs/compliance.md`.
+Also hard-fail: **no unlock cycle** (A hidden until B, B hidden until A). INV-5 is a compliance
+requirement — see `docs/compliance.md`.
 
 ---
 
@@ -317,7 +319,27 @@ INV-1 and INV-2 together *are* the scarcity rule (§3). INV-5 is a compliance re
 | DR-7 | English only at v1 | 6 languages like Stalkie | After first case validates, localization is real leverage |
 | DR-8 | **iOS-lookalike shell** — home grid, system font, iOS status bar, iMessage-style bubbles | Forensic workstation (the original DR-1, zero 5.2.5 exposure); fictional phone OS (phone-shaped and immersive, own visual language, near-zero 5.2.5 exposure) | A reviewer flags 5.2.5, or you decide the account risk outweighs the familiarity gain |
 | DR-9 | **Swift / SwiftUI, iOS only**; damage via Metal | Flutter (the original DR-2, retains Android) | Android returns to scope — and note that is a rewrite, not a recompile |
-| DR-10 | **Relationship-suspicion drama for women; drama tone, no horror.** "You have his phone and five minutes." | Forensic investigation framing (the original premise); horror/supernatural framing (the genre default) | The audience doesn't respond, or playtests show the drama can't carry it without a genre hook |
+| DR-10 | **Relationship-suspicion drama for women; drama tone, no horror.** "You have his phone." | Forensic investigation framing (the original premise); horror/supernatural framing (the genre default) | The audience doesn't respond, or playtests show the drama can't carry it without a genre hook |
+| DR-11 | **Discovery-gated free browsing.** No cycle budget. Structure is `hiddenUntil`. Ending is a forced, scored verdict (~15 concise questions). | Cycle-budget scarcity (INV-1/INV-2); unscored ending; no ending | Playtests show free browsing without scarcity feels empty *and* discovery gates fail to replace it |
+
+### DR-11 — the reasoning
+
+The cycle budget was the original differentiator against free exhaustive browsing. After DR-8
+and DR-10, the commercially validated titles on this shelf (*Normal Lost Phone* and kin) all
+use free browsing with discovery structure — and they work. Scarcity was fighting the fantasy:
+*his phone is right there* is not a resource-management fantasy.
+
+**What replaces scarcity:** the six-predicate `hiddenUntil` grammar, already specified and
+tested, now wired into load, visibility, and validation. Something she finds in one thread
+opens another. Unlock cycles and unreachable gates are hard failures.
+
+**What keeps a win condition:** the owner rejected both "no ending" and "unscored ending."
+The case closes when she answers every verdict question (on the order of fifteen, concise
+options). `fileVerdict` refuses incomplete filings; `scoreVerdict` grades accuracy. She can
+still be wrong.
+
+**Deleted with this record:** `cycleBudget`, `carveCost`, the INV-1 solver, INV-2, and the
+off-premise `riverside` sample. Sample case is now `cases/five_minutes`.
 
 ### DR-10 — the reasoning
 
@@ -362,10 +384,10 @@ It is recorded here so no future contributor mistakes it for one and "fixes" it.
 Two consequences follow, and both are load-bearing:
 
 - **§4.3(b) differentiation gets weaker.** "Phone shell" was one of the four differentiators in
-  `docs/compliance.md` §3's comparison table. The remaining three — cycle budget, filed verdict
-  scored on accuracy, and never enough budget to see everything (INV-2) — now carry the whole
-  differentiation argument alone. They must be prominent in the first ten minutes of play and
-  in the App Store screenshots, or there is no 4.3(b) answer left.
+  `docs/compliance.md` §3's comparison table. DR-11 then removed cycle-budget scarcity. What
+  remains is discovery-gated structure, a forced filed verdict scored on accuracy, and the
+  ability to be wrong. Those must be prominent in the first ten minutes of play and in the App
+  Store screenshots, or there is no 4.3(b) answer left.
 - **The theme layer is the retreat plan.** Fonts, bubble geometry, radii, icon shapes and
   status-bar layout ship as data, never as hardcoded constants. If this is not built, a 5.2.5
   flag means a rewrite instead of a reskin, and DR-8 becomes irreversible in practice.
@@ -394,7 +416,7 @@ the whole differentiated loop without paying.
 ## 10. What "done" means for v1
 
 1. One complete case, free, start to filed verdict, ~45–90 minutes
-2. All five invariants INV-1…INV-6 enforced by automated tests
+2. Surviving invariants INV-3…INV-6 enforced by automated tests (INV-1/INV-2 removed by DR-11)
 3. Ships on iOS only (DR-9; Android removed from scope 2026-08-12)
 4. Zero simulated Apple interfaces, zero real brands (INV-6)
 5. A second case authorable **without an engineer** — the real test of the content pipeline

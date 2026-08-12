@@ -4,8 +4,8 @@ import Testing
 
 struct CaseParserTests {
   private let minimalManifestJSON = """
-  { "schemaVersion": 1, "id": "test", "title": "Test Case", "cycleBudget": 10,
-    "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9, "carveCost": 4 } ],
+  { "schemaVersion": 1, "id": "test", "title": "Test Case",
+    "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9 } ],
     "verdict": { "questions": [ { "id": "q1", "prompt": "Who?", "answerType": "entity",
       "options": ["a","b"], "correct": "a", "supportedBy": ["note_001"] } ] } }
   """
@@ -31,6 +31,33 @@ struct CaseParserTests {
     )
     #expect(caseFile.id == "test")
     #expect(caseFile.fragments["note_001"]?.damage.seed == 7)
+  }
+
+  @Test func parsesHiddenUntilOnFragment() throws {
+    let gated = """
+    { "id": "note_002", "type": "note", "label": "Gated",
+    "damage": { "profile": "block-loss", "intensity": 0.2, "seed": 9 },
+    "hiddenUntil": { "carved": "note_001" },
+    "content": { "title": "x", "body": "y" } }
+    """
+    let manifest = """
+    { "schemaVersion": 1, "id": "test", "title": "Test Case",
+      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9 } ],
+      "verdict": { "questions": [ { "id": "q1", "prompt": "Who?", "answerType": "entity",
+        "options": ["a","b"], "correct": "a", "supportedBy": ["note_001"] } ] } }
+    """
+    let caseFile = try parseCase(
+      manifestData: data(manifest),
+      fragmentFiles: fragmentFiles([
+        "note_001.json": minimalFragmentJSON,
+        "note_002.json": gated,
+      ]))
+    #expect(caseFile.fragments["note_002"]?.hiddenUntil != nil)
+    guard case .string(let target)? = caseFile.fragments["note_002"]?.hiddenUntil?["carved"] else {
+      Issue.record("expected carved predicate")
+      return
+    }
+    #expect(target == "note_001")
   }
 
   @Test func rejectsUnknownSchemaVersion() {
@@ -128,8 +155,8 @@ struct CaseParserTests {
     // Foundation's JSONDecoder tolerates trailing commas, so this used to
     // parse and exit 0. The strict check must reject it before decoding.
     let manifest = """
-    { "schemaVersion": 1, "id": "test", "title": "Test Case", "cycleBudget": 10,
-      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9, "carveCost": 4 } ],
+    { "schemaVersion": 1, "id": "test", "title": "Test Case",
+      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9 } ],
       "verdict": { "questions": [ { "id": "q1", "prompt": "Who?", "answerType": "entity",
         "options": ["a","b"], "correct": "a", "supportedBy": ["note_001"] } ] }, }
     """
@@ -153,7 +180,7 @@ struct CaseParserTests {
 
   @Test func rejectsManifestWithDuplicateKey() {
     let manifest = minimalManifestJSON.replacingOccurrences(
-      of: "\"cycleBudget\": 10", with: "\"cycleBudget\": 10, \"cycleBudget\": 10")
+      of: "\"id\": \"test\"", with: "\"id\": \"test\", \"id\": \"test\"")
     expectCaseFormatError(
       manifest: manifest,
       files: fragmentFiles(["note_001.json": minimalFragmentJSON]),
@@ -171,20 +198,27 @@ struct CaseParserTests {
 
   @Test func rejectsManifestMissingVerdict() {
     let noVerdict = """
-    { "schemaVersion": 1, "id": "test", "title": "Test Case", "cycleBudget": 10,
-      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9, "carveCost": 4 } ] }
+    { "schemaVersion": 1, "id": "test", "title": "Test Case",
+      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9 } ] }
     """
     #expect(throws: CaseFormatError.self) {
       try parseCase(manifestData: data(noVerdict), fragmentFiles: [])
     }
   }
 
-  @Test func rejectsSectorEntryMissingCarveCost() {
-    let manifest = minimalManifestJSON.replacingOccurrences(
-      of: "\"integrity\": 0.9, \"carveCost\": 4", with: "\"integrity\": 0.9")
-    #expect(throws: CaseFormatError.self) {
-      try parseCase(manifestData: data(manifest), fragmentFiles: [])
-    }
+  @Test func ignoresLegacyCycleBudgetKey() throws {
+    // cycleBudget is gone (DR-11). Extra keys are ignored by Codable; a case
+    // must still parse without carveCost on sector entries.
+    let withLegacy = """
+    { "schemaVersion": 1, "id": "test", "title": "Test Case", "cycleBudget": 99,
+      "sectorMap": [ { "fragmentId": "note_001", "typeHint": "note", "integrity": 0.9 } ],
+      "verdict": { "questions": [ { "id": "q1", "prompt": "Who?", "answerType": "entity",
+        "options": ["a","b"], "correct": "a", "supportedBy": ["note_001"] } ] } }
+    """
+    let caseFile = try parseCase(
+      manifestData: data(withLegacy),
+      fragmentFiles: fragmentFiles(["note_001.json": minimalFragmentJSON]))
+    #expect(caseFile.id == "test")
   }
 
   @Test func contentWithNestedJSONSurvivesParsing() throws {

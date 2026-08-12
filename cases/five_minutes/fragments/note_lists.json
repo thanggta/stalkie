@@ -1,0 +1,11 @@
+{
+  "id": "note_lists",
+  "type": "note",
+  "label": "Notes — shopping",
+  "damage": { "profile": "partial-decode", "intensity": 0.15, "seed": 1103 },
+  "content": {
+    "title": "errands",
+    "body": "oat milk\neggs\nphone charger (hers)\n—\ncancel? no keep it",
+    "modifiedAt": "2026-08-10T07:44:00+07:00"
+  }
+}

@@ -6,7 +6,7 @@ import Testing
 /// inside a test — that deadlocks on the SwiftPM build lock. CI (and local
 /// verification) run `swift build` before `swift test`.
 struct CLIBinaryTests {
-  @Test func builtBinaryExitsZeroOnRiverside() throws {
+  @Test func builtBinaryExitsZeroOnFiveMinutes() throws {
     let binaryPath = ".build/debug/CarveCLI"
     guard FileManager.default.isExecutableFile(atPath: binaryPath) else {
       Issue.record("CarveCLI binary not built — run `swift build` before `swift test`.")
@@ -15,7 +15,7 @@ struct CLIBinaryTests {
 
     let process = Process()
     process.executableURL = URL(fileURLWithPath: binaryPath)
-    process.arguments = ["cases/riverside"]
+    process.arguments = ["cases/five_minutes"]
     let pipe = Pipe()
     process.standardOutput = pipe
     process.standardError = pipe

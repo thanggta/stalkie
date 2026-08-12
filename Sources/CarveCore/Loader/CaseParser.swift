@@ -38,8 +38,7 @@ public func parseCase(
     SectorEntry(
       fragmentId: wire.fragmentId,
       typeHint: try parseType(wire.typeHint, fragmentId: wire.fragmentId),
-      integrity: wire.integrity,
-      carveCost: wire.carveCost)
+      integrity: wire.integrity)
   }
 
   let questions = manifest.verdict.questions
@@ -83,6 +82,7 @@ public func parseCase(
         profile: wire.damage.profile,
         intensity: wire.damage.intensity,
         seed: wire.damage.seed),
+      hiddenUntil: wire.hiddenUntil,
       content: wire.content)
   }
 
@@ -90,7 +90,6 @@ public func parseCase(
     schemaVersion: manifest.schemaVersion,
     id: manifest.id,
     title: manifest.title,
-    cycleBudget: manifest.cycleBudget,
     sectorMap: sectorMap,
     questions: questions,
     fragments: fragments)
@@ -106,7 +105,6 @@ private struct SectorWire: Decodable {
   let fragmentId: String
   let typeHint: String
   let integrity: Double
-  let carveCost: Int
 }
 
 private struct DamageWire: Decodable {
@@ -120,6 +118,7 @@ private struct FragmentWire: Decodable {
   let type: String
   let label: String
   let damage: DamageWire
+  let hiddenUntil: [String: JSONValue]?
   let content: [String: JSONValue]
 }
 
@@ -131,7 +130,6 @@ private struct CaseManifest: Decodable {
   let schemaVersion: Int
   let id: String
   let title: String
-  let cycleBudget: Int
   let sectorMap: [SectorWire]
   let verdict: VerdictWire
 }

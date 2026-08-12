@@ -14,12 +14,13 @@ struct CLILogicTests {
     let out = StreamCapture()
     let err = StreamCapture()
     let code = CLIRunner.run(
-      arguments: ["cases/riverside"],
+      arguments: ["cases/five_minutes"],
       stdout: { out.text.append($0) },
       stderr: { err.text.append($0) })
     #expect(code == 0)
-    #expect(out.text.contains("OK  riverside"))
-    #expect(out.text.contains("budget 20"))
+    #expect(out.text.contains("OK  five_minutes"))
+    #expect(out.text.contains("gated"))
+    #expect(out.text.contains("15 questions"))
   }
 
   @Test func missingDirectoryReturnsOneAndNamesIt() {
@@ -45,7 +46,7 @@ struct CLILogicTests {
     // this toolchain's Foundation JSONDecoder tolerates trailing commas, so
     // that fixture would parse and never reach the bare-catch path this test
     // guards.
-    let badJSON = #"{"schemaVersion":1,"id":"broken","title":"Broken","cycleBudget":5,"sectorMap":[],"verdict":{"questions":[]}"#
+    let badJSON = #"{"schemaVersion":1,"id":"broken","title":"Broken","sectorMap":[],"verdict":{"questions":[]}"#
     try Data(badJSON.utf8).write(to: tempRoot.appendingPathComponent("case.json"))
 
     let out = StreamCapture()
@@ -69,7 +70,7 @@ struct CLILogicTests {
     try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
 
     let sloppyJSON = #"""
-    {"schemaVersion":1,"id":"sloppy","title":"Sloppy","cycleBudget":5,
+    {"schemaVersion":1,"id":"sloppy","title":"Sloppy",
      "sectorMap":[],"verdict":{"questions":[]},}
     """#
     try Data(sloppyJSON.utf8).write(to: tempRoot.appendingPathComponent("case.json"))
@@ -94,9 +95,9 @@ struct CLILogicTests {
     try FileManager.default.createDirectory(at: tempRoot, withIntermediateDirectories: true)
 
     // Empty sectorMap + empty verdict.questions: parses cleanly, then
-    // validateCase reports INV-2 and "at least one verdict question".
+    // validateCase reports "at least one verdict question".
     let invalidJSON = #"""
-    {"schemaVersion":1,"id":"invalid","title":"Invalid","cycleBudget":5,"sectorMap":[],"verdict":{"questions":[]}}
+    {"schemaVersion":1,"id":"invalid","title":"Invalid","sectorMap":[],"verdict":{"questions":[]}}
     """#
     try Data(invalidJSON.utf8).write(to: tempRoot.appendingPathComponent("case.json"))
 
@@ -109,8 +110,7 @@ struct CLILogicTests {
     #expect(code == 1)
     #expect(err.text.contains("FAILED"))
     #expect(err.text.contains("problem(s):"))
-    #expect(err.text.contains("INV-2"))
+    #expect(err.text.contains("verdict question"))
     #expect(err.text.contains("  • "))
   }
 }
-

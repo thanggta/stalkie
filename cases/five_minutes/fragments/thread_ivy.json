@@ -1,0 +1,19 @@
+{
+  "id": "thread_ivy",
+  "type": "thread",
+  "label": "Messages — Ivy",
+  "damage": { "profile": "block-loss", "intensity": 0.2, "seed": 2202 },
+  "hiddenUntil": { "carved": "thread_sable" },
+  "content": {
+    "participants": [
+      { "entityId": "eli", "display": "Eli" },
+      { "entityId": "ivy", "display": "Ivy" }
+    ],
+    "messages": [
+      { "at": "2026-08-05T11:02:00+07:00", "from": "ivy", "text": "Sable said the bakery can do Saturday morning. You're still free right?", "corrupt": false },
+      { "at": "2026-08-05T11:14:00+07:00", "from": "eli", "text": "yeah. don't tell mom the theme yet, she ruins surprises", "corrupt": false },
+      { "at": "2026-08-05T11:15:00+07:00", "from": "ivy", "text": "It's MY birthday Eli. Mom already knows. Focus.", "corrupt": false },
+      { "at": "2026-08-05T11:16:00+07:00", "from": "eli", "text": "right. sorry. cake is on me", "corrupt": false }
+    ]
+  }
+}

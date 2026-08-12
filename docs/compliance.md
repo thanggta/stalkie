@@ -103,21 +103,22 @@ text of the removal condition.
 
 | Every competitor | CARVE |
 |---|---|
-| Free exhaustive browsing | A hard budget — "minutes before he's back" (DR-10) |
-| No win condition | You must decide. Filed verdict, scored on accuracy. |
-| Read everything | You never read all of it. Authored so the budget cannot cover it (INV-2). |
+| Free exhaustive browsing, no structure | Free browsing **with discovery gates** (`hiddenUntil`, DR-11) |
+| No win condition | You must decide. Filed verdict (~15 questions, all required), scored on accuracy. |
+| Read everything, put the phone down | You file what you believe — and you can be wrong |
 | No way to lose | You can be confidently wrong, and it costs you |
 | Horror / supernatural hook | Ordinary relationship drama, deliberately (DR-10) |
 | ~~Phone shell~~ | ~~Forensic workstation~~ — **dead as a differentiator (DR-8).** Our shell is a phone shell too. |
+| ~~Hard budget / INV-2 scarcity~~ | **Removed (DR-11).** Competitors already do free browsing; we match the fantasy and beat them on ending + gates. |
 
-**Read that table as a warning, not a comfort.** DR-8 struck out the shell and DR-10 struck out
-the premise — the two differentiators that were *visible in a screenshot*. What remains is real
-but is all **loop**, and a loop is invisible until someone plays it. Since 4.3(b)'s literal
-removal condition is "do not attract customers", and both reference apps in `research-findings.md`
-have near-zero ratings, the burden is now specific:
+**Read that table as a warning, not a comfort.** DR-8 struck out the shell, DR-10 struck out
+the forensic premise, and DR-11 struck out cycle-budget scarcity. What remains is discovery
+structure and a forced scored ending — real, but **loop**, and a loop is invisible until
+someone plays it. Since 4.3(b)'s literal removal condition is "do not attract customers", the
+burden is now specific:
 
-- The budget, the countdown, and the verdict must be legible in the **first two minutes** of
-  play, not unlocked in hour two.
+- Discovery revealing something new, and the verdict, must be legible in the **first two minutes**
+  of play, not unlocked in hour two.
 - They must be legible in the **App Store screenshots and preview video**, because that is the
   only differentiation a reviewer or a browsing customer sees before installing.
 
@@ -201,9 +202,9 @@ Run before every submission.
 - [ ] Theme layer intact — fonts, geometry, radii, icon shapes, status bar all still data, not
       hardcoded. This is the retreat path; verify it still works by reskinning in a scratch
       build before submitting.
-- [ ] 4.3(b) differentiation visible in the first ten minutes and in the screenshots — cycle
-      budget, filed verdict, INV-2 scarcity. "Phone shell" is no longer one of our four
-      differentiators (§3), so the other three carry it alone.
+- [ ] 4.3(b) differentiation visible in the first ten minutes and in the screenshots —
+      discovery gates opening new content, forced filed verdict scored on accuracy. "Phone
+      shell" and cycle-budget scarcity are no longer differentiators (DR-8, DR-11).
 - [ ] INV-6 asset review passed for every case in the build
 - [ ] No real brand, logo, or wordmark in screenshots or the App Store listing
 - [ ] Free first case complete and playable to a filed verdict without payment

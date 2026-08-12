@@ -24,8 +24,14 @@ public struct VerdictReport: Equatable, Sendable {
   public var accuracy: Double { total == 0 ? 0 : Double(correct) / Double(total) }
 }
 
-/// Scores on accuracy, not completeness. An unanswered question is wrong —
-/// filing an incomplete report is a choice with a cost.
+public enum FileVerdictResult: Equatable, Sendable {
+  /// Player tried to close without answering every question. No score is issued.
+  case incomplete(missingQuestionIds: [String])
+  case filed(VerdictReport)
+}
+
+/// Scores on accuracy. An unanswered question is wrong if this is called
+/// directly — prefer `fileVerdict`, which refuses to score incomplete filings.
 public func scoreVerdict(_ caseFile: CaseFile, _ answers: [String: String]) -> VerdictReport {
   let results = caseFile.questions.map { q in
     let given = answers[q.id] ?? ""
@@ -36,4 +42,16 @@ public func scoreVerdict(_ caseFile: CaseFile, _ answers: [String: String]) -> V
       isCorrect: given == q.correct)
   }
   return VerdictReport(results: results)
+}
+
+/// Forces a complete answer set before scoring. Empty strings count as missing.
+public func fileVerdict(_ caseFile: CaseFile, _ answers: [String: String]) -> FileVerdictResult {
+  let missing = caseFile.questions.compactMap { q -> String? in
+    guard let given = answers[q.id], !given.isEmpty else { return q.id }
+    return nil
+  }
+  if !missing.isEmpty {
+    return .incomplete(missingQuestionIds: missing)
+  }
+  return .filed(scoreVerdict(caseFile, answers))
 }

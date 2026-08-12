@@ -1,5 +1,5 @@
 public enum CarveOutcome: String, Codable, Sendable {
-  case ok, alreadyCarved, insufficientCycles, unknownFragment
+  case ok, alreadyCarved, hidden, unknownFragment
 }
 
 public struct CarveResult: Equatable, Sendable {
@@ -14,29 +14,24 @@ public struct CarveResult: Equatable, Sendable {
 
 /// Pure game rules. No IO, no platform calls. See CLAUDE.md rule 3.
 ///
-/// FIX A: value semantics. `caseFile` is `let`, so a caller cannot inject a
-/// zero-cost sector entry or otherwise corrupt the rules. All mutation flows
-/// through `mutating` methods.
+/// Free browsing gated by discovery: a fragment is openable when it is visible
+/// under the current `GameState` (sector map seed, or `hiddenUntil` true).
+/// There is no cycle budget — structure comes from unlocks, not scarcity (DR-11).
 public struct CarveEngine: Equatable, Codable, Sendable {
   public let caseFile: CaseFile
   public private(set) var carved: Set<String>
   public private(set) var links: Set<String>
   public private(set) var answered: Set<String>
-  public private(set) var spent: Int
 
   public init(caseFile: CaseFile) {
     self.caseFile = caseFile
     self.carved = []
     self.links = []
     self.answered = []
-    self.spent = 0
   }
 
-  public var cyclesRemaining: Int { caseFile.cycleBudget - spent }
   public var carvedIds: Set<String> { carved }
 
-  // FIX B: all four state fields are stored properties, so Codable
-  // synthesis restores the session from persisted JSON for free.
   public var state: GameState {
     GameState(
       carvedFragmentIds: carved,
@@ -44,26 +39,36 @@ public struct CarveEngine: Equatable, Codable, Sendable {
       answeredQuestionIds: answered)
   }
 
-  public func canCarve(_ fragmentId: String) -> Bool {
-    guard let sector = caseFile.sectorFor(fragmentId), !carved.contains(fragmentId) else {
-      return false
+  /// True when the fragment exists and its unlock gate (if any) holds.
+  /// Sector-map fragments with no `hiddenUntil` are visible from the start.
+  /// Gated fragments become visible when their predicate evaluates true.
+  public func isVisible(_ fragmentId: String) -> Bool {
+    guard let fragment = caseFile.fragments[fragmentId] else { return false }
+    guard let raw = fragment.hiddenUntil else {
+      return caseFile.sectorFor(fragmentId) != nil
     }
-    return sector.carveCost <= cyclesRemaining
+    guard let predicate = try? parsePredicate(raw) else { return false }
+    return predicate.evaluate(state)
+  }
+
+  public func canCarve(_ fragmentId: String) -> Bool {
+    guard caseFile.fragments[fragmentId] != nil else { return false }
+    guard !carved.contains(fragmentId) else { return false }
+    return isVisible(fragmentId)
   }
 
   public mutating func carve(_ fragmentId: String) -> CarveResult {
-    guard let sector = caseFile.sectorFor(fragmentId) else {
+    guard let fragment = caseFile.fragments[fragmentId] else {
       return CarveResult(outcome: .unknownFragment, fragment: nil)
     }
     if carved.contains(fragmentId) {
-      return CarveResult(outcome: .alreadyCarved, fragment: caseFile.fragments[fragmentId])
+      return CarveResult(outcome: .alreadyCarved, fragment: fragment)
     }
-    if sector.carveCost > cyclesRemaining {
-      return CarveResult(outcome: .insufficientCycles, fragment: nil)
+    if !isVisible(fragmentId) {
+      return CarveResult(outcome: .hidden, fragment: nil)
     }
-    spent += sector.carveCost
     carved.insert(fragmentId)
-    return CarveResult(outcome: .ok, fragment: caseFile.fragments[fragmentId])
+    return CarveResult(outcome: .ok, fragment: fragment)
   }
 
   public mutating func link(_ a: String, _ b: String) {

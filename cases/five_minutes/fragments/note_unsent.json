@@ -1,0 +1,12 @@
+{
+  "id": "note_unsent",
+  "type": "note",
+  "label": "Notes — draft",
+  "damage": { "profile": "partial-decode", "intensity": 0.55, "seed": 2203 },
+  "hiddenUntil": { "carved": "thread_sable" },
+  "content": {
+    "title": "do not send",
+    "body": "I keep saying next week and it's been weeks.\n\nI don't know how to tell Rae and I don't know how to stop either.\n\nLast Thursday felt like the only honest thing I've done all month and that scares me.\n\nIf you're still up — ███████",
+    "modifiedAt": "2026-08-08T01:17:00+07:00"
+  }
+}

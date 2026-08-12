@@ -5,7 +5,6 @@
 public func validateCase(_ c: CaseFile) -> [String] {
   var problems: [String] = []
 
-  // Every sector entry must resolve to a fragment.
   var seenSectorIds = Set<String>()
   for entry in c.sectorMap {
     if !seenSectorIds.insert(entry.fragmentId).inserted {
@@ -14,32 +13,69 @@ public func validateCase(_ c: CaseFile) -> [String] {
     if c.fragments[entry.fragmentId] == nil {
       problems.append("Sector entry \"\(entry.fragmentId)\" has no fragment file.")
     }
-    if entry.carveCost <= 0 {
-      problems.append("Sector entry \"\(entry.fragmentId)\" has carveCost <= 0.")
-    }
     if entry.integrity < 0 || entry.integrity > 1 {
       problems.append("Sector entry \"\(entry.fragmentId)\" integrity must be 0..1.")
     }
   }
 
-  // INV-4: no orphan fragments.
-  var referenced = Set<String>()
-  for entry in c.sectorMap {
-    referenced.insert(entry.fragmentId)
-  }
+  // Parse every hiddenUntil; collect grammar / reference problems early.
+  var parsedGates: [String: any Predicate] = [:]
   for id in c.fragments.keys.sorted() {
-    if !referenced.contains(id) {
-      problems.append(
-        "INV-4 violated: fragment \"\(id)\" is unreachable — no sector entry references it.")
+    guard let fragment = c.fragments[id], let raw = fragment.hiddenUntil else { continue }
+    do {
+      let predicate = try parsePredicate(raw)
+      parsedGates[id] = predicate
+      for ref in allCarvedReferences(predicate) where c.fragments[ref] == nil {
+        problems.append(
+          "Fragment \"\(id)\" hiddenUntil references unknown fragment \"\(ref)\".")
+      }
+      for ref in allAnsweredReferences(predicate) where !c.questions.contains(where: { $0.id == ref }) {
+        problems.append(
+          "Fragment \"\(id)\" hiddenUntil references unknown question \"\(ref)\".")
+      }
+    } catch let error as PredicateFormatError {
+      problems.append("Fragment \"\(id)\" hiddenUntil is not valid declarative grammar: \(error.message)")
+    } catch {
+      problems.append("Fragment \"\(id)\" hiddenUntil is not valid declarative grammar: \(error)")
     }
   }
 
-  // INV-2: the case must NOT be fully recoverable within budget.
-  if c.totalCarveCost <= c.cycleBudget {
-    problems.append(
-      "INV-2 violated: total carve cost (\(c.totalCarveCost)) is within cycleBudget "
-        + "(\(c.cycleBudget)). The player could recover everything, which removes every "
-        + "decision from the case.")
+  // Deadlock: A hidden until B, B hidden until A (or longer cycles).
+  do {
+    if try hasUnlockCycle(fragments: c.fragments) {
+      problems.append(
+        "Unlock cycle detected: two or more fragments gate each other via hiddenUntil. "
+          + "The player can never open them.")
+    }
+  } catch let error as PredicateFormatError {
+    // Already reported per-fragment above when parsing failed.
+    _ = error
+  } catch {
+    problems.append("Unlock cycle check failed: \(error)")
+  }
+
+  // INV-4: every fragment is reachable from the sector map through some
+  // sequence of unlocks. Sector map alone is not the only path.
+  let reachable: Set<String>
+  do {
+    reachable = try reachableFragmentIds(sectorMap: c.sectorMap, fragments: c.fragments)
+  } catch {
+    reachable = Set(c.sectorMap.map(\.fragmentId))
+  }
+
+  for id in c.fragments.keys.sorted() {
+    if !reachable.contains(id) {
+      let hasGate = c.fragments[id]?.hiddenUntil != nil
+      if hasGate {
+        problems.append(
+          "INV-4 violated: fragment \"\(id)\" is unreachable — its hiddenUntil can never "
+            + "become true from the sector map.")
+      } else {
+        problems.append(
+          "INV-4 violated: fragment \"\(id)\" is unreachable — not on the sector map and "
+            + "has no hiddenUntil gate.")
+      }
+    }
   }
 
   // Verdict questions.
@@ -62,18 +98,16 @@ public func validateCase(_ c: CaseFile) -> [String] {
         problems.append(
           "INV-3 violated: question \"\(question.id)\" is supported by \"\(fragmentId)\", "
             + "which does not exist.")
+      } else if !reachable.contains(fragmentId) {
+        problems.append(
+          "INV-3 violated: question \"\(question.id)\" is supported by \"\(fragmentId)\", "
+            + "which is not reachable through any unlock sequence.")
       }
     }
   }
 
   if c.questions.isEmpty {
     problems.append("A case needs at least one verdict question.")
-  }
-
-  if !isSolvable(c) {
-    problems.append(
-      "INV-1 violated: no set of fragments within cycleBudget (\(c.cycleBudget)) supports "
-        + "every verdict question. The case is unwinnable.")
   }
 
   return problems

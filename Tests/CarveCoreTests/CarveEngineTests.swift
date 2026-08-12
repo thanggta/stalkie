@@ -3,59 +3,68 @@ import Testing
 @testable import CarveCore
 
 struct CarveEngineTests {
-  private func fixture() -> CaseFile {
+  private let damage = DamageSpec(profile: "block-loss", intensity: 0.2, seed: 1)
+
+  private func fixture(
+    sectors: [SectorEntry]? = nil,
+    fragments: [String: Fragment]? = nil
+  ) -> CaseFile {
     CaseFile(
       schemaVersion: 1,
       id: "t",
       title: "T",
-      cycleBudget: 10,
-      sectorMap: [
-        SectorEntry(fragmentId: "a", typeHint: .note, integrity: 0.9, carveCost: 4),
-        SectorEntry(fragmentId: "b", typeHint: .note, integrity: 0.4, carveCost: 9),
+      sectorMap: sectors ?? [
+        SectorEntry(fragmentId: "a", typeHint: .note, integrity: 0.9),
+        SectorEntry(fragmentId: "b", typeHint: .note, integrity: 0.4),
       ],
       questions: [
         VerdictQuestion(
           id: "q1", prompt: "?", options: ["x"], correct: "x", supportedBy: ["a"]),
       ],
-      fragments: [
-        "a": Fragment(
-          id: "a", type: .note, label: "A",
-          damage: DamageSpec(profile: "block-loss", intensity: 0.2, seed: 1),
-          content: [:]),
-        "b": Fragment(
-          id: "b", type: .note, label: "B",
-          damage: DamageSpec(profile: "block-loss", intensity: 0.2, seed: 1),
-          content: [:]),
+      fragments: fragments ?? [
+        "a": Fragment(id: "a", type: .note, label: "A", damage: damage, content: [:]),
+        "b": Fragment(id: "b", type: .note, label: "B", damage: damage, content: [:]),
       ]
     )
   }
 
-  @Test func carvingSpendsCyclesAndReturnsFragment() {
+  @Test func carvingMarksFragmentWithoutSpendingABudget() {
     var engine = CarveEngine(caseFile: fixture())
-    #expect(engine.cyclesRemaining == 10)
     let result = engine.carve("a")
     #expect(result.outcome == .ok)
     #expect(result.fragment?.id == "a")
-    #expect(engine.cyclesRemaining == 6)
+    #expect(engine.carvedIds == ["a"])
   }
 
-  @Test func carvingSameFragmentTwiceDoesNotDoubleCharge() {
-    // Players will re-tap. Charging twice would silently break INV-1's
-    // guarantee that the case stays winnable.
+  @Test func carvingSameFragmentTwiceIsIdempotent() {
+    // Players will re-tap. Charging a cost twice used to break scarcity math;
+    // now the contract is simply: already open stays open, no double-mark.
     var engine = CarveEngine(caseFile: fixture())
     engine.carve("a")
     let second = engine.carve("a")
     #expect(second.outcome == .alreadyCarved)
-    #expect(engine.cyclesRemaining == 6)
+    #expect(engine.carvedIds == ["a"])
   }
 
-  @Test func refusesCarveItCannotAffordAndSpendsNothing() {
-    var engine = CarveEngine(caseFile: fixture())
-    engine.carve("b")  // 9 of 10 spent
-    let result = engine.carve("a")  // needs 4, only 1 left
-    #expect(result.outcome == .insufficientCycles)
-    #expect(engine.cyclesRemaining == 1)
-    #expect(engine.carvedIds.contains("a") == false)
+  @Test func refusesHiddenFragmentUntilGateOpens() {
+    // Discovery gating is the structure that replaced the cycle budget.
+    // If hiddenUntil is ignored, this opens immediately and the case has no shape.
+    let gated = fixture(
+      sectors: [SectorEntry(fragmentId: "a", typeHint: .note, integrity: 0.9)],
+      fragments: [
+        "a": Fragment(id: "a", type: .note, label: "A", damage: damage, content: [:]),
+        "secret": Fragment(
+          id: "secret", type: .note, label: "S", damage: damage,
+          hiddenUntil: ["carved": .string("a")], content: [:]),
+      ])
+    var engine = CarveEngine(caseFile: gated)
+    #expect(engine.isVisible("secret") == false)
+    #expect(engine.canCarve("secret") == false)
+    #expect(engine.carve("secret").outcome == .hidden)
+
+    engine.carve("a")
+    #expect(engine.isVisible("secret"))
+    #expect(engine.carve("secret").outcome == .ok)
   }
 
   @Test func reportsUnknownFragmentsRatherThanThrowing() {
@@ -71,22 +80,17 @@ struct CarveEngineTests {
     #expect(engine.state.linkedPairs == ["adrian|priya"])
   }
 
-  @Test func canCarveReflectsAffordabilityAndCarveState() {
+  @Test func canCarveReflectsVisibilityAndCarveState() {
     var engine = CarveEngine(caseFile: fixture())
-    #expect(engine.canCarve("a"))  // affordable initially
-    #expect(engine.canCarve("ghost") == false)  // no sector entry
+    #expect(engine.canCarve("a"))
+    #expect(engine.canCarve("ghost") == false)
     engine.carve("a")
-    #expect(engine.canCarve("a") == false)  // already carved
-
-    var broke = CarveEngine(caseFile: fixture())
-    broke.carve("b")  // 9 of 10 spent
-    #expect(broke.canCarve("a") == false)  // needs 4, only 1 left
+    #expect(engine.canCarve("a") == false)
   }
 
   @Test func engineRestoresFromPersistedState() throws {
-    // FIX B: all four state fields must survive encode/decode. If any one of
-    // carved/links/answered/spent were dropped from Codable, the decoded
-    // engine would differ from the live one and the equality check fails.
+    // All three state fields must survive encode/decode. If carved/links/
+    // answered drop out of Codable, the decoded engine differs and equality fails.
     var engine = CarveEngine(caseFile: fixture())
     engine.carve("a")
     engine.link("priya", "adrian")
@@ -96,8 +100,26 @@ struct CarveEngineTests {
     let decoded = try JSONDecoder().decode(CarveEngine.self, from: data)
 
     #expect(decoded == engine)
-    #expect(decoded.cyclesRemaining == 6)
     #expect(decoded.carvedIds == ["a"])
     #expect(decoded.state.linkedPairs == ["adrian|priya"])
+  }
+
+  @Test func sectorMapFragmentWithoutGateIsVisibleAtStart() {
+    let engine = CarveEngine(caseFile: fixture())
+    #expect(engine.isVisible("a"))
+    #expect(engine.isVisible("b"))
+  }
+
+  @Test func fragmentNotOnSectorMapAndWithoutGateStaysInvisible() {
+    // Orphans are a validator concern; the engine must not leak them as openable.
+    let c = fixture(
+      sectors: [SectorEntry(fragmentId: "a", typeHint: .note, integrity: 0.9)],
+      fragments: [
+        "a": Fragment(id: "a", type: .note, label: "A", damage: damage, content: [:]),
+        "orphan": Fragment(id: "orphan", type: .note, label: "O", damage: damage, content: [:]),
+      ])
+    let engine = CarveEngine(caseFile: c)
+    #expect(engine.isVisible("orphan") == false)
+    #expect(engine.canCarve("orphan") == false)
   }
 }

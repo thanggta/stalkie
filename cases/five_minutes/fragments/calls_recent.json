@@ -1,0 +1,17 @@
+{
+  "id": "calls_recent",
+  "type": "record",
+  "label": "Recents — calls",
+  "damage": { "profile": "scanline-tear", "intensity": 0.25, "seed": 1104 },
+  "content": {
+    "kind": "call_log",
+    "columns": ["at", "entityId", "durationSec", "direction"],
+    "rows": [
+      ["2026-08-07T17:58:00+07:00", "sable", 94, "out"],
+      ["2026-08-07T22:18:00+07:00", "sable", 6, "in"],
+      ["2026-08-08T12:03:00+07:00", "theo", 41, "out"],
+      ["2026-08-10T08:11:00+07:00", "mom", 0, "missed"],
+      ["2026-08-11T13:40:00+07:00", "sable", 128, "out"]
+    ]
+  }
+}

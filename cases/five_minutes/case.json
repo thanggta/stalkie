@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "id": "five_minutes",
+  "title": "Five Minutes",
+  "briefing": "His phone is unlocked on the counter. The shower is still running. You told yourself you wouldn't.",
+  "estimatedMinutes": 45,
+  "sectorMap": [
+    { "fragmentId": "thread_theo", "typeHint": "thread", "integrity": 0.95 },
+    { "fragmentId": "thread_mom", "typeHint": "thread", "integrity": 0.98 },
+    { "fragmentId": "note_lists", "typeHint": "note", "integrity": 0.9 },
+    { "fragmentId": "calls_recent", "typeHint": "record", "integrity": 0.85 }
+  ],
+  "verdict": {
+    "questions": [
+      {
+        "id": "q_sable_who",
+        "prompt": "Who is Sable to Eli?",
+        "answerType": "entity",
+        "options": ["coworker", "affair", "party_help", "unknown"],
+        "correct": "affair",
+        "supportedBy": ["thread_sable", "note_unsent"]
+      },
+      {
+        "id": "q_thursday_lie",
+        "prompt": "Did Eli lie about Thursday night?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_theo", "thread_sable", "record_places"]
+      },
+      {
+        "id": "q_thursday_where",
+        "prompt": "Where was Eli Thursday evening?",
+        "answerType": "entity",
+        "options": ["office", "with_theo", "with_sable", "unknown"],
+        "correct": "with_sable",
+        "supportedBy": ["thread_sable", "record_places", "calls_recent"]
+      },
+      {
+        "id": "q_theo_cover",
+        "prompt": "Was Theo used as a cover story?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_theo", "thread_sable"]
+      },
+      {
+        "id": "q_theo_knew",
+        "prompt": "Did Theo know the cover was a lie?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["thread_theo"]
+      },
+      {
+        "id": "q_usual_place",
+        "prompt": "What is 'the usual'?",
+        "answerType": "entity",
+        "options": ["office", "sable_place", "gym", "unknown"],
+        "correct": "sable_place",
+        "supportedBy": ["thread_sable", "record_places"]
+      },
+      {
+        "id": "q_rae_mentioned",
+        "prompt": "Does Sable know about Rae?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_sable"]
+      },
+      {
+        "id": "q_hide_phone",
+        "prompt": "Has Eli been careful about his phone around Sable?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_sable"]
+      },
+      {
+        "id": "q_ivy_party",
+        "prompt": "Is Ivy's bakery thread about a surprise for Rae?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "no",
+        "supportedBy": ["thread_ivy", "note_calendar"]
+      },
+      {
+        "id": "q_ivy_knows_affair",
+        "prompt": "Does Ivy know about Sable and Eli?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["thread_ivy", "note_calendar"]
+      },
+      {
+        "id": "q_how_long",
+        "prompt": "How long has this been going on?",
+        "answerType": "entity",
+        "options": ["days", "weeks", "months", "unknown"],
+        "correct": "weeks",
+        "supportedBy": ["thread_sable", "note_unsent"]
+      },
+      {
+        "id": "q_unsent_to",
+        "prompt": "Who was the unsent note for?",
+        "answerType": "entity",
+        "options": ["rae", "sable", "theo", "unknown"],
+        "correct": "sable",
+        "supportedBy": ["note_unsent"]
+      },
+      {
+        "id": "q_still_active",
+        "prompt": "Is it still happening?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "yes",
+        "supportedBy": ["thread_sable", "calls_recent", "record_places"]
+      },
+      {
+        "id": "q_mom_related",
+        "prompt": "Is the mom thread related to Sable?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "no",
+        "supportedBy": ["thread_mom"]
+      },
+      {
+        "id": "q_leaving",
+        "prompt": "Is Eli planning to leave Rae?",
+        "answerType": "bool",
+        "options": ["yes", "no", "unknown"],
+        "correct": "unknown",
+        "supportedBy": ["note_unsent", "thread_sable"]
+      }
+    ]
+  }
+}

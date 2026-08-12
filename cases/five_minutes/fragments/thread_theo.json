@@ -1,0 +1,19 @@
+{
+  "id": "thread_theo",
+  "type": "thread",
+  "label": "Messages — Theo",
+  "damage": { "profile": "block-loss", "intensity": 0.1, "seed": 1101 },
+  "content": {
+    "participants": [
+      { "entityId": "eli", "display": "Eli" },
+      { "entityId": "theo", "display": "Theo" }
+    ],
+    "messages": [
+      { "at": "2026-08-07T18:12:00+07:00", "from": "eli", "text": "still at the office. if Rae asks, we got stuck on the deck review", "corrupt": false },
+      { "at": "2026-08-07T18:13:00+07:00", "from": "theo", "text": "got it. don't make me a liar if she actually calls me", "corrupt": false },
+      { "at": "2026-08-07T18:14:00+07:00", "from": "eli", "text": "she won't. i'll be back by 10", "corrupt": false },
+      { "at": "2026-08-07T22:41:00+07:00", "from": "theo", "text": "you good?", "corrupt": false },
+      { "at": "2026-08-07T22:55:00+07:00", "from": "eli", "text": "yeah. long night. thanks", "corrupt": false }
+    ]
+  }
+}

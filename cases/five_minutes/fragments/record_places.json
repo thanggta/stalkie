@@ -1,0 +1,21 @@
+{
+  "id": "record_places",
+  "type": "record",
+  "label": "Places — recent",
+  "damage": { "profile": "chroma-bleed", "intensity": 0.4, "seed": 2204 },
+  "hiddenUntil": {
+    "all": [
+      { "carved": "thread_sable" },
+      { "carved": "calls_recent" }
+    ]
+  },
+  "content": {
+    "kind": "location",
+    "columns": ["at", "label", "durationMin"],
+    "rows": [
+      ["2026-08-07T18:21:00+07:00", "River Court — east wing", 214],
+      ["2026-08-07T22:12:00+07:00", "home", null],
+      ["2026-08-11T13:45:00+07:00", "River Court — east wing", 12]
+    ]
+  }
+}

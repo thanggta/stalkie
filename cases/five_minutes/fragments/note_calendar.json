@@ -1,0 +1,12 @@
+{
+  "id": "note_calendar",
+  "type": "note",
+  "label": "Notes — dates",
+  "damage": { "profile": "overwrite", "intensity": 0.3, "seed": 2205 },
+  "hiddenUntil": { "carved": "thread_ivy" },
+  "content": {
+    "title": "keep straight",
+    "body": "Sat 16 — Ivy bday brunch (Sable coordinating cake). NOT a Rae thing.\nThu nights — S. only. Theo cover if needed.\nSun — mom lunch with Rae. act normal.",
+    "modifiedAt": "2026-08-09T23:04:00+07:00"
+  }
+}
