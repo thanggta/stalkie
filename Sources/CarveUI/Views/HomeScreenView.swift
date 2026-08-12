@@ -22,13 +22,6 @@ struct HomeScreenView: View {
       .ignoresSafeArea()
 
       VStack(alignment: .leading, spacing: theme.spacing.lg) {
-        if session.caseFile.id == "missing" {
-          Text("Case bundle not found")
-            .font(theme.fonts.headlineFont)
-            .foregroundStyle(theme.palette.destructive.color)
-            .padding(theme.spacing.lg)
-        }
-
         Text(session.caseFile.title)
           .font(theme.fonts.titleFont)
           .foregroundStyle(theme.palette.iconLabel.color)

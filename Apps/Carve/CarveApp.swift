@@ -6,31 +6,43 @@ import CarveUI
 
 @main
 struct CarveApp: App {
-  @StateObject private var session: GameSession
+  /// Owns the load outcome. On success, holds the `GameSession` the UI observes
+  /// via `environmentObject` (so session mutations still publish correctly).
+  @StateObject private var bootstrap: AppBootstrap
 
   init() {
-    let caseFile: CaseFile
-    if let dir = CaseBundleLoader.resolveCaseDirectory(id: "five_minutes"),
-      let loaded = try? CaseBundleLoader.load(directory: dir)
-    {
-      caseFile = loaded
-    } else {
-      caseFile = CaseFile(
-        schemaVersion: 1,
-        id: "missing",
-        title: "Missing case",
-        sectorMap: [],
-        questions: [],
-        fragments: [:])
-    }
-    _session = StateObject(wrappedValue: GameSession(caseFile: caseFile))
+    _bootstrap = StateObject(wrappedValue: AppBootstrap(caseId: "five_minutes"))
   }
 
   var body: some Scene {
     WindowGroup {
-      RootPhoneView()
-        .environmentObject(session)
-        .environment(\.carveTheme, session.theme)
+      if let session = bootstrap.session {
+        RootPhoneView()
+          .environmentObject(session)
+          .environment(\.carveTheme, session.theme)
+      } else {
+        CaseLoadFailureView(message: bootstrap.failureMessage)
+      }
+    }
+  }
+}
+
+/// Loads the case once at launch. Failures stay failures — no empty fake case.
+public final class AppBootstrap: ObservableObject {
+  public let session: GameSession?
+  public let failureMessage: String
+
+  public init(caseId: String) {
+    do {
+      guard let dir = CaseBundleLoader.resolveCaseDirectory(id: caseId) else {
+        throw CaseBundleLoaderError.missingManifest("Cases/\(caseId)/case.json (not in bundle or cwd)")
+      }
+      let caseFile = try CaseBundleLoader.load(directory: dir)
+      self.session = GameSession(caseFile: caseFile)
+      self.failureMessage = ""
+    } catch {
+      self.session = nil
+      self.failureMessage = String(describing: error)
     }
   }
 }
