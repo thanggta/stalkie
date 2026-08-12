@@ -9,18 +9,50 @@ struct ThreadDetailView: View {
 
   var body: some View {
     if let content = try? FragmentContent.thread(fragment) {
-      ScrollView {
-        LazyVStack(alignment: .leading, spacing: theme.bubble.groupSpacing) {
-          ForEach(content.messages) { message in
-            MessageBubble(
-              message: message,
-              isOutgoing: message.from == "eli",
-              timeLabel: formatTime(message.at)
-            )
+      VStack(spacing: 0) {
+        ScrollView {
+          LazyVStack(alignment: .leading, spacing: theme.bubble.groupSpacing) {
+            ForEach(content.messages) { message in
+              MessageBubble(
+                message: message,
+                isOutgoing: message.from == "eli",
+                timeLabel: formatTime(message.at)
+              )
+            }
           }
+          .padding(.horizontal, theme.spacing.md)
+          .padding(.vertical, theme.spacing.md)
+        }
+
+        // Composer chrome — read-only (you have his phone; you don't text as him).
+        HStack(spacing: theme.spacing.sm) {
+          Text("iMessage")
+            .font(theme.fonts.subheadlineFont)
+            .foregroundStyle(theme.palette.tertiaryText.color)
+            .padding(.horizontal, theme.spacing.md)
+            .padding(.vertical, theme.spacing.sm)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+              theme.palette.groupedBackground.color,
+              in: Capsule()
+            )
+          Circle()
+            .stroke(theme.palette.accent.color, lineWidth: 2)
+            .frame(width: 28, height: 28)
+            .overlay(
+              Text("↑")
+                .font(theme.fonts.captionFont)
+                .foregroundStyle(theme.palette.accent.color)
+            )
         }
         .padding(.horizontal, theme.spacing.md)
-        .padding(.vertical, theme.spacing.md)
+        .padding(.vertical, theme.spacing.sm)
+        .background(theme.palette.elevatedBackground.color)
+        .overlay(alignment: .top) {
+          Rectangle()
+            .fill(theme.palette.separator.color)
+            .frame(height: 0.33)
+        }
       }
       .background(theme.palette.screenBackground.color)
     } else {

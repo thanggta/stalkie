@@ -1,6 +1,5 @@
 // Sources/CarveUI/Views/HomeScreenView.swift
-// Unlocked home screen. Structure mirrors a real phone: wallpaper, icon page,
-// page dots, frosted dock — not a titled game lobby.
+// Unlocked home screen. Dense icon page + dock — not a sparse game lobby.
 
 import SwiftUI
 import CarveShell
@@ -10,43 +9,39 @@ struct HomeScreenView: View {
   @Environment(\.carveTheme) private var theme
   @Binding var path: [PhoneRoute]
 
-  /// Apps that live on the home page (not the dock).
+  /// Four-up dock (classic phone layout).
+  private static let dockApps: [PhoneAppId] = [.phone, .messages, .photos, .browser]
+
+  /// Everything else on the page, including Decide (no narrative banner over the dock).
   private var pageApps: [PhoneAppId] {
     PhoneAppId.allCases.filter { !Self.dockApps.contains($0) }
   }
-
-  /// Classic four-up dock.
-  private static let dockApps: [PhoneAppId] = [.phone, .messages, .photos, .notes]
 
   var body: some View {
     ZStack {
       wallpaper
         .ignoresSafeArea()
         .onLongPressGesture(minimumDuration: 0.7) {
-          // Theme retreat lives here, not in the status bar.
           cycleTheme()
         }
 
       VStack(spacing: 0) {
-        // Leave room for the overlaid status chrome.
-        Spacer()
-          .frame(height: theme.statusBar.height)
+        Spacer().frame(height: theme.statusBar.height)
 
         iconPage
-          .padding(.top, theme.spacing.lg)
+          .padding(.top, theme.spacing.md)
 
-        Spacer(minLength: theme.spacing.md)
+        Spacer(minLength: theme.spacing.sm)
 
-        pageDots
-          .padding(.bottom, theme.spacing.sm)
-
-        decidePill
-          .padding(.horizontal, theme.spacing.lg)
+        // Single page for now — one lit dot only (two dots looked fake with one page).
+        Circle()
+          .fill(theme.palette.badgeText.color.opacity(0.9))
+          .frame(width: 7, height: 7)
           .padding(.bottom, theme.spacing.sm)
 
         dock
           .padding(.horizontal, theme.spacing.md)
-          .padding(.bottom, theme.spacing.md)
+          .padding(.bottom, theme.spacing.lg)
       }
     }
   }
@@ -55,33 +50,33 @@ struct HomeScreenView: View {
 
   private var wallpaper: some View {
     ZStack {
-      // Layered gradients — reads photographic, not a flat fill.
       LinearGradient(
         colors: [
           theme.palette.homeWallpaperTop.color,
-          theme.palette.accent.color.opacity(0.55),
+          theme.palette.accent.color.opacity(0.45),
           theme.palette.homeWallpaperBottom.color,
+          theme.palette.iconPhotos.color.opacity(0.55),
         ],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
       )
       RadialGradient(
         colors: [
-          theme.palette.badgeText.color.opacity(0.18),
+          theme.palette.badgeText.color.opacity(0.22),
           theme.palette.badgeText.color.opacity(0),
         ],
         center: .topTrailing,
-        startRadius: 20,
-        endRadius: 320
+        startRadius: 10,
+        endRadius: 340
       )
       RadialGradient(
         colors: [
-          theme.palette.iconPhotos.color.opacity(0.35),
-          theme.palette.iconPhotos.color.opacity(0),
+          theme.palette.iconPlaces.color.opacity(0.4),
+          theme.palette.iconPlaces.color.opacity(0),
         ],
-        center: UnitPoint(x: 0.15, y: 0.75),
-        startRadius: 10,
-        endRadius: 280
+        center: UnitPoint(x: 0.2, y: 0.55),
+        startRadius: 8,
+        endRadius: 260
       )
     }
   }
@@ -96,7 +91,7 @@ struct HomeScreenView: View {
         GridItem(.flexible(), spacing: theme.icon.gridSpacing),
         GridItem(.flexible(), spacing: theme.icon.gridSpacing),
       ],
-      spacing: theme.icon.gridSpacing + 8
+      spacing: theme.icon.gridSpacing + 10
     ) {
       ForEach(pageApps, id: \.self) { app in
         iconButton(app)
@@ -107,67 +102,27 @@ struct HomeScreenView: View {
 
   private func iconButton(_ app: PhoneAppId) -> some View {
     Button {
-      path.append(.app(app))
+      switch app {
+      case .decide:
+        path.append(session.isFiled ? .verdictResults : .verdict)
+      default:
+        path.append(.app(app))
+      }
     } label: {
       AppIconCell(
         appId: app,
-        badge: session.badgeCount(for: app),
-        pulse: session.badgeCount(for: app) > 0
+        badge: badge(for: app),
+        pulse: badge(for: app) > 0
       )
     }
     .buttonStyle(.plain)
   }
 
-  private var pageDots: some View {
-    HStack(spacing: theme.spacing.xs) {
-      Circle()
-        .fill(theme.palette.badgeText.color.opacity(0.95))
-        .frame(width: 7, height: 7)
-      Circle()
-        .fill(theme.palette.badgeText.color.opacity(0.28))
-        .frame(width: 7, height: 7)
+  private func badge(for app: PhoneAppId) -> Int {
+    if app == .decide {
+      return session.isFiled ? 0 : (session.allQuestionsAnswered ? 1 : 0)
     }
-  }
-
-  // MARK: - Decide (ending, not a resource bar)
-
-  private var decidePill: some View {
-    Button {
-      path.append(session.isFiled ? .verdictResults : .verdict)
-    } label: {
-      HStack(spacing: theme.spacing.sm) {
-        VStack(alignment: .leading, spacing: 2) {
-          Text(session.isFiled ? "What you decided" : "When you put the phone down")
-            .font(theme.fonts.subheadlineFont)
-            .fontWeight(.semibold)
-            .foregroundStyle(theme.palette.badgeText.color)
-          Text(
-            session.isFiled
-              ? "Read it again"
-              : (session.answeredCount == 0
-                ? "You will have decided what you believe."
-                : "\(session.answeredCount) of \(session.caseFile.questions.count) answered")
-          )
-          .font(theme.fonts.captionFont)
-          .foregroundStyle(theme.palette.badgeText.color.opacity(0.78))
-        }
-        Spacer(minLength: 0)
-        Text("›")
-          .font(theme.fonts.headlineFont)
-          .foregroundStyle(theme.palette.badgeText.color.opacity(0.7))
-      }
-      .padding(.horizontal, theme.spacing.md)
-      .padding(.vertical, theme.spacing.sm)
-      .background(
-        theme.palette.unlockBannerBackground.color.opacity(0.55),
-        in: RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
-          .stroke(theme.palette.badgeText.color.opacity(0.12), lineWidth: 0.5)
-      )
-    }
-    .buttonStyle(.plain)
+    return session.badgeCount(for: app)
   }
 
   // MARK: - Dock
@@ -181,17 +136,17 @@ struct HomeScreenView: View {
       }
     }
     .padding(.horizontal, theme.spacing.sm)
-    .padding(.vertical, theme.spacing.sm)
+    .padding(.vertical, theme.spacing.sm + 2)
     .background(
-      RoundedRectangle(cornerRadius: theme.radii.banner + 8, style: .continuous)
-        .fill(theme.palette.elevatedBackground.color.opacity(0.28))
+      RoundedRectangle(cornerRadius: theme.radii.banner + 10, style: .continuous)
+        .fill(theme.palette.elevatedBackground.color.opacity(0.32))
         .background(
-          RoundedRectangle(cornerRadius: theme.radii.banner + 8, style: .continuous)
-            .fill(theme.palette.badgeText.color.opacity(0.12))
+          RoundedRectangle(cornerRadius: theme.radii.banner + 10, style: .continuous)
+            .fill(theme.palette.badgeText.color.opacity(0.14))
         )
         .overlay(
-          RoundedRectangle(cornerRadius: theme.radii.banner + 8, style: .continuous)
-            .stroke(theme.palette.badgeText.color.opacity(0.22), lineWidth: 0.5)
+          RoundedRectangle(cornerRadius: theme.radii.banner + 10, style: .continuous)
+            .stroke(theme.palette.badgeText.color.opacity(0.28), lineWidth: 0.5)
         )
     )
   }
@@ -199,8 +154,7 @@ struct HomeScreenView: View {
   private func cycleTheme() {
     let all = Theme.allBuiltIn
     guard let idx = all.firstIndex(where: { $0.id == session.themeId }) else { return }
-    let next = all[(idx + 1) % all.count]
-    session.setTheme(next.id)
+    session.setTheme(all[(idx + 1) % all.count].id)
   }
 }
 
@@ -220,9 +174,9 @@ struct AppIconCell: View {
         AppGlyph(appId: appId)
           .frame(width: theme.icon.size, height: theme.icon.size)
           .shadow(
-            color: theme.palette.primaryText.color.opacity(0.28),
-            radius: 8,
-            y: 4
+            color: theme.palette.primaryText.color.opacity(0.3),
+            radius: 10,
+            y: 5
           )
           .scaleEffect(pulse && pulseOn ? 1.04 : 1.0)
           .animation(
@@ -247,7 +201,8 @@ struct AppIconCell: View {
         .font(theme.fonts.iconLabelFont)
         .foregroundStyle(theme.palette.iconLabel.color)
         .lineLimit(1)
-        .shadow(color: theme.palette.primaryText.color.opacity(0.35), radius: 1, y: 0.5)
+        .minimumScaleFactor(0.8)
+        .shadow(color: theme.palette.primaryText.color.opacity(0.4), radius: 1.5, y: 0.5)
     }
     .frame(maxWidth: .infinity)
     .onAppear { pulseOn = pulse }
@@ -276,16 +231,20 @@ struct AppGlyph: View {
     case .photos: return theme.palette.iconPhotos
     case .places: return theme.palette.iconPlaces
     case .board: return theme.palette.accent
+    case .decide: return theme.palette.destructive
+    case .calendar: return theme.palette.destructive
+    case .camera: return theme.palette.tertiaryText
+    case .browser: return theme.palette.accent
+    case .mail: return theme.palette.accent
+    case .settings: return theme.palette.secondaryText
+    case .music: return theme.palette.iconPhotos
     }
   }
 
-  /// Top-lit fill — the single biggest "this is a phone icon" cue.
   @ViewBuilder
   private var iconBackground: some View {
-    let top = base.color
-    let bottom = base.color.opacity(0.78)
     let gradient = LinearGradient(
-      colors: [top, bottom],
+      colors: [base.color, base.color.opacity(0.78)],
       startPoint: .top,
       endPoint: .bottom
     )
@@ -309,9 +268,7 @@ struct AppGlyph: View {
     let mark = theme.palette.badgeText.color
     switch appId {
     case .messages:
-      BubbleGlyph()
-        .fill(mark)
-        .padding(theme.spacing.md + 2)
+      BubbleGlyph().fill(mark).padding(theme.spacing.md + 2)
     case .notes:
       ZStack {
         RoundedRectangle(cornerRadius: theme.radii.chip * 0.4, style: .continuous)
@@ -319,45 +276,47 @@ struct AppGlyph: View {
           .padding(theme.spacing.md)
         VStack(spacing: 3) {
           ForEach(0..<3, id: \.self) { _ in
-            Capsule()
-              .fill(base.color.opacity(0.55))
-              .frame(height: 2)
+            Capsule().fill(base.color.opacity(0.55)).frame(height: 2)
           }
         }
         .padding(.horizontal, theme.spacing.lg + 2)
       }
     case .phone:
-      PhoneHandsetGlyph()
-        .fill(mark)
-        .padding(theme.spacing.lg)
-        .rotationEffect(.degrees(-40))
+      PhoneHandsetGlyph().fill(mark).padding(theme.spacing.md + 2)
     case .photos:
-      // Flower-like original mark — not Apple's Photos asset.
-      PhotoFlowerGlyph()
-        .fill(mark)
-        .padding(theme.spacing.md + 1)
+      PhotoFlowerGlyph().fill(mark).padding(theme.spacing.md + 1)
     case .places:
-      PinGlyph()
-        .fill(mark)
-        .padding(theme.spacing.md + 2)
+      PinGlyph().fill(mark).padding(theme.spacing.md + 2)
     case .board:
-      LinkGlyph()
-        .stroke(mark, lineWidth: 2.2)
-        .padding(theme.spacing.md)
+      LinkGlyph().stroke(mark, lineWidth: 2.2).padding(theme.spacing.md)
+    case .decide:
+      // Scale / balance — filing a verdict, not a game controller.
+      DecideGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md + 2)
+    case .calendar:
+      CalendarGlyph(mark: mark, ink: base.color)
+    case .camera:
+      CameraGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md)
+    case .browser:
+      CompassGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md)
+    case .mail:
+      EnvelopeGlyph().stroke(mark, lineWidth: 2).padding(theme.spacing.md)
+    case .settings:
+      GearGlyph().stroke(mark, lineWidth: 1.8).padding(theme.spacing.md + 1)
+    case .music:
+      MusicGlyph().fill(mark).padding(theme.spacing.md + 2)
     }
   }
 }
+
+// MARK: Shape library
 
 private struct BubbleGlyph: Shape {
   func path(in rect: CGRect) -> Path {
     var p = Path()
     let r = min(rect.width, rect.height) * 0.22
     let body = CGRect(
-      x: rect.minX + rect.width * 0.08,
-      y: rect.minY + rect.height * 0.08,
-      width: rect.width * 0.84,
-      height: rect.height * 0.58
-    )
+      x: rect.minX + rect.width * 0.08, y: rect.minY + rect.height * 0.08,
+      width: rect.width * 0.84, height: rect.height * 0.58)
     p.addRoundedRect(in: body, cornerSize: CGSize(width: r, height: r))
     p.move(to: CGPoint(x: rect.midX - rect.width * 0.08, y: body.maxY))
     p.addLine(to: CGPoint(x: rect.midX - rect.width * 0.18, y: rect.maxY - rect.height * 0.08))
@@ -367,34 +326,28 @@ private struct BubbleGlyph: Shape {
   }
 }
 
-/// Classic handset silhouette — original geometry, not Apple's phone glyph.
 private struct PhoneHandsetGlyph: Shape {
   func path(in rect: CGRect) -> Path {
     var p = Path()
     let w = rect.width
     let h = rect.height
-    // Upper ear cup
     p.addRoundedRect(
-      in: CGRect(x: rect.minX + w * 0.18, y: rect.minY + h * 0.12,
-                 width: w * 0.34, height: h * 0.28),
+      in: CGRect(x: rect.minX + w * 0.12, y: rect.minY + h * 0.18,
+                 width: w * 0.32, height: h * 0.28),
       cornerSize: CGSize(width: w * 0.12, height: w * 0.12))
-    // Lower mouth cup
     p.addRoundedRect(
-      in: CGRect(x: rect.minX + w * 0.48, y: rect.minY + h * 0.58,
-                 width: w * 0.34, height: h * 0.28),
+      in: CGRect(x: rect.minX + w * 0.56, y: rect.minY + h * 0.54,
+                 width: w * 0.32, height: h * 0.28),
       cornerSize: CGSize(width: w * 0.12, height: w * 0.12))
-    // Connecting bar
-    var bar = Path()
-    bar.move(to: CGPoint(x: rect.minX + w * 0.42, y: rect.minY + h * 0.28))
-    bar.addQuadCurve(
-      to: CGPoint(x: rect.minX + w * 0.58, y: rect.minY + h * 0.68),
-      control: CGPoint(x: rect.minX + w * 0.72, y: rect.minY + h * 0.48))
-    bar.addLine(to: CGPoint(x: rect.minX + w * 0.48, y: rect.minY + h * 0.72))
-    bar.addQuadCurve(
-      to: CGPoint(x: rect.minX + w * 0.32, y: rect.minY + h * 0.32),
-      control: CGPoint(x: rect.minX + w * 0.58, y: rect.minY + h * 0.52))
-    bar.closeSubpath()
-    p.addPath(bar)
+    p.move(to: CGPoint(x: rect.minX + w * 0.38, y: rect.minY + h * 0.32))
+    p.addQuadCurve(
+      to: CGPoint(x: rect.minX + w * 0.62, y: rect.minY + h * 0.64),
+      control: CGPoint(x: rect.minX + w * 0.78, y: rect.minY + h * 0.42))
+    p.addLine(to: CGPoint(x: rect.minX + w * 0.52, y: rect.minY + h * 0.7))
+    p.addQuadCurve(
+      to: CGPoint(x: rect.minX + w * 0.28, y: rect.minY + h * 0.38),
+      control: CGPoint(x: rect.minX + w * 0.62, y: rect.minY + h * 0.5))
+    p.closeSubpath()
     return p
   }
 }
@@ -403,16 +356,13 @@ private struct PinGlyph: Shape {
   func path(in rect: CGRect) -> Path {
     var p = Path()
     let head = CGRect(
-      x: rect.midX - rect.width * 0.22,
-      y: rect.minY + rect.height * 0.08,
-      width: rect.width * 0.44,
-      height: rect.height * 0.44
-    )
+      x: rect.midX - rect.width * 0.22, y: rect.minY + rect.height * 0.08,
+      width: rect.width * 0.44, height: rect.height * 0.44)
     p.addEllipse(in: head)
-    p.move(to: CGPoint(x: rect.midX, y: head.midY + head.height * 0.2))
-    p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.08))
-    p.addLine(to: CGPoint(x: rect.midX - rect.width * 0.08, y: rect.maxY - rect.height * 0.2))
-    p.addLine(to: CGPoint(x: rect.midX + rect.width * 0.08, y: rect.maxY - rect.height * 0.2))
+    p.move(to: CGPoint(x: rect.midX, y: head.midY + head.height * 0.25))
+    p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.06))
+    p.addLine(to: CGPoint(x: rect.midX - rect.width * 0.1, y: rect.maxY - rect.height * 0.22))
+    p.addLine(to: CGPoint(x: rect.midX + rect.width * 0.1, y: rect.maxY - rect.height * 0.22))
     p.closeSubpath()
     return p
   }
@@ -427,11 +377,13 @@ private struct PhotoFlowerGlyph: Shape {
       let angle = Double(i) * (.pi / 3) - .pi / 2
       let cx = c.x + cos(angle) * petalR * 0.85
       let cy = c.y + sin(angle) * petalR * 0.85
-      p.addEllipse(in: CGRect(x: cx - petalR * 0.55, y: cy - petalR * 0.55,
-                              width: petalR * 1.1, height: petalR * 1.1))
+      p.addEllipse(in: CGRect(
+        x: cx - petalR * 0.55, y: cy - petalR * 0.55,
+        width: petalR * 1.1, height: petalR * 1.1))
     }
-    p.addEllipse(in: CGRect(x: c.x - petalR * 0.35, y: c.y - petalR * 0.35,
-                            width: petalR * 0.7, height: petalR * 0.7))
+    p.addEllipse(in: CGRect(
+      x: c.x - petalR * 0.35, y: c.y - petalR * 0.35,
+      width: petalR * 0.7, height: petalR * 0.7))
     return p
   }
 }
@@ -450,18 +402,130 @@ private struct LinkGlyph: Shape {
   }
 }
 
+private struct DecideGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    // Simple balance beam
+    p.move(to: CGPoint(x: rect.minX + rect.width * 0.15, y: rect.midY))
+    p.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.15, y: rect.midY))
+    p.move(to: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.2))
+    p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.15))
+    p.addEllipse(in: CGRect(
+      x: rect.minX + rect.width * 0.12, y: rect.midY - rect.height * 0.12,
+      width: rect.width * 0.18, height: rect.height * 0.18))
+    p.addEllipse(in: CGRect(
+      x: rect.maxX - rect.width * 0.3, y: rect.midY - rect.height * 0.12,
+      width: rect.width * 0.18, height: rect.height * 0.18))
+    return p
+  }
+}
+
+private struct CalendarGlyph: View {
+  @Environment(\.carveTheme) private var theme
+  let mark: Color
+  let ink: Color
+
+  var body: some View {
+    VStack(spacing: 0) {
+      Rectangle()
+        .fill(mark.opacity(0.95))
+        .frame(height: 10)
+      Text("12")
+        .font(theme.fonts.headlineFont)
+        .fontWeight(.bold)
+        .foregroundStyle(ink)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(mark.opacity(0.95))
+    }
+    .clipShape(RoundedRectangle(cornerRadius: theme.radii.chip * 0.35, style: .continuous))
+    .padding(theme.spacing.md)
+  }
+}
+
+private struct CameraGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    let body = rect.insetBy(dx: rect.width * 0.12, dy: rect.height * 0.22)
+    p.addRoundedRect(
+      in: body,
+      cornerSize: CGSize(width: body.width * 0.12, height: body.width * 0.12))
+    p.addEllipse(in: CGRect(
+      x: rect.midX - rect.width * 0.16, y: rect.midY - rect.height * 0.16,
+      width: rect.width * 0.32, height: rect.height * 0.32))
+    return p
+  }
+}
+
+private struct CompassGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    p.addEllipse(in: rect.insetBy(dx: rect.width * 0.12, dy: rect.height * 0.12))
+    p.move(to: CGPoint(x: rect.midX, y: rect.minY + rect.height * 0.22))
+    p.addLine(to: CGPoint(x: rect.midX + rect.width * 0.12, y: rect.midY))
+    p.addLine(to: CGPoint(x: rect.midX, y: rect.maxY - rect.height * 0.22))
+    p.addLine(to: CGPoint(x: rect.midX - rect.width * 0.12, y: rect.midY))
+    p.closeSubpath()
+    return p
+  }
+}
+
+private struct EnvelopeGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    let r = rect.insetBy(dx: rect.width * 0.12, dy: rect.height * 0.22)
+    p.addRoundedRect(in: r, cornerSize: CGSize(width: r.width * 0.08, height: r.width * 0.08))
+    p.move(to: CGPoint(x: r.minX, y: r.minY + 2))
+    p.addLine(to: CGPoint(x: r.midX, y: r.midY + 2))
+    p.addLine(to: CGPoint(x: r.maxX, y: r.minY + 2))
+    return p
+  }
+}
+
+private struct GearGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    let c = CGPoint(x: rect.midX, y: rect.midY)
+    let outer = min(rect.width, rect.height) * 0.38
+    let inner = outer * 0.55
+    for i in 0..<8 {
+      let a0 = Double(i) * (.pi / 4) - .pi / 8
+      let a1 = a0 + .pi / 8
+      p.addArc(center: c, radius: outer, startAngle: .radians(a0), endAngle: .radians(a1), clockwise: false)
+      p.addArc(center: c, radius: inner, startAngle: .radians(a1), endAngle: .radians(a0 + .pi / 4), clockwise: false)
+    }
+    p.closeSubpath()
+    p.addEllipse(in: CGRect(x: c.x - outer * 0.28, y: c.y - outer * 0.28,
+                            width: outer * 0.56, height: outer * 0.56))
+    return p
+  }
+}
+
+private struct MusicGlyph: Shape {
+  func path(in rect: CGRect) -> Path {
+    var p = Path()
+    p.addEllipse(in: CGRect(
+      x: rect.minX + rect.width * 0.18, y: rect.maxY - rect.height * 0.42,
+      width: rect.width * 0.28, height: rect.height * 0.28))
+    p.addEllipse(in: CGRect(
+      x: rect.minX + rect.width * 0.52, y: rect.maxY - rect.height * 0.36,
+      width: rect.width * 0.28, height: rect.height * 0.28))
+    p.move(to: CGPoint(x: rect.minX + rect.width * 0.44, y: rect.maxY - rect.height * 0.28))
+    p.addLine(to: CGPoint(x: rect.minX + rect.width * 0.44, y: rect.minY + rect.height * 0.18))
+    p.addLine(to: CGPoint(x: rect.minX + rect.width * 0.78, y: rect.minY + rect.height * 0.12))
+    p.addLine(to: CGPoint(x: rect.minX + rect.width * 0.78, y: rect.maxY - rect.height * 0.22))
+    return p
+  }
+}
+
 struct HexagonShape: Shape {
   func path(in rect: CGRect) -> Path {
     var p = Path()
     let w = rect.width
     let h = rect.height
     let points: [CGPoint] = [
-      CGPoint(x: w * 0.25, y: 0),
-      CGPoint(x: w * 0.75, y: 0),
-      CGPoint(x: w, y: h * 0.5),
-      CGPoint(x: w * 0.75, y: h),
-      CGPoint(x: w * 0.25, y: h),
-      CGPoint(x: 0, y: h * 0.5),
+      CGPoint(x: w * 0.25, y: 0), CGPoint(x: w * 0.75, y: 0),
+      CGPoint(x: w, y: h * 0.5), CGPoint(x: w * 0.75, y: h),
+      CGPoint(x: w * 0.25, y: h), CGPoint(x: 0, y: h * 0.5),
     ]
     p.move(to: CGPoint(x: rect.minX + points[0].x, y: rect.minY + points[0].y))
     for pt in points.dropFirst() {

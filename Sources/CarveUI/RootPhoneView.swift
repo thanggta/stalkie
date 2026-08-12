@@ -102,18 +102,19 @@ struct UnlockBannerStack: View {
         session.dismissNotice(notice.fragmentId)
         path = [.app(notice.appId)]
       } label: {
-        // iOS-style notification banner: frosted card, app glyph, two lines.
+        // Compact floating notification — must not bury the app nav bar.
         HStack(spacing: theme.spacing.sm) {
           AppGlyph(appId: notice.appId)
-            .frame(width: 32, height: 32)
+            .frame(width: 28, height: 28)
             .clipShape(
-              RoundedRectangle(cornerRadius: theme.radii.appIcon * 0.45, style: .continuous)
+              RoundedRectangle(cornerRadius: theme.radii.appIcon * 0.4, style: .continuous)
             )
 
           VStack(alignment: .leading, spacing: 1) {
-            Text(notice.appId.title.uppercased())
+            Text(notice.appId.title)
               .font(theme.fonts.captionFont)
-              .foregroundStyle(theme.palette.unlockBannerText.color.opacity(0.7))
+              .fontWeight(.semibold)
+              .foregroundStyle(theme.palette.unlockBannerText.color.opacity(0.75))
             Text(notice.label)
               .font(theme.fonts.footnoteFont)
               .fontWeight(.semibold)
@@ -123,14 +124,14 @@ struct UnlockBannerStack: View {
           Spacer(minLength: 0)
         }
         .padding(.horizontal, theme.spacing.sm)
-        .padding(.vertical, theme.spacing.sm)
+        .padding(.vertical, theme.spacing.xs + 2)
         .background(
-          theme.palette.unlockBannerBackground.color.opacity(0.92),
+          theme.palette.unlockBannerBackground.color.opacity(0.94),
           in: RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
         )
         .overlay(
           RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
-            .stroke(theme.palette.badgeText.color.opacity(0.08), lineWidth: 0.5)
+            .stroke(theme.palette.badgeText.color.opacity(0.1), lineWidth: 0.5)
         )
         .padding(.horizontal, theme.spacing.md)
         .padding(.top, theme.spacing.xs)
@@ -138,6 +139,12 @@ struct UnlockBannerStack: View {
       .buttonStyle(.plain)
       .transition(.move(edge: .top).combined(with: .opacity))
       .animation(.spring(response: 0.35, dampingFraction: 0.85), value: notice.fragmentId)
+      .onAppear {
+        let id = notice.fragmentId
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+          session.dismissNotice(id)
+        }
+      }
     }
   }
 }

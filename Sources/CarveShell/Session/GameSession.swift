@@ -23,15 +23,34 @@ public struct UnlockNotice: Equatable, Sendable, Identifiable {
 /// edit rather than a rewrite — that is DR-12's only retreat path. Add the case here, the label
 /// there.
 public enum PhoneAppId: String, CaseIterable, Sendable, Equatable {
+  // Case content apps
   case messages
   case notes
   case phone
   case photos
   case places
   case board
+  case decide
+  // Shell fillers — real phones are dense; these open empty diegetic shells.
+  case calendar
+  case camera
+  case browser
+  case mail
+  case settings
+  case music
 
   public var title: String {
     PhoneAppLabels.title(for: self)
+  }
+
+  /// Apps that carry case fragments / game systems.
+  public var isGameApp: Bool {
+    switch self {
+    case .messages, .notes, .phone, .photos, .places, .board, .decide:
+      return true
+    case .calendar, .camera, .browser, .mail, .settings, .music:
+      return false
+    }
   }
 
   public static func hosting(type: FragmentType, recordKind: String? = nil) -> PhoneAppId {
@@ -55,8 +74,15 @@ public enum PhoneAppLabels {
     case .notes: return "Notes"
     case .phone: return "Phone"
     case .photos: return "Photos"
-    case .places: return "Places"
+    case .places: return "Maps"
     case .board: return "Links"
+    case .decide: return "Decide"
+    case .calendar: return "Calendar"
+    case .camera: return "Camera"
+    case .browser: return "Safari"
+    case .mail: return "Mail"
+    case .settings: return "Settings"
+    case .music: return "Music"
     }
   }
 }

@@ -34,6 +34,11 @@ struct AppContainerView: View {
           RecordListView(appId: .places, path: $path)
         case .board:
           LinkBoardView()
+        case .decide:
+          // Routed at home; keep a safe fallback.
+          EmptyShellAppView(appId: appId)
+        case .calendar, .camera, .browser, .mail, .settings, .music:
+          EmptyShellAppView(appId: appId)
         }
       }
     }
@@ -84,6 +89,26 @@ struct AppNavBar: View {
   }
 }
 
+struct EmptyShellAppView: View {
+  @Environment(\.carveTheme) private var theme
+  let appId: PhoneAppId
+
+  var body: some View {
+    VStack(spacing: theme.spacing.md) {
+      Spacer()
+      Text(appId.title)
+        .font(theme.fonts.titleFont)
+        .foregroundStyle(theme.palette.primaryText.color)
+      Text("Nothing here.")
+        .font(theme.fonts.bodyFont)
+        .foregroundStyle(theme.palette.secondaryText.color)
+      Spacer()
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(theme.palette.groupedBackground.color)
+  }
+}
+
 struct MessagesListView: View {
   @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
@@ -96,13 +121,21 @@ struct MessagesListView: View {
         Button {
           path.append(.fragment(item.id))
         } label: {
-          FragmentRow(item: item, subtitle: threadPreview(item))
+          MessagesThreadRow(item: item, preview: threadPreview(item))
         }
-        .listRowBackground(rowBackground(item))
+        .listRowInsets(EdgeInsets(
+          top: theme.spacing.sm,
+          leading: theme.spacing.md,
+          bottom: theme.spacing.sm,
+          trailing: theme.spacing.md
+        ))
+        .listRowBackground(theme.palette.elevatedBackground.color)
+        .listRowSeparatorTint(theme.palette.separator.color)
       }
     }
     .listStyle(.plain)
     .scrollContentBackground(.hidden)
+    .background(theme.palette.elevatedBackground.color)
   }
 
   private func threadPreview(_ item: VisibleFragmentItem) -> String {
@@ -113,11 +146,81 @@ struct MessagesListView: View {
     }
     return item.fragment.label
   }
+}
 
-  private func rowBackground(_ item: VisibleFragmentItem) -> Color {
-    item.isUnreadUnlock
-      ? theme.palette.unlockBannerBackground.color.opacity(0.12)
-      : theme.palette.elevatedBackground.color
+/// iMessage-style conversation row: avatar, name, preview, time — no chevron.
+struct MessagesThreadRow: View {
+  @Environment(\.carveTheme) private var theme
+  let item: VisibleFragmentItem
+  let preview: String
+
+  var body: some View {
+    HStack(alignment: .top, spacing: theme.spacing.md) {
+      // Contact monogram — original, not a stock asset.
+      ZStack {
+        Circle()
+          .fill(theme.palette.groupedBackground.color)
+        Text(monogram)
+          .font(theme.fonts.headlineFont)
+          .fontWeight(.semibold)
+          .foregroundStyle(theme.palette.secondaryText.color)
+      }
+      .frame(width: 48, height: 48)
+
+      VStack(alignment: .leading, spacing: 3) {
+        HStack(alignment: .firstTextBaseline) {
+          Text(rowTitle)
+            .font(theme.fonts.headlineFont)
+            .fontWeight(.semibold)
+            .foregroundStyle(theme.palette.primaryText.color)
+            .lineLimit(1)
+          Spacer(minLength: theme.spacing.sm)
+          Text(timeLabel)
+            .font(theme.fonts.footnoteFont)
+            .foregroundStyle(theme.palette.tertiaryText.color)
+        }
+        HStack(spacing: theme.spacing.xs) {
+          Text(preview)
+            .font(theme.fonts.subheadlineFont)
+            .foregroundStyle(theme.palette.secondaryText.color)
+            .lineLimit(2)
+          if item.isUnreadUnlock {
+            Circle()
+              .fill(theme.palette.badge.color)
+              .frame(width: 10, height: 10)
+          }
+        }
+      }
+    }
+    .padding(.vertical, theme.spacing.xxs)
+  }
+
+  private var rowTitle: String {
+    if let t = try? FragmentContent.thread(item.fragment) {
+      return t.counterpartyDisplay
+    }
+    return item.fragment.label
+  }
+
+  private var monogram: String {
+    let name = rowTitle
+    let parts = name.split(separator: " ")
+    if let first = parts.first?.first {
+      return String(first).uppercased()
+    }
+    return "?"
+  }
+
+  private var timeLabel: String {
+    guard let content = try? FragmentContent.thread(item.fragment),
+      let last = content.messages.last
+    else { return "" }
+    let parser = ISO8601DateFormatter()
+    parser.formatOptions = [.withInternetDateTime]
+    guard let date = parser.date(from: last.at) else { return "" }
+    let f = DateFormatter()
+    f.dateFormat = "h:mm a"
+    return f.string(from: date)
   }
 }
 
