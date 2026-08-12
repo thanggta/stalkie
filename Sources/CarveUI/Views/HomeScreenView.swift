@@ -1,5 +1,6 @@
 // Sources/CarveUI/Views/HomeScreenView.swift
-// SpringBoard-fidelity home. Layout math lives in SpringBoardLayout (tested).
+// SpringBoard-fidelity home. Bottom chrome (dots + dock + indicator) is
+// pinned; page rows are capped so the home indicator is never clipped.
 
 import SwiftUI
 #if canImport(UIKit)
@@ -16,7 +17,6 @@ struct HomeScreenView: View {
 
   private static let dockApps: [PhoneAppId] = [.phone, .messages, .photos, .browser]
 
-  /// Fill a dense first page (6 rows × 4) so mid-screen is not a lobby void.
   private static let pageOrder: [PhoneAppId] = [
     .facetime, .calendar, .photos, .camera,
     .mail, .clock, .weather, .notes,
@@ -27,7 +27,7 @@ struct HomeScreenView: View {
     .decide,
   ]
 
-  private var pageApps: [PhoneAppId] {
+  private func pageApps(maxIcons: Int) -> [PhoneAppId] {
     var seen = Set(Self.dockApps)
     var out: [PhoneAppId] = []
     for app in Self.pageOrder where !seen.contains(app) {
@@ -37,8 +37,7 @@ struct HomeScreenView: View {
     for app in PhoneAppId.allCases where !seen.contains(app) {
       out.append(app)
     }
-    // Cap at 24 (6×4) so the first page stays one screen with the widget.
-    return Array(out.prefix(24))
+    return Array(out.prefix(max(0, maxIcons)))
   }
 
   var body: some View {
@@ -46,30 +45,37 @@ struct HomeScreenView: View {
       let layout = SpringBoardLayout(
         screenWidth: geo.size.width,
         screenHeight: geo.size.height,
-        iconSize: theme.icon.size
+        iconSize: theme.icon.size,
+        labelSpacing: theme.icon.labelSpacing,
+        iconLabelHeight: theme.fonts.iconLabel + 2,
+        statusBandHeight: theme.statusBar.height + theme.spacing.xs
       )
+      let apps = pageApps(maxIcons: layout.maxPageIcons)
 
-      ZStack {
+      ZStack(alignment: .bottom) {
         wallpaper
           .ignoresSafeArea()
           .onLongPressGesture(minimumDuration: 0.7) {
             cycleTheme()
           }
 
+        // Page content sits above a reserved bottom-chrome band so the
+        // home-indicator Capsule is never pushed off-screen.
         VStack(spacing: 0) {
           Color.clear
-            .frame(height: theme.statusBar.height + theme.spacing.xs)
+            .frame(height: layout.statusBandHeight)
 
           HomeMediumWidget(layout: layout)
             .padding(.horizontal, layout.sideMargin)
-            .padding(.bottom, theme.spacing.md)
+            .padding(.bottom, layout.widgetBottomPadding)
 
-          iconPage(layout: layout)
+          iconPage(layout: layout, apps: apps)
 
-          Spacer(minLength: theme.spacing.sm)
-
-          bottomChrome(layout: layout)
+          Spacer(minLength: 0)
         }
+        .padding(.bottom, layout.bottomChromeHeight)
+
+        bottomChrome(layout: layout)
       }
     }
     .ignoresSafeArea()
@@ -109,14 +115,14 @@ struct HomeScreenView: View {
 
   // MARK: - Icon page
 
-  private func iconPage(layout: SpringBoardLayout) -> some View {
+  private func iconPage(layout: SpringBoardLayout, apps: [PhoneAppId]) -> some View {
     let columns = Array(
       repeating: GridItem(.fixed(layout.iconSize), spacing: layout.columnGap, alignment: .top),
       count: 4
     )
 
     return LazyVGrid(columns: columns, alignment: .center, spacing: layout.rowGap) {
-      ForEach(pageApps, id: \.self) { app in
+      ForEach(apps, id: \.self) { app in
         iconButton(app, showLabel: true)
           .frame(width: layout.iconSize, alignment: .top)
       }
@@ -128,16 +134,21 @@ struct HomeScreenView: View {
   private func bottomChrome(layout: SpringBoardLayout) -> some View {
     VStack(spacing: 0) {
       pageDots(layout: layout)
-        .padding(.bottom, 10)
+        .padding(.bottom, layout.dotsBottomPadding)
 
       dock(layout: layout)
 
+      // In-fiction home indicator — must remain fully on-screen (system
+      // overlays are hidden by the shell).
       Capsule()
-        .fill(theme.palette.badgeText.color.opacity(0.35))
+        .fill(theme.palette.badgeText.color.opacity(0.72))
         .frame(width: layout.homeIndicatorWidth, height: layout.homeIndicatorHeight)
-        .padding(.top, 10)
-        .padding(.bottom, 8)
+        .padding(.top, layout.indicatorTopPadding)
+        .padding(.bottom, layout.indicatorBottomPadding)
+        .accessibilityIdentifier("home-indicator")
+        .accessibilityLabel("Home Indicator")
     }
+    .frame(maxWidth: .infinity)
   }
 
   private func pageDots(layout: SpringBoardLayout) -> some View {
@@ -188,7 +199,7 @@ struct HomeScreenView: View {
       }
     }
     .padding(.horizontal, layout.dockGlassBleed)
-    .padding(.vertical, 12)
+    .padding(.vertical, layout.dockVerticalPadding)
     .background {
       RoundedRectangle(cornerRadius: theme.radii.banner, style: .continuous)
         .fill(.ultraThinMaterial)
@@ -218,7 +229,7 @@ struct HomeMediumWidget: View {
           .fontWeight(.semibold)
           .foregroundStyle(theme.palette.badgeText.color)
         Text("72°")
-          .font(theme.fonts.font(52))
+          .font(theme.fonts.font(48))
           .fontWeight(.thin)
           .foregroundStyle(theme.palette.badgeText.color)
           .monospacedDigit()
@@ -230,7 +241,7 @@ struct HomeMediumWidget: View {
       Spacer(minLength: 0)
       VStack(alignment: .trailing, spacing: theme.spacing.sm) {
         Image(systemName: "cloud.sun.fill")
-          .font(theme.fonts.font(34))
+          .font(theme.fonts.font(32))
           .symbolRenderingMode(.palette)
           .foregroundStyle(
             theme.palette.iconNotes.color,
@@ -245,7 +256,7 @@ struct HomeMediumWidget: View {
     }
     .padding(.leading, theme.spacing.lg)
     .padding(.trailing, theme.spacing.lg - 2)
-    .padding(.vertical, theme.spacing.md)
+    .padding(.vertical, theme.spacing.md - 2)
     .frame(maxWidth: .infinity)
     .frame(height: layout.widgetHeight)
     .background {
