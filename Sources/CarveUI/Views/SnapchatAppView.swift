@@ -213,6 +213,7 @@ struct SnapchatAppView: View {
 }
 
 struct SnapchatThreadDetailView: View {
+  @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
   let fragment: Fragment
 
@@ -250,7 +251,7 @@ struct SnapchatThreadDetailView: View {
   }
 
   private func snapBubble(_ message: ThreadMessage, thread: ThreadContent) -> some View {
-    let outgoing = message.from == "eli"
+    let outgoing = thread.isFromOwner(message.from, ownerEntityId: session.caseFile.ownerEntityId)
     return HStack {
       if outgoing { Spacer(minLength: 40) }
       VStack(alignment: outgoing ? .trailing : .leading, spacing: 4) {

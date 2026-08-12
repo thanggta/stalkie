@@ -4,6 +4,7 @@ import CarveCore
 import CarveShell
 
 struct ThreadDetailView: View {
+  @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
   let fragment: Fragment
 
@@ -13,9 +14,12 @@ struct ThreadDetailView: View {
         ScrollView {
           LazyVStack(alignment: .leading, spacing: theme.bubble.groupSpacing) {
             ForEach(Array(content.messages.enumerated()), id: \.element.id) { index, message in
-              let isOutgoing = message.from == "eli"
+              let isOutgoing = content.isFromOwner(
+                message.from, ownerEntityId: session.caseFile.ownerEntityId)
               let prevOutgoing: Bool? = index > 0
-                ? content.messages[index - 1].from == "eli"
+                ? content.isFromOwner(
+                  content.messages[index - 1].from,
+                  ownerEntityId: session.caseFile.ownerEntityId)
                 : nil
               MessageBubble(
                 message: message,

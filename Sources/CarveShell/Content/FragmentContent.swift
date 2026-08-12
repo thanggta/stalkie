@@ -35,10 +35,26 @@ public struct ThreadContent: Equatable, Sendable {
 
   /// The counterparty relative to the device owner (first non-eli, else second).
   public var counterpartyDisplay: String {
-    if let other = participants.first(where: { $0.entityId != "eli" }) {
+    counterpartyDisplay(ownerEntityId: nil)
+  }
+
+  public func counterpartyDisplay(ownerEntityId: String?) -> String {
+    let owner = resolvedOwner(ownerEntityId)
+    if let owner,
+      let other = participants.first(where: { $0.entityId != owner })
+    {
       return other.display
     }
     return participants.dropFirst().first?.display ?? labelFallback
+  }
+
+  public func isFromOwner(_ from: String, ownerEntityId: String?) -> Bool {
+    from == resolvedOwner(ownerEntityId)
+  }
+
+  private func resolvedOwner(_ ownerEntityId: String?) -> String? {
+    if let ownerEntityId, !ownerEntityId.isEmpty { return ownerEntityId }
+    return participants.first?.entityId
   }
 
   private var labelFallback: String { participants.first?.display ?? "Thread" }

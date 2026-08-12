@@ -93,6 +93,7 @@ public func parseCase(
     schemaVersion: manifest.schemaVersion,
     id: manifest.id,
     title: manifest.title,
+    ownerEntityId: manifest.ownerEntityId,
     sectorMap: sectorMap,
     questions: questions,
     fragments: fragments)
@@ -135,6 +136,7 @@ private struct CaseManifest: Decodable {
   let schemaVersion: Int
   let id: String
   let title: String
+  let ownerEntityId: String?
   let sectorMap: [SectorWire]
   let verdict: VerdictWire
 }
