@@ -71,36 +71,40 @@ struct AppNavBar: View {
   let onBack: () -> Void
 
   var body: some View {
-    ZStack {
+    HStack(spacing: theme.spacing.xs) {
+      Button(action: onBack) {
+        HStack(spacing: 4) {
+          Image(systemName: "chevron.left")
+            .font(theme.fonts.bodyFont)
+            .fontWeight(.semibold)
+          Text(backLabel)
+            .font(theme.fonts.bodyFont)
+        }
+        .foregroundStyle(theme.palette.accent.color)
+        .frame(minWidth: 64, minHeight: 44, alignment: .leading)
+        .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .accessibilityLabel("\(backLabel)")
+      .accessibilityIdentifier(backLabel == "Home" ? "nav-home" : "nav-back")
+      .zIndex(1)
+
+      Spacer(minLength: theme.spacing.xs)
+
       Text(title)
         .font(theme.fonts.headlineFont)
         .fontWeight(.semibold)
         .foregroundStyle(theme.palette.primaryText.color)
         .lineLimit(1)
         .accessibilityAddTraits(.isHeader)
-        .padding(.horizontal, 88)
 
-      HStack(spacing: theme.spacing.xxs) {
-        Button(action: onBack) {
-          HStack(spacing: 3) {
-            Image(systemName: "chevron.left")
-              .font(theme.fonts.bodyFont)
-              .fontWeight(.semibold)
-            Text(backLabel)
-              .font(theme.fonts.bodyFont)
-          }
-          .foregroundStyle(theme.palette.accent.color)
-          .frame(minWidth: 64, minHeight: 44, alignment: .leading)
-          .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel("\(backLabel)")
-        .accessibilityIdentifier(backLabel == "Home" ? "nav-home" : "nav-back")
-        Spacer(minLength: 0)
-      }
+      Spacer(minLength: theme.spacing.xs)
+
+      Color.clear
+        .frame(width: 64, height: 44)
     }
     .padding(.horizontal, theme.spacing.md)
-    .padding(.vertical, theme.spacing.sm)
+    .padding(.vertical, theme.spacing.xs)
     .frame(minHeight: 44)
     .background(theme.palette.elevatedBackground.color.opacity(0.94))
     .overlay(alignment: .bottom) {

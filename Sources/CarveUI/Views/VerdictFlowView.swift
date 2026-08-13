@@ -4,57 +4,51 @@
 import SwiftUI
 import CarveCore
 import CarveShell
+import Accessibility
 
 struct VerdictFlowView: View {
   @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Binding var path: [PhoneRoute]
 
   @State private var phase: Phase = .intro
-  @State private var sectionIndex: Int = 0
+  @State private var questionIndex: Int = 0
   @State private var showIncomplete = false
 
   private enum Phase: Equatable {
     case intro
-    case sections
+    case questions
     case review
     case confirm
   }
 
-  /// Three thematic beats so fifteen questions are paced, not cut.
-  private var sections: [[VerdictQuestion]] {
-    let qs = session.caseFile.questions
-    guard !qs.isEmpty else { return [] }
-    let size = max(1, (qs.count + 2) / 3)
-    var result: [[VerdictQuestion]] = []
-    var i = 0
-    while i < qs.count {
-      let end = min(i + size, qs.count)
-      result.append(Array(qs[i..<end]))
-      i = end
-    }
-    return result
+  private var questions: [VerdictQuestion] {
+    session.caseFile.questions
   }
 
-  private var sectionTitles: [String] {
-    [
-      "What happened",
-      "Who they are to each other",
-      "What you are going to believe",
-    ]
+  private func partTitle(for index: Int) -> (part: Int, totalParts: Int, title: String) {
+    let total = max(questions.count, 1)
+    if index < total / 3 {
+      return (1, 3, "What happened")
+    } else if index < (total * 2) / 3 {
+      return (2, 3, "Who they are to each other")
+    } else {
+      return (3, 3, "What you are going to believe")
+    }
   }
 
   var body: some View {
     VStack(spacing: 0) {
-      AppNavBar(title: navTitle, backLabel: "Home") {
+      AppNavBar(title: navTitle, backLabel: backLabelForPhase) {
         goBack()
       }
 
       switch phase {
       case .intro:
         introBody
-      case .sections:
-        sectionBody
+      case .questions:
+        questionBody
       case .review:
         reviewBody
       case .confirm:
@@ -69,11 +63,15 @@ struct VerdictFlowView: View {
     }
   }
 
+  private var backLabelForPhase: String {
+    phase == .intro ? "Home" : "Back"
+  }
+
   private var navTitle: String {
     switch phase {
     case .intro: return "Decide"
-    case .sections:
-      return "\(session.answeredCount)/\(session.caseFile.questions.count)"
+    case .questions:
+      return "\(questionIndex + 1) of \(questions.count)"
     case .review: return "Review"
     case .confirm: return "File"
     }
@@ -83,7 +81,8 @@ struct VerdictFlowView: View {
     ScrollView {
       VStack(alignment: .leading, spacing: theme.spacing.lg) {
         Text("You are about to accuse someone.")
-          .font(theme.fonts.titleFont)
+          .font(theme.fonts.largeTitleFont)
+          .fontWeight(.bold)
           .foregroundStyle(theme.palette.primaryText.color)
 
         Text(
@@ -99,14 +98,13 @@ struct VerdictFlowView: View {
         .foregroundStyle(theme.palette.secondaryText.color)
 
         Button {
-          phase = .sections
-          sectionIndex = 0
+          phase = .questions
+          questionIndex = 0
         } label: {
           Text("I am ready to answer")
             .font(theme.fonts.headlineFont)
             .foregroundStyle(theme.palette.badgeText.color)
-            .frame(maxWidth: .infinity)
-            .padding(theme.spacing.md)
+            .frame(maxWidth: .infinity, minHeight: 50)
             .background(
               theme.palette.destructive.color,
               in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
@@ -120,84 +118,120 @@ struct VerdictFlowView: View {
     }
   }
 
-  private var sectionBody: some View {
-    let sections = self.sections
-    let safeIndex = min(sectionIndex, max(sections.count - 1, 0))
-    let questions = sections.isEmpty ? [] : sections[safeIndex]
-    let title = safeIndex < sectionTitles.count
-      ? sectionTitles[safeIndex]
-      : "Questions"
+  private var questionBody: some View {
+    guard !questions.isEmpty else {
+      return AnyView(
+        Text("No questions in case")
+          .font(theme.fonts.bodyFont)
+          .foregroundStyle(theme.palette.secondaryText.color)
+      )
+    }
 
-    return VStack(spacing: 0) {
-      VStack(alignment: .leading, spacing: theme.spacing.xs) {
-        Text("Part \(safeIndex + 1) of \(max(sections.count, 1))")
-          .font(theme.fonts.captionFont)
-          .foregroundStyle(theme.palette.tertiaryText.color)
-        Text(title)
-          .font(theme.fonts.headlineFont)
-          .foregroundStyle(theme.palette.primaryText.color)
-        progressBar
-      }
-      .padding(theme.spacing.md)
-      .frame(maxWidth: .infinity, alignment: .leading)
-      .background(theme.palette.elevatedBackground.color)
+    let safeIndex = min(max(questionIndex, 0), questions.count - 1)
+    let currentQuestion = questions[safeIndex]
+    let partInfo = partTitle(for: safeIndex)
 
-      ScrollView {
-        VStack(alignment: .leading, spacing: theme.spacing.lg) {
-          ForEach(questions, id: \.id) { question in
-            questionCard(question)
+    return AnyView(
+      VStack(spacing: 0) {
+        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+          HStack {
+            Text("Part \(partInfo.part) of \(partInfo.totalParts)")
+              .font(theme.fonts.captionFont)
+              .fontWeight(.semibold)
+              .foregroundStyle(theme.palette.tertiaryText.color)
+            Spacer()
+            Text("\(session.answeredCount)/\(questions.count) answered")
+              .font(theme.fonts.captionFont)
+              .foregroundStyle(theme.palette.secondaryText.color)
           }
+          Text(partInfo.title)
+            .font(theme.fonts.subheadlineFont)
+            .fontWeight(.semibold)
+            .foregroundStyle(theme.palette.primaryText.color)
+          progressBar
         }
         .padding(theme.spacing.md)
-      }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(theme.palette.elevatedBackground.color)
 
-      HStack(spacing: theme.spacing.md) {
-        if safeIndex > 0 {
-          Button("Back") {
-            sectionIndex = safeIndex - 1
+        ScrollView {
+          VStack(alignment: .leading, spacing: theme.spacing.lg) {
+            singleQuestionCard(currentQuestion)
           }
-          .font(theme.fonts.bodyFont)
-          .foregroundStyle(theme.palette.accent.color)
+          .padding(theme.spacing.md)
         }
-        Spacer()
-        Button(safeIndex + 1 >= sections.count ? "Review answers" : "Next part") {
-          if sectionComplete(questions) {
-            showIncomplete = false
-            if safeIndex + 1 >= sections.count {
-              phase = .review
-            } else {
-              sectionIndex = safeIndex + 1
+
+        if showIncomplete {
+          Text("Please select an answer before moving forward.")
+            .font(theme.fonts.footnoteFont)
+            .fontWeight(.semibold)
+            .foregroundStyle(theme.palette.destructive.color)
+            .padding(.horizontal, theme.spacing.md)
+            .padding(.top, theme.spacing.xs)
+            .accessibilityIdentifier("verdict-incomplete-warning")
+        }
+
+        HStack(spacing: theme.spacing.md) {
+          if safeIndex > 0 {
+            Button {
+              showIncomplete = false
+              questionIndex = safeIndex - 1
+              AccessibilityNotification.Announcement("Question \(questionIndex + 1)").post()
+            } label: {
+              HStack(spacing: 4) {
+                Image(systemName: "chevron.left")
+                Text("Previous")
+              }
+              .font(theme.fonts.bodyFont)
+              .foregroundStyle(theme.palette.accent.color)
+              .frame(minWidth: 88, minHeight: 44)
             }
-          } else {
-            showIncomplete = true
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("verdict-prev")
           }
-        }
-        .font(theme.fonts.headlineFont)
-        .foregroundStyle(theme.palette.badgeText.color)
-        .padding(.horizontal, theme.spacing.md)
-        .padding(.vertical, theme.spacing.sm)
-        .background(
-          theme.palette.accent.color,
-          in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
-        )
-        .accessibilityIdentifier("verdict-next")
-      }
-      .padding(theme.spacing.md)
-      .background(theme.palette.elevatedBackground.color)
 
-      if showIncomplete {
-        Text("Answer every question in this part before continuing.")
-          .font(theme.fonts.footnoteFont)
-          .foregroundStyle(theme.palette.destructive.color)
-          .padding(.horizontal, theme.spacing.md)
-          .padding(.bottom, theme.spacing.sm)
+          Spacer()
+
+          Button {
+            let hasAnswer = session.draftAnswers[currentQuestion.id] != nil
+            if hasAnswer {
+              showIncomplete = false
+              if safeIndex + 1 >= questions.count {
+                phase = .review
+              } else {
+                questionIndex = safeIndex + 1
+                AccessibilityNotification.Announcement("Question \(questionIndex + 1)").post()
+              }
+            } else {
+              showIncomplete = true
+            }
+          } label: {
+            HStack(spacing: 4) {
+              Text(safeIndex + 1 >= questions.count ? "Review Claims" : "Next")
+              if safeIndex + 1 < questions.count {
+                Image(systemName: "chevron.right")
+              }
+            }
+            .font(theme.fonts.headlineFont)
+            .foregroundStyle(theme.palette.badgeText.color)
+            .padding(.horizontal, theme.spacing.md)
+            .frame(minHeight: 44)
+            .background(
+              theme.palette.accent.color,
+              in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
+            )
+          }
+          .buttonStyle(.plain)
+          .accessibilityIdentifier("verdict-next")
+        }
+        .padding(theme.spacing.md)
+        .background(theme.palette.elevatedBackground.color)
       }
-    }
+    )
   }
 
   private var progressBar: some View {
-    // Answer progress only — not a cycle budget (DR-11).
-    let total = max(session.caseFile.questions.count, 1)
+    let total = max(questions.count, 1)
     let fraction = CGFloat(session.answeredCount) / CGFloat(total)
     return GeometryReader { geo in
       ZStack(alignment: .leading) {
@@ -211,50 +245,69 @@ struct VerdictFlowView: View {
     .frame(height: 4)
   }
 
-  private func questionCard(_ question: VerdictQuestion) -> some View {
-    VStack(alignment: .leading, spacing: theme.spacing.sm) {
+  private func singleQuestionCard(_ question: VerdictQuestion) -> some View {
+    VStack(alignment: .leading, spacing: theme.spacing.md) {
       Text(question.prompt)
-        .font(theme.fonts.headlineFont)
+        .font(theme.fonts.titleFont)
+        .fontWeight(.bold)
         .foregroundStyle(theme.palette.primaryText.color)
+        .lineLimit(nil)
+        .fixedSize(horizontal: false, vertical: true)
+        .accessibilityAddTraits(.isHeader)
 
-      ForEach(question.options, id: \.self) { option in
-        let selected = session.draftAnswers[question.id] == option
-        Button {
-          session.setAnswer(questionId: question.id, option: option)
-        } label: {
-          HStack {
-            Text(displayOption(option))
-              .font(theme.fonts.bodyFont)
-              .foregroundStyle(
-                selected
-                  ? theme.palette.badgeText.color
-                  : theme.palette.primaryText.color
-              )
-            Spacer()
+      VStack(spacing: theme.spacing.sm) {
+        ForEach(question.options, id: \.self) { option in
+          let selected = session.draftAnswers[question.id] == option
+          Button {
+            showIncomplete = false
+            session.setAnswer(questionId: question.id, option: option)
+          } label: {
+            HStack(spacing: theme.spacing.sm) {
+              Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                .font(theme.fonts.bodyFont)
+                .foregroundStyle(
+                  selected
+                    ? theme.palette.badgeText.color
+                    : theme.palette.secondaryText.color
+                )
+
+              Text(displayOption(option))
+                .font(theme.fonts.bodyFont)
+                .fontWeight(selected ? .semibold : .regular)
+                .foregroundStyle(
+                  selected
+                    ? theme.palette.badgeText.color
+                    : theme.palette.primaryText.color
+                )
+                .multilineTextAlignment(.leading)
+              Spacer()
+            }
+            .padding(theme.spacing.md)
+            .background(
+              selected
+                ? theme.palette.accent.color
+                : theme.palette.elevatedBackground.color,
+              in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
+            )
+            .scaleEffect(selected ? 1.01 : 1.0)
+            .animation(.easeInOut(duration: 0.12), value: selected)
+            .overlay(
+              RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
+                .stroke(
+                  selected ? theme.palette.accent.color : theme.palette.separator.color,
+                  lineWidth: selected ? 2 : 1
+                )
+            )
           }
-          .padding(theme.spacing.sm)
-          .background(
-            selected
-              ? theme.palette.accent.color
-              : theme.palette.elevatedBackground.color,
-            in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
-          )
-          .overlay(
-            RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
-              .stroke(
-                selected ? theme.palette.accent.color : theme.palette.separator.color,
-                lineWidth: 1
-              )
-          )
+          .buttonStyle(.plain)
+          .frame(minHeight: 48)
+          .accessibilityIdentifier("verdict-option-\(question.id)-\(option)")
+          .accessibilityLabel(displayOption(option))
+          .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
         }
-        .buttonStyle(.plain)
-        .frame(minHeight: 44)
-        .accessibilityIdentifier("verdict-option-\(question.id)-\(option)")
-        .accessibilityLabel(option.replacingOccurrences(of: "_", with: " "))
-        .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
       }
     }
-    .padding(theme.spacing.md)
+    .padding(theme.spacing.lg)
     .background(
       theme.palette.screenBackground.color,
       in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
@@ -262,45 +315,87 @@ struct VerdictFlowView: View {
   }
 
   private var reviewBody: some View {
-    ScrollView {
+    let unansweredCount = questions.count - session.answeredCount
+    return ScrollView {
       VStack(alignment: .leading, spacing: theme.spacing.md) {
-        Text("Read this once more.")
+        Text("Read your claims once more.")
           .font(theme.fonts.titleFont)
+          .fontWeight(.bold)
           .foregroundStyle(theme.palette.primaryText.color)
+          .accessibilityAddTraits(.isHeader)
 
         Text(
-          "These are the claims you are about to lock in. Wrong ones stay wrong."
+          "These are the 15 claims you are about to lock in. Tap any item to change your answer."
         )
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.secondaryText.color)
 
-        ForEach(session.caseFile.questions, id: \.id) { question in
-          VStack(alignment: .leading, spacing: theme.spacing.xxs) {
-            Text(question.prompt)
-              .font(theme.fonts.subheadlineFont)
-              .foregroundStyle(theme.palette.secondaryText.color)
-            Text(displayOption(session.draftAnswers[question.id] ?? "—"))
-              .font(theme.fonts.headlineFont)
-              .foregroundStyle(theme.palette.primaryText.color)
+        if unansweredCount > 0 {
+          Text("\(unansweredCount) question\(unansweredCount == 1 ? "" : "s") unanswered")
+            .font(theme.fonts.footnoteFont)
+            .fontWeight(.bold)
+            .foregroundStyle(theme.palette.destructive.color)
+            .padding(.top, theme.spacing.xs)
+        }
+
+        ForEach(Array(questions.enumerated()), id: \.element.id) { idx, question in
+          let answer = session.draftAnswers[question.id]
+          Button {
+            questionIndex = idx
+            phase = .questions
+          } label: {
+            HStack(alignment: .top) {
+              VStack(alignment: .leading, spacing: theme.spacing.xxs) {
+                Text("\(idx + 1). \(question.prompt)")
+                  .font(theme.fonts.subheadlineFont)
+                  .foregroundStyle(theme.palette.secondaryText.color)
+                  .multilineTextAlignment(.leading)
+
+                if let answer, !answer.isEmpty {
+                  Text(displayOption(answer))
+                    .font(theme.fonts.headlineFont)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(theme.palette.primaryText.color)
+                } else {
+                  Text("Unanswered")
+                    .font(theme.fonts.footnoteFont)
+                    .fontWeight(.bold)
+                    .foregroundStyle(theme.palette.destructive.color)
+                }
+              }
+              Spacer()
+              Image(systemName: "pencil")
+                .font(theme.fonts.subheadlineFont)
+                .foregroundStyle(theme.palette.accent.color)
+            }
+            .padding(theme.spacing.sm)
+            .background(
+              theme.palette.elevatedBackground.color,
+              in: RoundedRectangle(cornerRadius: theme.radii.chip, style: .continuous)
+            )
           }
-          .padding(.vertical, theme.spacing.xs)
-          .overlay(alignment: .bottom) {
-            Rectangle()
-              .fill(theme.palette.separator.color)
-              .frame(height: 0.5)
-          }
+          .buttonStyle(.plain)
+          .accessibilityIdentifier("verdict-review-item-\(question.id)")
         }
 
         Button {
-          phase = .confirm
+          if session.allQuestionsAnswered {
+            showIncomplete = false
+            phase = .confirm
+          } else {
+            showIncomplete = true
+            if let firstUnanswered = questions.firstIndex(where: { session.draftAnswers[$0.id] == nil }) {
+              questionIndex = firstUnanswered
+              phase = .questions
+            }
+          }
         } label: {
-          Text("I have read my answers")
+          Text(session.allQuestionsAnswered ? "Lock in answers" : "Complete remaining questions")
             .font(theme.fonts.headlineFont)
             .foregroundStyle(theme.palette.badgeText.color)
-            .frame(maxWidth: .infinity)
-            .padding(theme.spacing.md)
+            .frame(maxWidth: .infinity, minHeight: 50)
             .background(
-              theme.palette.accent.color,
+              session.allQuestionsAnswered ? theme.palette.accent.color : theme.palette.destructive.color,
               in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
             )
         }
@@ -308,12 +403,13 @@ struct VerdictFlowView: View {
         .accessibilityIdentifier("verdict-review-continue")
         .padding(.top, theme.spacing.md)
 
-        Button("Go back and change something") {
-          phase = .sections
-          sectionIndex = max(sections.count - 1, 0)
+        Button("Go back to questions") {
+          phase = .questions
+          questionIndex = max(questions.count - 1, 0)
         }
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.accent.color)
+        .frame(minHeight: 44)
       }
       .padding(theme.spacing.lg)
     }
@@ -336,7 +432,7 @@ struct VerdictFlowView: View {
       .foregroundStyle(theme.palette.primaryText.color)
 
       Text(
-        "\(session.caseFile.questions.count) answers. Wrong ones stay wrong. You cannot take a filed verdict back."
+        "\(questions.count) answers. Wrong ones stay wrong. You cannot take a filed verdict back."
       )
       .font(theme.fonts.headlineFont)
       .foregroundStyle(theme.palette.secondaryText.color)
@@ -348,7 +444,10 @@ struct VerdictFlowView: View {
           path = [.verdictResults]
         case .incomplete:
           showIncomplete = true
-          phase = .sections
+          phase = .questions
+          if let firstUnanswered = questions.firstIndex(where: { session.draftAnswers[$0.id] == nil }) {
+            questionIndex = firstUnanswered
+          }
         }
       } label: {
         Text("File what I believe")
@@ -366,7 +465,7 @@ struct VerdictFlowView: View {
       .disabled(!session.allQuestionsAnswered)
       .opacity(session.allQuestionsAnswered ? 1 : 0.5)
 
-      Button("Not yet") {
+      Button("Not yet — review claims") {
         phase = .review
       }
       .font(theme.fonts.bodyFont)
@@ -378,26 +477,19 @@ struct VerdictFlowView: View {
     .padding(theme.spacing.lg)
   }
 
-  private func sectionComplete(_ questions: [VerdictQuestion]) -> Bool {
-    questions.allSatisfy { q in
-      guard let a = session.draftAnswers[q.id] else { return false }
-      return !a.isEmpty
-    }
-  }
-
   private func goBack() {
     switch phase {
     case .intro:
       path = []
-    case .sections:
-      if sectionIndex > 0 {
-        sectionIndex -= 1
+    case .questions:
+      if questionIndex > 0 {
+        questionIndex -= 1
       } else {
         phase = .intro
       }
     case .review:
-      phase = .sections
-      sectionIndex = max(sections.count - 1, 0)
+      phase = .questions
+      questionIndex = max(questions.count - 1, 0)
     case .confirm:
       phase = .review
     }

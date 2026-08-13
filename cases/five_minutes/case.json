@@ -20,7 +20,9 @@
         "answerType": "entity",
         "options": ["coworker", "affair", "party_help", "unknown"],
         "correct": "affair",
-        "supportedBy": ["thread_sable", "note_unsent"]
+        "supportedBy": ["thread_sable", "note_unsent"],
+        "rationale": "Sable's late night messages and unsent notes show an intimate affair, not a professional relationship.",
+        "evidenceHint": "Review Sable's thread and the unsent draft in Notes."
       },
       {
         "id": "q_thursday_lie",
@@ -28,7 +30,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_theo", "thread_sable", "record_places"]
+        "supportedBy": ["thread_theo", "thread_sable", "record_places"],
+        "rationale": "Eli claimed he was working late with Theo, but location records show he went to Sable's apartment.",
+        "evidenceHint": "Compare Theo's text message with the location log in Maps."
       },
       {
         "id": "q_thursday_where",
@@ -36,7 +40,9 @@
         "answerType": "entity",
         "options": ["office", "with_theo", "with_sable", "unknown"],
         "correct": "with_sable",
-        "supportedBy": ["thread_sable", "record_places", "calls_recent"]
+        "supportedBy": ["thread_sable", "record_places", "calls_recent"],
+        "rationale": "Location pins and incoming calls place Eli directly at Sable's apartment.",
+        "evidenceHint": "Check the timestamped location pins on Maps."
       },
       {
         "id": "q_theo_cover",
@@ -44,7 +50,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_theo", "thread_sable"]
+        "supportedBy": ["thread_theo", "thread_sable"],
+        "rationale": "Eli asked Theo to corroborate his whereabouts if questioned.",
+        "evidenceHint": "Read the opening messages in Theo's text thread."
       },
       {
         "id": "q_theo_knew",
@@ -52,7 +60,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["thread_theo"]
+        "supportedBy": ["thread_theo"],
+        "rationale": "Theo agreed to cover for Eli, but thread messages never explicitly reveal if he knew about Sable.",
+        "evidenceHint": "Theo's answers remain ambiguous."
       },
       {
         "id": "q_usual_place",
@@ -60,7 +70,9 @@
         "answerType": "entity",
         "options": ["office", "sable_place", "gym", "unknown"],
         "correct": "sable_place",
-        "supportedBy": ["thread_sable", "record_places", "ig_post_thursday"]
+        "supportedBy": ["thread_sable", "record_places", "ig_post_thursday"],
+        "rationale": "Messages and social posts refer to 'the usual' as Sable's private apartment.",
+        "evidenceHint": "Check the caption on the Thursday photo social post."
       },
       {
         "id": "q_rae_mentioned",
@@ -68,7 +80,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_sable"]
+        "supportedBy": ["thread_sable"],
+        "rationale": "Sable explicitly mentions Rae in text messages asking when Eli will tell her.",
+        "evidenceHint": "Read Sable's mid-thread messages."
       },
       {
         "id": "q_hide_phone",
@@ -76,7 +90,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_sable"]
+        "supportedBy": ["thread_sable"],
+        "rationale": "Eli reminds Sable to send ephemeral snaps rather than standard SMS.",
+        "evidenceHint": "Check the ephemeral chat messages."
       },
       {
         "id": "q_ivy_party",
@@ -84,7 +100,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "no",
-        "supportedBy": ["thread_ivy", "note_calendar"]
+        "supportedBy": ["thread_ivy", "note_calendar"],
+        "rationale": "Ivy's bakery order is an innocent event order, unrelated to Rae's surprise.",
+        "evidenceHint": "Check the note calendar entries."
       },
       {
         "id": "q_ivy_knows_affair",
@@ -92,7 +110,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["thread_ivy", "note_calendar"]
+        "supportedBy": ["thread_ivy", "note_calendar"],
+        "rationale": "No evidence in Ivy's texts suggests she was aware of Eli's affair.",
+        "evidenceHint": "Ivy's messages focus solely on catering."
       },
       {
         "id": "q_how_long",
@@ -100,7 +120,9 @@
         "answerType": "entity",
         "options": ["days", "weeks", "months", "unknown"],
         "correct": "weeks",
-        "supportedBy": ["thread_sable", "note_unsent"]
+        "supportedBy": ["thread_sable", "note_unsent"],
+        "rationale": "The unsent note specifies 'it's been weeks'.",
+        "evidenceHint": "Look at the unsent note draft in Notes."
       },
       {
         "id": "q_unsent_to",
@@ -108,7 +130,9 @@
         "answerType": "entity",
         "options": ["rae", "sable", "theo", "unknown"],
         "correct": "sable",
-        "supportedBy": ["note_unsent"]
+        "supportedBy": ["note_unsent"],
+        "rationale": "The draft note addresses Sable directly about ending the secret meetings.",
+        "evidenceHint": "Read the full text of the unsent note."
       },
       {
         "id": "q_still_active",
@@ -116,7 +140,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_sable", "calls_recent", "record_places", "snap_sable"]
+        "supportedBy": ["thread_sable", "calls_recent", "record_places", "snap_sable"],
+        "rationale": "Recent calls and location logs prove active ongoing meetings.",
+        "evidenceHint": "Check today's recent call log."
       },
       {
         "id": "q_mom_related",
@@ -124,7 +150,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "no",
-        "supportedBy": ["thread_mom"]
+        "supportedBy": ["thread_mom"],
+        "rationale": "The conversation with Mom is entirely routine family chatter.",
+        "evidenceHint": "Read the thread with Mom."
       },
       {
         "id": "q_leaving",
@@ -132,7 +160,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["note_unsent", "thread_sable", "ig_dm_sable"]
+        "supportedBy": ["note_unsent", "thread_sable", "ig_dm_sable"],
+        "rationale": "Eli expresses hesitation and conflict in drafts, but never commits to leaving.",
+        "evidenceHint": "Compare the draft note with Sable's DMs."
       }
     ]
   }

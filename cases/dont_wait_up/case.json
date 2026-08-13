@@ -21,7 +21,9 @@
         "answerType": "entity",
         "options": ["coworker", "affair", "recruiter", "unknown"],
         "correct": "recruiter",
-        "supportedBy": ["thread_mara", "note_comp", "thread_priya"]
+        "supportedBy": ["thread_mara", "note_comp", "thread_priya"],
+        "rationale": "Mara is an executive recruiter pitching a new job position to Jonah.",
+        "evidenceHint": "Review Mara's messages and the compensation note."
       },
       {
         "id": "q_thursday_dentist",
@@ -29,7 +31,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "no",
-        "supportedBy": ["thread_dex", "note_calendar"]
+        "supportedBy": ["thread_dex", "note_calendar"],
+        "rationale": "The dentist appointment was a cover story used to hide a confidential interview.",
+        "evidenceHint": "Compare the calendar note with Dex's text messages."
       },
       {
         "id": "q_thursday_where",
@@ -37,7 +41,9 @@
         "answerType": "entity",
         "options": ["home", "northline", "harboridge", "unknown"],
         "correct": "harboridge",
-        "supportedBy": ["thread_mara", "record_places", "image_hotel"]
+        "supportedBy": ["thread_mara", "record_places", "image_hotel"],
+        "rationale": "Jonah traveled to Harboridge for an on-site interview.",
+        "evidenceHint": "Check the hotel photo and location history."
       },
       {
         "id": "q_trip_reason",
@@ -45,7 +51,9 @@
         "answerType": "entity",
         "options": ["affair", "interview", "family", "unknown"],
         "correct": "interview",
-        "supportedBy": ["thread_priya", "image_badge", "note_comp"]
+        "supportedBy": ["thread_priya", "image_badge", "note_comp"],
+        "rationale": "Jonah was interviewing for an unannounced corporate role.",
+        "evidenceHint": "Examine the visitor badge image and compensation breakdown."
       },
       {
         "id": "q_dex_cover",
@@ -53,7 +61,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_dex", "snap_dex"]
+        "supportedBy": ["thread_dex", "snap_dex"],
+        "rationale": "Dex agreed to back up the story while Jonah was out of town.",
+        "evidenceHint": "Read Dex's thread and ephemeral messages."
       },
       {
         "id": "q_cal_ring",
@@ -61,7 +71,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "no",
-        "supportedBy": ["thread_cal", "note_lists"]
+        "supportedBy": ["thread_cal", "note_lists"],
+        "rationale": "The ring mentioned by Cal was for Cal's own partner.",
+        "evidenceHint": "Read the full text in Cal's thread."
       },
       {
         "id": "q_cal_knows_job",
@@ -69,7 +81,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["thread_cal"]
+        "supportedBy": ["thread_cal"],
+        "rationale": "Messages with Cal discuss personal matters but leave job knowledge ambiguous.",
+        "evidenceHint": "Cal's messages make no reference to the interview."
       },
       {
         "id": "q_mara_dinner",
@@ -77,7 +91,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["thread_mara", "ig_post_wren", "image_bar"]
+        "supportedBy": ["thread_mara", "ig_post_wren", "image_bar"],
+        "rationale": "They had dinner at a hotel bar, but messages leave personal intentions ambiguous.",
+        "evidenceHint": "Compare the bar photo with Mara's DMs."
       },
       {
         "id": "q_has_offer",
@@ -85,7 +101,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["note_offer", "thread_priya"]
+        "supportedBy": ["note_offer", "thread_priya"],
+        "rationale": "The formal offer note details salary and start date.",
+        "evidenceHint": "Read the offer note in Notes."
       },
       {
         "id": "q_told_mina",
@@ -93,7 +111,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "no",
-        "supportedBy": ["note_unsent", "snap_dex", "thread_dex"]
+        "supportedBy": ["note_unsent", "snap_dex", "thread_dex"],
+        "rationale": "Jonah admits in drafts that he hasn't told Mina about the offer.",
+        "evidenceHint": "Read the unsent note draft."
       },
       {
         "id": "q_leaving_mina",
@@ -101,7 +121,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["note_unsent", "snap_dex"]
+        "supportedBy": ["note_unsent", "snap_dex"],
+        "rationale": "The relocation would require moving, but Jonah's choice is undecided.",
+        "evidenceHint": "Drafts show internal conflict without a final call."
       },
       {
         "id": "q_will_take_job",
@@ -109,7 +131,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["note_offer", "note_unsent", "snap_dex"]
+        "supportedBy": ["note_offer", "note_unsent", "snap_dex"],
+        "rationale": "Jonah has received the offer letter but has not accepted it.",
+        "evidenceHint": "Check the response deadline on the offer note."
       },
       {
         "id": "q_mom_related",
@@ -117,7 +141,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "no",
-        "supportedBy": ["thread_mom"]
+        "supportedBy": ["thread_mom"],
+        "rationale": "The thread with Mom discusses family updates, not the interview.",
+        "evidenceHint": "Read the messages with Mom."
       },
       {
         "id": "q_still_hiding",
@@ -125,7 +151,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "yes",
-        "supportedBy": ["thread_dex", "note_unsent", "calls_recent"]
+        "supportedBy": ["thread_dex", "note_unsent", "calls_recent"],
+        "rationale": "Jonah's recent calls and messages show he is still keeping the offer secret.",
+        "evidenceHint": "Check recent calls and text threads from today."
       },
       {
         "id": "q_mara_wants_him",
@@ -133,7 +161,9 @@
         "answerType": "bool",
         "options": ["yes", "no", "unknown"],
         "correct": "unknown",
-        "supportedBy": ["thread_mara", "ig_dm_mara"]
+        "supportedBy": ["thread_mara", "ig_dm_mara"],
+        "rationale": "Mara's social messages mix professional recruitment with friendly warmth.",
+        "evidenceHint": "Read Mara's Instagram DMs."
       }
     ]
   }

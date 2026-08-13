@@ -1,7 +1,7 @@
 # Baseline capture manifest
 
 Device folder: iPhone-17-Pro
-Captured: 2026-08-13T03:28:50Z
+Captured: 2026-08-13T16:12:17Z
 Count: 29
 
 - 01-library-not-started.png

@@ -199,22 +199,18 @@ final class DesignBaselineCaptureUITests: XCTestCase {
       ("q_leaving", "unknown"),
     ]
 
-    // Incomplete validation: answer one question, press Next → guidance appears.
+    // Incomplete validation: press Next without selecting an answer → warning appears.
     waitFor(app, "verdict-next", timeout: 6)
-    tap(app, "verdict-option-\(answers[0].0)-\(answers[0].1)", timeout: 6)
     capture(app, "22-decide-question-section")
     tap(app, "verdict-next", timeout: 4)
-    // Stay on section; incomplete copy should appear.
+    // Stay on question; incomplete copy should appear.
     RunLoop.current.run(until: Date().addingTimeInterval(0.3))
     capture(app, "22b-decide-incomplete-validation")
 
-    // Complete all answers in three sections of five (same path as FullLoop).
-    for chunkStart in stride(from: 0, to: answers.count, by: 5) {
-      let chunk = answers[chunkStart..<min(chunkStart + 5, answers.count)]
-      for (qid, option) in chunk {
-        tap(app, "verdict-option-\(qid)-\(option)", timeout: 6)
-      }
-      if chunkStart == 0 {
+    // Complete all answers one by one.
+    for (idx, (qid, option)) in answers.enumerated() {
+      tap(app, "verdict-option-\(qid)-\(option)", timeout: 6)
+      if idx == 0 {
         capture(app, "23-decide-section-filled")
       }
       tap(app, "verdict-next", timeout: 6)
@@ -242,11 +238,8 @@ final class DesignBaselineCaptureUITests: XCTestCase {
     }
     if app.descendants(matching: .any)["library-back"].waitForExistence(timeout: 4) {
       let chip = app.descendants(matching: .any)["library-back"].firstMatch
-      if chip.isHittable {
-        chip.tap()
-      } else {
-        chip.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-      }
+      XCTAssertTrue(chip.isHittable, "library-back chip must be hittable")
+      chip.tap()
     }
     if app.descendants(matching: .any)["case-library"].waitForExistence(timeout: 12) {
       capture(app, "28-library-after-filed")
@@ -315,17 +308,6 @@ final class DesignBaselineCaptureUITests: XCTestCase {
       if hittableTap(app.descendants(matching: .any)["snapchat-home"]) { continue }
       if hittableTap(app.buttons["Home"]) { continue }
       if hittableTap(app.buttons["Back"]) { continue }
-      // Prefer hittable first; only coordinate-tap *visible* nav ids (not buried home-indicator).
-      let back = app.descendants(matching: .any)["nav-back"]
-      if back.exists {
-        back.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        continue
-      }
-      let home = app.descendants(matching: .any)["nav-home"]
-      if home.exists {
-        home.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        continue
-      }
     }
     XCTAssertTrue(isHome(app), "failed to return home — navigation debt")
   }

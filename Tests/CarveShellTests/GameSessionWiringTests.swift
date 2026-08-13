@@ -123,6 +123,21 @@ struct GameSessionWiringTests {
     #expect(ids.contains("sable"))
   }
 
+  @Test func linkBoardCanonicalSelfAndDuplicatePrevention() throws {
+    let session = GameSession(caseFile: try loadFiveMinutes())
+    #expect(session.openFragment("thread_theo").outcome == .ok)
+    #expect(session.openFragment("thread_sable").outcome == .ok)
+
+    // Re-linking same pair is idempotent
+    session.link("sable", "eli")
+    session.link("eli", "sable")
+    #expect(session.linkedPairs == ["eli|sable"])
+
+    // Self-link is impossible / ignored
+    session.link("eli", "eli")
+    #expect(session.linkedPairs == ["eli|sable"])
+  }
+
   @Test func unansweredQuestionCountsWrongThroughSessionPath() throws {
     // fileVerdict refuses incomplete sets; scoreVerdict through draftAnswers
     // still counts blanks as wrong — the UI must not invent a free pass.

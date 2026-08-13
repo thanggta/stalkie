@@ -96,14 +96,20 @@ struct InstagramAppView: View {
       Button {
         path = []
       } label: {
-        Image(systemName: "chevron.left")
-          .font(theme.fonts.bodyFont)
-          .fontWeight(.semibold)
-          .foregroundStyle(theme.palette.primaryText.color)
+        HStack(spacing: 4) {
+          Image(systemName: "chevron.left")
+            .font(theme.fonts.bodyFont)
+            .fontWeight(.semibold)
+          Text("Home")
+            .font(theme.fonts.bodyFont)
+        }
+        .foregroundStyle(theme.palette.primaryText.color)
+        .frame(minWidth: 64, minHeight: 44, alignment: .leading)
+        .contentShape(Rectangle())
       }
       .buttonStyle(.plain)
       .accessibilityLabel("Home")
-      .accessibilityIdentifier("instagram-home")
+      .accessibilityIdentifier("nav-home")
 
       Text(PhoneAppLabels.title(for: .photoSocial))
         .font(theme.fonts.titleFont)
@@ -120,6 +126,7 @@ struct InstagramAppView: View {
           Image(systemName: "paperplane")
             .font(theme.fonts.titleFont)
             .foregroundStyle(theme.palette.primaryText.color)
+            .frame(minWidth: 44, minHeight: 44)
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier("instagram-dms")

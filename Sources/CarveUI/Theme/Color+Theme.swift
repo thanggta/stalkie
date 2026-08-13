@@ -11,26 +11,26 @@ extension ThemeColor {
 }
 
 extension ThemeFonts {
-  public func font(_ size: Double, mono: Bool = false) -> Font {
+  public func font(_ size: Double, textStyle: Font.TextStyle = .body, mono: Bool = false) -> Font {
     let name = mono ? monoFamily : family
-    if name.hasPrefix(".") {
-      return .system(size: size)
+    if mono {
+      return .custom(name.hasPrefix(".") ? "Courier" : name, size: CGFloat(size), relativeTo: textStyle)
     }
-    return .custom(name, size: size)
+    return .custom(name.hasPrefix(".") ? "" : name, size: CGFloat(size), relativeTo: textStyle)
   }
 
-  public var largeTitleFont: Font { font(largeTitle) }
-  public var titleFont: Font { font(title) }
-  public var headlineFont: Font { font(headline) }
-  public var bodyFont: Font { font(body) }
-  public var calloutFont: Font { font(callout) }
-  public var subheadlineFont: Font { font(subheadline) }
-  public var footnoteFont: Font { font(footnote) }
-  public var captionFont: Font { font(caption) }
-  public var statusBarFont: Font { font(statusBar) }
-  public var iconLabelFont: Font { font(iconLabel) }
-  public var bubbleFont: Font { font(bubble) }
-  public var monoFont: Font { font(body, mono: true) }
+  public var largeTitleFont: Font { font(largeTitle, textStyle: .largeTitle) }
+  public var titleFont: Font { font(title, textStyle: .title) }
+  public var headlineFont: Font { font(headline, textStyle: .headline) }
+  public var bodyFont: Font { font(body, textStyle: .body) }
+  public var calloutFont: Font { font(callout, textStyle: .callout) }
+  public var subheadlineFont: Font { font(subheadline, textStyle: .subheadline) }
+  public var footnoteFont: Font { font(footnote, textStyle: .footnote) }
+  public var captionFont: Font { font(caption, textStyle: .caption) }
+  public var statusBarFont: Font { font(statusBar, textStyle: .caption2) }
+  public var iconLabelFont: Font { font(iconLabel, textStyle: .caption) }
+  public var bubbleFont: Font { font(bubble, textStyle: .body) }
+  public var monoFont: Font { font(body, textStyle: .body, mono: true) }
 }
 
 private struct CarveThemeKey: EnvironmentKey {

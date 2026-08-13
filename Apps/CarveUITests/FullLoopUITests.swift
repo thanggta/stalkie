@@ -81,13 +81,9 @@ final class FullLoopUITests: XCTestCase {
       ("q_leaving", "unknown"),
     ]
 
-    // Three sections of five.
-    for chunkStart in stride(from: 0, to: answers.count, by: 5) {
-      let chunk = answers[chunkStart..<min(chunkStart + 5, answers.count)]
-      for (qid, option) in chunk {
-        tapIdentifier(app, "verdict-option-\(qid)-\(option)", timeout: 6)
-      }
-      tapIdentifier(app, "verdict-next")
+    for (qid, option) in answers {
+      tapIdentifier(app, "verdict-option-\(qid)-\(option)", timeout: 6)
+      tapIdentifier(app, "verdict-next", timeout: 6)
     }
 
     tapIdentifier(app, "verdict-review-continue")

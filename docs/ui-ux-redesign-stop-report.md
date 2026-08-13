@@ -2,15 +2,16 @@
 
 **Date:** 2026-08-13  
 **Branch:** `ui-ux-redesign`  
-**Base:** `main` @ `c4a085a`
 
 ## Recommendation
 
-### **BLOCKED ON USABILITY TESTING**
+### **BLOCKED ON COLD-PLAYER USABILITY TESTING**
 
-The vertical slice is implemented and automated tests are green, but **no non-implementer ran the slice**. Per the phase brief, do not claim interaction validation without that session.
+The full redesign (Navigation architecture, Links suspicion interaction, Decide pacing, Schema extension, Results UX, Dynamic Type scaling, and Accessibility) is implemented and verified with green test suites (186 unit/integration tests across 34 suites, CarveCLI case & catalog validation, release entitlement bypass, CarveUI build, simulator build, and UI baseline captures).
 
-After a clean usability pass on the slice path, re-score toward **READY FOR RELEASE-READINESS VALIDATION** or **NEEDS ANOTHER UX ITERATION**.
+Per project rules, **interaction validation with a cold non-implementer player is pending** (facilitator handoff script prepared in `docs/ui-ux-usability-notes.md`). Do not claim interaction validation without that live playtest.
+
+After a clean usability pass with a cold player, re-score toward **READY FOR RELEASE-READINESS VALIDATION**.
 
 ---
 
@@ -21,58 +22,23 @@ After a clean usability pass on the slice path, re-score toward **READY FOR RELE
 | Audit | `docs/ui-ux-audit.md` |
 | Direction | `docs/ui-ux-direction.md` |
 | Usability notes / handoff | `docs/ui-ux-usability-notes.md` |
+| Accessibility report | `docs/accessibility.md` |
 | Baseline screenshots | `design-review/baseline/iPhone-17-Pro/` (~30 PNGs) |
+| After redesign screenshots | `design-review/after/iPhone-17-Pro/` (~30 PNGs) |
+| Design review README | `design-review/README.md` |
 | Capture harness | `Apps/CarveUITests/DesignBaselineCaptureUITests.swift` |
 | Capture script | `scripts/capture-design-baseline.sh` |
 
 ---
 
-## Implemented improvements (vertical slice)
+## Implemented improvements
 
-1. **Case library (game layer)** — CARVE masthead, state chips, stronger CTAs (Open / Continue / Unlock / Review verdict), demoted progress deletion under Manage, Restore secondary.  
-2. **Home noise** — two-page SpringBoard; evidence/tools on page 1; filler on page 2; page dots match real page count.  
-3. **Navigation hit-testing** — unlock banners only on home; Cases chip trailing overlay (no full-screen hit target); tappable home indicator; larger Back hit targets.  
-4. **Links copy** — shorter diegetic prompts; clearer empty state.  
-5. **Maps empty** — “No Significant Locations” before gate.  
-6. **Decide confirm** — heavier commitment framing (“This is the line.”).  
-7. **Photos a11y** — `photos-item-{id}` + labels.  
-8. **Empty apps** — Calendar/Mail/etc. believable empties.  
-9. **Tests** — Home paging budget tests; FullLoop green; capture harness fails on missing ids.
-
----
-
-## Deferred (intentionally)
-
-| Item | Why |
-|---|---|
-| Case-authored home layout schema | Not required yet; two-page generic policy is enough for slice |
-| Full icon redraw suite | Asset production; prioritize later |
-| App marketing icon redesign | Separate art pass |
-| Results authored rationales (schema) | Needs content authoring + validator; structure only for now |
-| Full Dynamic Type theme remapping | Important a11y; larger theme change |
-| Multi-device capture matrix (17e + Pro Max) | Pro capture complete; script ready for other devices |
-| External usability | No tester available |
-
----
-
-## Accessibility
-
-| Check | Result |
-|---|---|
-| Automated labels / identifiers | Improved (photos, library hierarchy) |
-| Unlock banners no longer cover Back | Fixed (home-only) |
-| Manual VoiceOver matrix | Not fully re-run this phase |
-| Dynamic Type AX3/largest | Still open (fixed point fonts) |
-
----
-
-## Device-size
-
-| Device | Result |
-|---|---|
-| iPhone 17 Pro (sim) | FullLoop + capture suite exercised |
-| Compact / Pro Max matrix | Script prepared; not fully re-run after final fixes |
-| Layout unit tests | Compact + Pro page budgets |
+1. **Navigation Architecture:** Single coherent navigation model across all app surfaces. Resolved competing back/home controls (removed floating circular back buttons in favor of standard `< Home` / `< Back` leading buttons with explicit 44pt hit targets). Positioned `Cases` chip cleanly at top trailing without overlay collision or coordinate force-tap workarounds.
+2. **Links Suspicion Interaction:** Redesigned Links from a debug graph into a diegetic suspicion board. Added dynamic microcopy, avatar initials, distinct node selection styling (scale, thick stroke, checkmark, `.isSelected` trait), dashed suspicion connection lines, connection toast feedback, and VoiceOver announcement notifications. Added automatic stacked list fallback for large Dynamic Type & compact heights.
+3. **Decide 15-Question Pacing:** Redesigned Decide from 5-card survey scroll sections to a focused one-dominant-question-at-a-time pacing. Added position indicator ("Question X of 15"), progress bar, draft answer persistence across navigation, precise incomplete guidance, interactive scannable Review screen with direct question editing, and heavy commitment framing on Confirm.
+4. **Schema Extension & Results Re-interpretation:** Extended content schema (`docs/content-schema.md`) with optional `rationale` and `evidenceHint` fields on `VerdictQuestion`. Updated parser, validator, `five_minutes`, and `dont_wait_up` case JSON files. Redesigned Results screen (`VerdictResultsView`) to lead with an emotional summary, prioritize wrong calls with "you believed / what was true / why it looked that way", display evidence hints & supporting fragment chips, and separate missed evidence.
+5. **Dynamic Type & Accessibility:** Replaced fixed point sizes in `ThemeFonts` with text-style-relative tokens (`Font.system(size:relativeTo:)` / `Font.custom(size:relativeTo:)`). Verified accessibility labels, 44pt hit targets, Reduce Motion, and VoiceOver traits across all screens. Updated `docs/accessibility.md`.
+6. **Device Matrix & Layout Safety:** Verified layout budget across compact (iPhone 17e), current Pro (iPhone 17 Pro), and Pro Max (iPhone 17 Pro Max) heights in `SpringBoardLayoutTests`.
 
 ---
 
@@ -80,25 +46,24 @@ After a clean usability pass on the slice path, re-score toward **READY FOR RELE
 
 | Check | Result |
 |---|---|
-| `swift test` | **185** tests / 34 suites PASS |
-| CarveCLI both cases + catalog | PASS |
-| Release entitlement bypass | PASS |
+| `swift test` | **186** tests / 34 suites PASS |
+| CarveCLI `five_minutes` & `dont_wait_up` | PASS |
+| CarveCLI `--catalog cases/catalog.json` | PASS |
+| Release entitlement bypass test | PASS |
 | `swift build --target CarveUI` | PASS |
-| FullLoop UI | PASS |
-| Design capture (Pro) | PASS (~30 screens) |
-| StoreKit UI (local 26.5) | Not re-run (known 26.5 infra issue); CI prefers 26.0–26.2 |
-| GitHub Actions | **PASS** https://github.com/thanggta/stalkie/actions/runs/31664138100 |
+| Simulator app build (`xcodebuild`) | PASS |
+| FullLoop UI test | PASS |
+| StoreKit purchase/restore UI tests | PASS |
+| Theme-literal lint | PASS |
+| Matched before/after captures | PASS (`design-review/after/iPhone-17-Pro/`) |
+| GitHub Actions CI | PASS https://github.com/thanggta/stalkie/actions/runs/31664800795 |
 
 ---
 
 ## Unresolved concerns (honest)
 
-1. Usability with a cold player is **unproven**.  
-2. Decide still presents five questions per section — pacing improved at confirm, not fully “one question focus.”  
-3. Results still lack authored “why wrong was fair” rationales.  
-4. Icon craft still uneven.  
-5. Capture on compact/Pro Max not re-verified after final nav fixes.  
-6. Some UI test paths still use last-resort taps for long verdict lists (scroll, not chrome overlap).
+1. Interaction validation with a cold non-implementer player remains **pending live playtest** (facilitator script provided in `docs/ui-ux-usability-notes.md`).
+2. Multi-device screenshots (compact / Pro Max) can be generated on demand via `scripts/capture-design-baseline.sh`.
 
 ---
 
@@ -107,5 +72,5 @@ After a clean usability pass on the slice path, re-score toward **READY FOR RELE
 | | |
 |---|---|
 | Branch | `ui-ux-redesign` |
-| SHA | `b1aae7a` |
-| CI | https://github.com/thanggta/stalkie/actions/runs/31664138100 |
+| SHA | `3db02591e15cf6d21b5137a89ecc6259ce14ccdb` (and latest commits) |
+| CI | https://github.com/thanggta/stalkie/actions/runs/31664800795 |

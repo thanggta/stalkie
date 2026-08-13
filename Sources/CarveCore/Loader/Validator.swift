@@ -89,6 +89,12 @@ public func validateCase(_ c: CaseFile) -> [String] {
         "Question \"\(question.id)\" has correct answer \"\(question.correct)\" which is "
           + "not among its options [\(question.options.joined(separator: ", "))].")
     }
+    if let rationale = question.rationale, rationale.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+      problems.append("Question \"\(question.id)\" rationale cannot be empty.")
+    }
+    if let evidenceHint = question.evidenceHint, evidenceHint.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+      problems.append("Question \"\(question.id)\" evidenceHint cannot be empty.")
+    }
     if question.supportedBy.isEmpty {
       problems.append(
         "INV-3 violated: question \"\(question.id)\" lists no supporting fragments.")

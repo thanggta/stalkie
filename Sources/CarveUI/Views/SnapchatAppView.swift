@@ -43,16 +43,21 @@ struct SnapchatAppView: View {
           Button {
             path = []
           } label: {
-            Image(systemName: "chevron.left")
-              .font(theme.fonts.bodyFont)
-              .fontWeight(.semibold)
-              .foregroundStyle(theme.palette.badgeText.color)
-              .frame(width: 36, height: 36)
-              .background(theme.palette.elevatedBackground.color.opacity(0.2), in: Circle())
+            HStack(spacing: 4) {
+              Image(systemName: "chevron.left")
+                .font(theme.fonts.bodyFont)
+                .fontWeight(.semibold)
+              Text("Home")
+                .font(theme.fonts.bodyFont)
+            }
+            .foregroundStyle(theme.palette.badgeText.color)
+            .frame(minWidth: 64, minHeight: 44, alignment: .leading)
+            .contentShape(Rectangle())
           }
           .buttonStyle(.plain)
           .accessibilityLabel("Home")
-          .accessibilityIdentifier("snapchat-home")
+          .accessibilityIdentifier("nav-home")
+
           Spacer()
           Text(PhoneAppLabels.title(for: .ephemeralChat))
             .font(theme.fonts.headlineFont)
@@ -60,9 +65,7 @@ struct SnapchatAppView: View {
             .foregroundStyle(theme.palette.badgeText.color)
             .accessibilityIdentifier("snapchat-title")
           Spacer()
-          Circle()
-            .fill(theme.palette.elevatedBackground.color.opacity(0.2))
-            .frame(width: 36, height: 36)
+          Color.clear.frame(width: 64, height: 44)
         }
         .padding(.horizontal, theme.spacing.md)
         .padding(.top, theme.spacing.sm)

@@ -10,6 +10,26 @@ public struct VerdictQuestion: Codable, Equatable, Sendable {
   public let options: [String]
   public let correct: String
   public let supportedBy: [String]
+  public let rationale: String?
+  public let evidenceHint: String?
+
+  public init(
+    id: String,
+    prompt: String,
+    options: [String],
+    correct: String,
+    supportedBy: [String],
+    rationale: String? = nil,
+    evidenceHint: String? = nil
+  ) {
+    self.id = id
+    self.prompt = prompt
+    self.options = options
+    self.correct = correct
+    self.supportedBy = supportedBy
+    self.rationale = rationale
+    self.evidenceHint = evidenceHint
+  }
 }
 
 public struct CaseFile: Codable, Equatable, Sendable {
