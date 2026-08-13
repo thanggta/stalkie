@@ -26,7 +26,30 @@ echo "== Selecting iPhone simulator"
 
 UDID="$(
   python3 - <<'PY'
-import json, subprocess, sys
+import json, re, subprocess, sys
+
+def runtime_score(runtime: str) -> int:
+    """Prefer runtimes where xcodebuild + StoreKitTest still syncs Octane.
+
+    iOS 26.5+ is known to fail SKTestSession with SKInternalErrorDomain Code=3
+    under xcodebuild (config never reaches storekitd). Prefer 26.0–26.2, then
+    18.x, and only fall back to 26.5+ when nothing else exists.
+    """
+    m = re.search(r"iOS-(\d+)-(\d+)", runtime) or re.search(r"iOS[ -](\d+)\.(\d+)", runtime)
+    if not m:
+        return 0
+    major, minor = int(m.group(1)), int(m.group(2))
+    if major == 26 and minor <= 2:
+        return 300 + minor  # 26.2 > 26.1 > 26.0
+    if major == 18:
+        return 200 + minor
+    if major == 17:
+        return 100 + minor
+    if major == 26 and minor >= 5:
+        return 10 + minor  # last resort
+    if major == 26:
+        return 50 + minor  # 26.3/26.4 unknown; mid-tier
+    return major
 
 raw = subprocess.check_output(
     ["xcrun", "simctl", "list", "devices", "available", "-j"],
@@ -37,6 +60,7 @@ candidates = []
 for runtime, devices in data.get("devices", {}).items():
     if "iOS" not in runtime:
         continue
+    rscore = runtime_score(runtime)
     for d in devices:
         name = d.get("name", "")
         if not d.get("isAvailable", False):
@@ -44,7 +68,7 @@ for runtime, devices in data.get("devices", {}).items():
         if "iPhone" not in name or "iPad" in name:
             continue
         # Prefer modern full-size iPhones; skip SE / Plus / Air when possible.
-        score = 0
+        score = rscore
         if any(tok in name for tok in ("16", "17", "15 Pro", "15")):
             score += 10
         if "Pro" in name:
@@ -70,7 +94,7 @@ ios = [
 ]
 if not ios:
     sys.exit(1)
-ios.sort(key=lambda r: r.get("version", ""), reverse=True)
+ios.sort(key=lambda r: runtime_score(r.get("identifier", r.get("name", ""))), reverse=True)
 runtime = ios[0]["identifier"]
 
 devicetypes = json.loads(

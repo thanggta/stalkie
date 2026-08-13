@@ -68,10 +68,33 @@ jobs:
 
   uitest:
     name: Execute UI tests
-    runs-on: macos-latest
-    timeout-minutes: 30
+    # macos-26 ships Xcode 26.x and iOS 26.0–26.2 runtimes. Prefer those over
+    # 26.5: StoreKitTest under xcodebuild fails with Code=3 on 26.5 simulators
+    # (Octane config never syncs). The selection script ranks 26.0–26.2 first.
+    runs-on: macos-26
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: |
+          # Prefer an Xcode whose bundled simulator runtimes still sync StoreKit.
+          for candidate in \
+            /Applications/Xcode_26.2.app \
+            /Applications/Xcode_26.1.1.app \
+            /Applications/Xcode_26.1.app \
+            /Applications/Xcode_26.0.1.app \
+            /Applications/Xcode_26.0.app \
+            /Applications/Xcode_26.6.app \
+            /Applications/Xcode_26.5.app \
+            /Applications/Xcode.app
+          do
+            if [ -d "$candidate" ]; then
+              sudo xcode-select -s "$candidate"
+              break
+            fi
+          done
+          xcodebuild -version
+          xcrun simctl list runtimes | grep iOS || true
       - name: Execute UI tests
         run: |
           chmod +x scripts/ci-run-ui-tests.sh
