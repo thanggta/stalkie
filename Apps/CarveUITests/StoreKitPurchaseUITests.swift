@@ -1,26 +1,28 @@
 // Apps/CarveUITests/StoreKitPurchaseUITests.swift
-// StoreKit-configured paid path. Uses the scheme's .storekit file.
+// StoreKit-configured paid path via the scheme's .storekit file.
 // This is not proof that the App Store Connect product exists.
 
 import XCTest
 import StoreKitTest
 
+@MainActor
 final class StoreKitPurchaseUITests: XCTestCase {
+  private static let paidProductId = "games.carve.case.dont_wait_up"
   var storeSession: SKTestSession?
 
   override func setUpWithError() throws {
     continueAfterFailure = false
-    let bundle = Bundle(for: StoreKitPurchaseUITests.self)
-    let url = try XCTUnwrap(
-      bundle.url(forResource: "Carve", withExtension: "storekit"),
-      "Carve.storekit must be copied into the UI test bundle")
-    let session = try SKTestSession(contentsOf: url)
-    session.resetToDefaultState()
+    // Scheme TestAction attaches Carve/Carve.storekit to games.carve.app.
+    // SKTestSession must use the same configuration so buy/restore share the
+    // app under test's StoreKitTest environment.
+    let session = try makeStoreSession()
     session.disableDialogs = true
+    session.resetToDefaultState()
     storeSession = session
   }
 
   override func tearDownWithError() throws {
+    storeSession?.resetToDefaultState()
     storeSession = nil
   }
 
@@ -39,20 +41,19 @@ final class StoreKitPurchaseUITests: XCTestCase {
     XCTAssertFalse(app.descendants(matching: .any)["phone-root"].exists)
 
     let buy = app.descendants(matching: .any)["purchase-buy"]
-    XCTAssertTrue(buy.waitForExistence(timeout: 15), "missing purchase-buy")
-    // Price/product load is async; keep retrying until the control is enabled.
-    let deadline = Date().addingTimeInterval(15)
-    while Date() < deadline, !buy.firstMatch.isHittable {
-      RunLoop.current.run(until: Date().addingTimeInterval(0.2))
-    }
+    XCTAssertTrue(buy.waitForExistence(timeout: 20), "missing purchase-buy")
+    XCTAssertTrue(
+      waitUntilEnabled(buy, timeout: 25),
+      "purchase-buy must enable after StoreKit products load for \(Self.paidProductId)")
     tapIdentifier(app, "purchase-buy", timeout: 5)
     XCTAssertTrue(
       app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 20),
       "verified purchase should launch the case without restart")
   }
 
-  func testRestorePurchasesUnlocksWithoutRestart() throws {
-    try storeSession?.buyProduct(productIdentifier: "games.carve.case.dont_wait_up")
+  func testRestorePurchasesUnlocksWithoutRestart() async throws {
+    let session = try XCTUnwrap(storeSession)
+    _ = try await session.buyProduct(identifier: Self.paidProductId)
 
     let app = XCUIApplication()
     app.launchArguments = ["-resetProgress", "-uiTestSkipRestore"]
@@ -64,6 +65,24 @@ final class StoreKitPurchaseUITests: XCTestCase {
     XCTAssertTrue(
       app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 15),
       "restored entitlement should launch the paid case")
+  }
+
+  private func makeStoreSession() throws -> SKTestSession {
+    let bundle = Bundle(for: StoreKitPurchaseUITests.self)
+    if let url = bundle.url(forResource: "Carve", withExtension: "storekit") {
+      return try SKTestSession(contentsOf: url)
+    }
+    return try SKTestSession(configurationFileNamed: "Carve")
+  }
+
+  @discardableResult
+  private func waitUntilEnabled(_ element: XCUIElement, timeout: TimeInterval) -> Bool {
+    let deadline = Date().addingTimeInterval(timeout)
+    while Date() < deadline {
+      if element.exists && element.isEnabled { return true }
+      RunLoop.current.run(until: Date().addingTimeInterval(0.2))
+    }
+    return element.exists && element.isEnabled
   }
 
   private func tapIdentifier(_ app: XCUIApplication, _ id: String, timeout: TimeInterval = 5) {

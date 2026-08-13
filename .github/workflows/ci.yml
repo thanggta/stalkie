@@ -72,7 +72,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - name: Execute FullLoopUITests
+      - name: Execute UI tests
         run: |
           chmod +x scripts/ci-run-ui-tests.sh
           scripts/ci-run-ui-tests.sh
@@ -80,8 +80,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: FullLoop-xcresult
+          name: UITest-xcresult
           path: |
             TestResults/FullLoop.xcresult
+            TestResults/StoreKit.xcresult
             TestResults/xcodebuild.log
           if-no-files-found: warn

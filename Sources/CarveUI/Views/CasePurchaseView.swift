@@ -35,71 +35,74 @@ public struct CasePurchaseView: View {
   }
 
   public var body: some View {
-    VStack(alignment: .leading, spacing: theme.spacing.md) {
-      HStack {
-        Button("Close", action: onClose)
+    // Match CaseLibraryView's ScrollView + identifier pattern so child
+    // accessibilityIdentifiers (purchase-buy, purchase-close, …) stay queryable.
+    ScrollView {
+      VStack(alignment: .leading, spacing: theme.spacing.md) {
+        HStack {
+          Button("Close", action: onClose)
+            .font(theme.fonts.bodyFont)
+            .foregroundStyle(theme.palette.accent.color)
+            .frame(minHeight: 44)
+            .accessibilityIdentifier("purchase-close")
+          Spacer()
+        }
+
+        Text(entry.title)
+          .font(theme.fonts.titleFont)
+          .foregroundStyle(theme.palette.primaryText.color)
+          .accessibilityAddTraits(.isHeader)
+
+        Text(entry.summary)
+          .font(theme.fonts.bodyFont)
+          .foregroundStyle(theme.palette.secondaryText.color)
+
+        Text("One-time purchase. Unlocks \(entry.title) only. Not a subscription.")
+          .font(theme.fonts.subheadlineFont)
+          .foregroundStyle(theme.palette.secondaryText.color)
+          .accessibilityIdentifier("purchase-terms")
+
+        if let product {
+          Text(product.displayPrice)
+            .font(theme.fonts.headlineFont)
+            .foregroundStyle(theme.palette.primaryText.color)
+            .accessibilityLabel("Price \(product.displayPrice)")
+            .accessibilityIdentifier("purchase-price")
+        }
+
+        Text(statusCopy)
+          .font(theme.fonts.bodyFont)
+          .foregroundStyle(statusColor)
+          .accessibilityIdentifier("purchase-state")
+          .accessibilityValue(statusCopy)
+
+        Button(action: onBuy) {
+          Text(buyTitle)
+            .font(theme.fonts.headlineFont)
+            .foregroundStyle(theme.palette.badgeText.color)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .background(
+              theme.palette.accent.color.opacity(canBuy ? 1 : 0.45),
+              in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(!canBuy)
+        .accessibilityIdentifier("purchase-buy")
+        .accessibilityLabel(buyTitle)
+        .accessibilityHint("One-time purchase. Not a subscription.")
+
+        Button("Restore Purchases", action: onRestore)
           .font(theme.fonts.bodyFont)
           .foregroundStyle(theme.palette.accent.color)
           .frame(minHeight: 44)
-          .accessibilityIdentifier("purchase-close")
-        Spacer()
+          .accessibilityIdentifier("purchase-restore")
+          .accessibilityHint("Refreshes what you already bought. Does not erase progress.")
+
+        Spacer(minLength: 0)
       }
-
-      Text(entry.title)
-        .font(theme.fonts.titleFont)
-        .foregroundStyle(theme.palette.primaryText.color)
-        .accessibilityAddTraits(.isHeader)
-
-      Text(entry.summary)
-        .font(theme.fonts.bodyFont)
-        .foregroundStyle(theme.palette.secondaryText.color)
-
-      Text("One-time purchase. Unlocks \(entry.title) only. Not a subscription.")
-        .font(theme.fonts.subheadlineFont)
-        .foregroundStyle(theme.palette.secondaryText.color)
-        .accessibilityIdentifier("purchase-terms")
-
-      if let product {
-        Text(product.displayPrice)
-          .font(theme.fonts.headlineFont)
-          .foregroundStyle(theme.palette.primaryText.color)
-          .accessibilityLabel("Price \(product.displayPrice)")
-          .accessibilityIdentifier("purchase-price")
-      }
-
-      Text(statusCopy)
-        .font(theme.fonts.bodyFont)
-        .foregroundStyle(statusColor)
-        .accessibilityIdentifier("purchase-state")
-        .accessibilityValue(statusCopy)
-
-      Button(action: onBuy) {
-        Text(buyTitle)
-          .font(theme.fonts.headlineFont)
-          .foregroundStyle(theme.palette.badgeText.color)
-          .frame(maxWidth: .infinity, minHeight: 44)
-          .background(
-            theme.palette.accent.color,
-            in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
-          )
-      }
-      .buttonStyle(.plain)
-      .disabled(!canBuy)
-      .accessibilityElement(children: .ignore)
-      .accessibilityIdentifier("purchase-buy")
-      .accessibilityLabel(buyTitle)
-      .accessibilityHint("One-time purchase. Not a subscription.")
-
-      Button("Restore Purchases", action: onRestore)
-        .font(theme.fonts.bodyFont)
-        .foregroundStyle(theme.palette.accent.color)
-        .frame(minHeight: 44)
-        .accessibilityIdentifier("purchase-restore")
-        .accessibilityHint("Refreshes what you already bought. Does not erase progress.")
-
-      Spacer()
+      .padding(theme.spacing.lg)
     }
-    .padding(theme.spacing.lg)
     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     .background(theme.palette.screenBackground.color.ignoresSafeArea())
     .accessibilityIdentifier("purchase-screen")

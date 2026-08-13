@@ -271,9 +271,11 @@ public final class GameSession: ObservableObject {
   }
 
   /// Decide appears when the case's readiness predicate (or the generic
-  /// supporting-fragment default) is true. Never case-id specific.
+  /// supporting-fragment default) is true. Once filed it stays visible so the
+  /// player can reopen results after a relaunch. Never case-id specific.
   public var isDecideVisible: Bool {
-    AppReadiness.decideReady(caseFile: caseFile, state: engine.state)
+    if isFiled { return true }
+    return AppReadiness.decideReady(caseFile: caseFile, state: engine.state)
   }
 
   public func hasLink(_ a: String, _ b: String) -> Bool {

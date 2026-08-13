@@ -59,10 +59,13 @@ public struct PersistenceFailure: Equatable, Sendable {
 
 /// Wires a SessionStore to GameSession so save failures become session state.
 /// IO stays in this module — never in CarveCore.
+///
+/// The store is captured **strongly**. `FileSessionStore` does not retain the
+/// session, so there is no cycle — and a weak capture would let the store die
+/// the moment `AppBootstrap.load` returns, silently discarding every save.
 public enum SessionPersistence {
   public static func attach(store: SessionStore, to session: GameSession) {
-    session.onMutation = { [weak store] s in
-      guard let store else { return }
+    session.onMutation = { s in
       do {
         try store.save(s.makeSnapshot())
         s.clearPersistenceFailure()

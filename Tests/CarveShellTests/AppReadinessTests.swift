@@ -30,6 +30,20 @@ struct AppReadinessTests {
     #expect(AppReadiness.decideReady(caseFile: caseFile, state: engine.state))
   }
 
+  /// Why: Decide must stay absent until the predicate, then appear after carve.
+  /// Session wiring is the product gate HomeScreenView reads.
+  @Test func sessionDecideVisibilityTracksPredicateAndFiledState() throws {
+    let caseFile = try loadCase("five_minutes")
+    let session = GameSession(caseFile: caseFile)
+    #expect(session.isDecideVisible == false)
+
+    #expect(session.openFragment("thread_theo").outcome == .ok)
+    #expect(session.isDecideVisible == false)
+
+    #expect(session.openFragment("thread_sable").outcome == .ok)
+    #expect(session.isDecideVisible == true)
+  }
+
   @Test func decideReadyWhenCannotUseAnswered() throws {
     let caseFile = try loadCase("five_minutes")
     let broken = CaseFile(

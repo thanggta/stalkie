@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "A1B2C3D4-E5F6-7890-A1B2-C3D4E5F67890",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "storeKitConfiguration" : {
+      "identifier" : "Carve/Carve.storekit"
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Carve.xcodeproj",
+      "identifier" : "6545D54280BD492983A838DE",
+      "name" : "Carve"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:Carve.xcodeproj",
+        "identifier" : "B1A01TARGET000000000001",
+        "name" : "CarveUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
