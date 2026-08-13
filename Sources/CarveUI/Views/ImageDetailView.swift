@@ -13,6 +13,18 @@ struct ImageDetailView: View {
   @State private var cgImage: CGImage?
   @State private var errorText: String?
 
+  private var imageAccessibilityLabel: String {
+    if let content = try? FragmentContent.image(fragment) {
+      if let description = content.accessibilityDescription, !description.isEmpty {
+        return description
+      }
+      if let caption = content.caption, !caption.isEmpty {
+        return caption
+      }
+    }
+    return fragment.label
+  }
+
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: theme.spacing.md) {
@@ -23,6 +35,7 @@ struct ImageDetailView: View {
             .clipShape(
               RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
             )
+            .accessibilityLabel(imageAccessibilityLabel)
         } else if let errorText {
           Text(errorText)
             .font(theme.fonts.bodyFont)

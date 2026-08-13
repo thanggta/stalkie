@@ -26,7 +26,30 @@ echo "== Selecting iPhone simulator"
 
 UDID="$(
   python3 - <<'PY'
-import json, subprocess, sys
+import json, re, subprocess, sys
+
+def runtime_score(runtime: str) -> int:
+    """Prefer runtimes where xcodebuild + StoreKitTest still syncs Octane.
+
+    iOS 26.5+ is known to fail SKTestSession with SKInternalErrorDomain Code=3
+    under xcodebuild (config never reaches storekitd). Prefer 26.0–26.2, then
+    18.x, and only fall back to 26.5+ when nothing else exists.
+    """
+    m = re.search(r"iOS-(\d+)-(\d+)", runtime) or re.search(r"iOS[ -](\d+)\.(\d+)", runtime)
+    if not m:
+        return 0
+    major, minor = int(m.group(1)), int(m.group(2))
+    if major == 26 and minor <= 2:
+        return 300 + minor  # 26.2 > 26.1 > 26.0
+    if major == 18:
+        return 200 + minor
+    if major == 17:
+        return 100 + minor
+    if major == 26 and minor >= 5:
+        return 10 + minor  # last resort
+    if major == 26:
+        return 50 + minor  # 26.3/26.4 unknown; mid-tier
+    return major
 
 raw = subprocess.check_output(
     ["xcrun", "simctl", "list", "devices", "available", "-j"],
@@ -37,6 +60,7 @@ candidates = []
 for runtime, devices in data.get("devices", {}).items():
     if "iOS" not in runtime:
         continue
+    rscore = runtime_score(runtime)
     for d in devices:
         name = d.get("name", "")
         if not d.get("isAvailable", False):
@@ -44,7 +68,7 @@ for runtime, devices in data.get("devices", {}).items():
         if "iPhone" not in name or "iPad" in name:
             continue
         # Prefer modern full-size iPhones; skip SE / Plus / Air when possible.
-        score = 0
+        score = rscore
         if any(tok in name for tok in ("16", "17", "15 Pro", "15")):
             score += 10
         if "Pro" in name:
@@ -70,7 +94,7 @@ ios = [
 ]
 if not ios:
     sys.exit(1)
-ios.sort(key=lambda r: r.get("version", ""), reverse=True)
+ios.sort(key=lambda r: runtime_score(r.get("identifier", r.get("name", ""))), reverse=True)
 runtime = ios[0]["identifier"]
 
 devicetypes = json.loads(
@@ -103,7 +127,8 @@ fi
 
 echo "== Booting $UDID"
 if ! xcrun simctl boot "$UDID" 2>/tmp/carve-sim-boot.err; then
-  if ! grep -qi "already booted" /tmp/carve-sim-boot.err; then
+  # "already booted" and "current state: Booted" are both success.
+  if ! grep -Eqi "already booted|current state: Booted" /tmp/carve-sim-boot.err; then
     cat /tmp/carve-sim-boot.err >&2
     infra "failed to boot simulator $UDID"
   fi
@@ -114,34 +139,56 @@ if ! xcrun simctl bootstatus "$UDID" -b >/tmp/carve-sim-bootstatus.log 2>&1; the
   infra "simulator $UDID never reached Booted"
 fi
 
-echo "== Running FullLoopUITests"
-set +e
-xcodebuild test \
-  -project Apps/Carve.xcodeproj \
-  -scheme Carve \
-  -destination "platform=iOS Simulator,id=${UDID}" \
-  -only-testing:CarveUITests/FullLoopUITests \
-  -resultBundlePath "$RESULT_BUNDLE" \
-  -derivedDataPath .build/DerivedData-UITest \
-  CODE_SIGN_IDENTITY=- \
-  CODE_SIGNING_REQUIRED=NO \
-  2>&1 | tee "${RESULT_DIR}/xcodebuild.log"
-STATUS=${PIPESTATUS[0]}
-set -e
+# Isolate free-loop from StoreKit: shared simulator purchase state can
+# contaminate either suite when they share one long test process.
+run_suite() {
+  local label="$1"
+  local only="$2"
+  local bundle="$3"
+  echo "== Running ${label}"
+  rm -rf "$bundle"
+  set +e
+  xcodebuild test \
+    -project Apps/Carve.xcodeproj \
+    -scheme Carve \
+    -testPlan CarveUITests \
+    -destination "platform=iOS Simulator,id=${UDID}" \
+    -only-testing:"${only}" \
+    -resultBundlePath "$bundle" \
+    -derivedDataPath .build/DerivedData-UITest \
+    CODE_SIGN_IDENTITY=- \
+    CODE_SIGNING_REQUIRED=NO \
+    2>&1 | tee -a "${RESULT_DIR}/xcodebuild.log"
+  local status=${PIPESTATUS[0]}
+  set -e
+  return "$status"
+}
 
-if [ "$STATUS" -eq 0 ]; then
-  echo "OK: FullLoopUITests passed"
+: > "${RESULT_DIR}/xcodebuild.log"
+
+FULL_BUNDLE="${RESULT_DIR}/FullLoop.xcresult"
+STORE_BUNDLE="${RESULT_DIR}/StoreKit.xcresult"
+RESULT_BUNDLE="$FULL_BUNDLE"
+
+run_suite "FullLoopUITests" "CarveUITests/FullLoopUITests" "$FULL_BUNDLE"
+FULL_STATUS=$?
+
+run_suite "StoreKitPurchaseUITests" "CarveUITests/StoreKitPurchaseUITests" "$STORE_BUNDLE"
+STORE_STATUS=$?
+
+if [ "$FULL_STATUS" -eq 0 ] && [ "$STORE_STATUS" -eq 0 ]; then
+  echo "OK: CarveUITests passed (FullLoop + StoreKit)"
   exit 0
 fi
 
 # Destination / signing / build-system problems are infrastructure.
 if grep -Eqi "Unable to find a destination|xcodebuild: error:|Failed to build|Could not find|No profiles for" \
   "${RESULT_DIR}/xcodebuild.log"; then
-  infra "xcodebuild failed before tests ran (exit ${STATUS})"
+  infra "xcodebuild failed before tests ran (FullLoop=${FULL_STATUS} StoreKit=${STORE_STATUS})"
 fi
 
-if [ "$STATUS" -eq 70 ]; then
-  infra "xcodebuild destination error (exit 70)"
+if [ "$FULL_STATUS" -eq 70 ] || [ "$STORE_STATUS" -eq 70 ]; then
+  infra "xcodebuild destination error (FullLoop=${FULL_STATUS} StoreKit=${STORE_STATUS})"
 fi
 
-testfail "FullLoopUITests failed (xcodebuild exit ${STATUS})"
+testfail "CarveUITests failed (FullLoop=${FULL_STATUS} StoreKit=${STORE_STATUS})"

@@ -14,10 +14,15 @@ final class FullLoopUITests: XCTestCase {
     app.launchArguments = ["-resetProgress", "-uiTestSkipRestore"]
     app.launch()
 
+    XCTAssertTrue(
+      app.descendants(matching: .any)["case-library"].waitForExistence(timeout: 15),
+      "library should appear on first launch")
+    tapIdentifier(app, "case-card-five_minutes")
+
     // Home shell is up (not the white failure screen).
     XCTAssertTrue(
       app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 15),
-      "phone root should appear after launch")
+      "phone root should appear after launching the free case")
 
     // Open Messages from the dock.
     tapIdentifier(app, "app-messages")
@@ -54,8 +59,8 @@ final class FullLoopUITests: XCTestCase {
 
     goHome(app)
 
-    // Decide flow — answer all 15.
-    tapIdentifier(app, "app-decide")
+    // Decide flow — answer all 15. Decide is hidden until Sable is carved.
+    tapIdentifier(app, "app-decide", timeout: 10)
     tapIdentifier(app, "verdict-ready")
 
     let answers: [(String, String)] = [
@@ -97,6 +102,11 @@ final class FullLoopUITests: XCTestCase {
     let app2 = XCUIApplication()
     app2.launchArguments = []  // restore saved snapshot
     app2.launch()
+
+    XCTAssertTrue(
+      app2.descendants(matching: .any)["case-library"].waitForExistence(timeout: 15),
+      "relaunch returns to the library")
+    tapIdentifier(app2, "case-card-five_minutes")
 
     XCTAssertTrue(
       app2.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 15))

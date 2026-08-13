@@ -253,7 +253,7 @@ struct MessagesListView: View {
 
   private func rowTitle(_ item: VisibleFragmentItem) -> String {
     if let t = try? FragmentContent.thread(item.fragment) {
-      return t.counterpartyDisplay
+      return t.counterpartyDisplay(ownerEntityId: session.caseFile.ownerEntityId)
     }
     return item.fragment.label
   }
@@ -261,6 +261,7 @@ struct MessagesListView: View {
 
 /// iMessage-style conversation row: avatar, name, preview, time.
 struct MessagesThreadRow: View {
+  @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
   let item: VisibleFragmentItem
   let preview: String
@@ -322,7 +323,7 @@ struct MessagesThreadRow: View {
 
   private var rowTitle: String {
     if let t = try? FragmentContent.thread(item.fragment) {
-      return t.counterpartyDisplay
+      return t.counterpartyDisplay(ownerEntityId: session.caseFile.ownerEntityId)
     }
     return item.fragment.label
   }
@@ -466,6 +467,7 @@ struct PhotosGridView: View {
 }
 
 struct FragmentRow: View {
+  @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
   let item: VisibleFragmentItem
   let subtitle: String
@@ -507,7 +509,7 @@ struct FragmentRow: View {
     switch item.fragment.type {
     case .thread:
       if let t = try? FragmentContent.thread(item.fragment) {
-        return t.counterpartyDisplay
+        return t.counterpartyDisplay(ownerEntityId: session.caseFile.ownerEntityId)
       }
       return item.fragment.label
     case .note:

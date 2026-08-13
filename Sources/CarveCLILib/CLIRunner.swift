@@ -1,5 +1,6 @@
 // Sources/CarveCLILib/CLIRunner.swift
 import CarveCore
+import CarveShell
 import Foundation
 
 /// The whole `validate_case` flow as a library, so every branch is testable
@@ -24,8 +25,17 @@ public enum CLIRunner {
     stdout: (String) -> Void,
     stderr: (String) -> Void
   ) -> Int32 {
+    if arguments.first == "--catalog" {
+      guard let catalogPath = arguments.dropFirst().first else {
+        stderr("usage: CarveCLI --catalog <catalog.json>")
+        return 1
+      }
+      return validateCatalogArgument(catalogPath, stdout: stdout, stderr: stderr)
+    }
+
     guard let dir = arguments.first else {
       stderr("usage: CarveCLI <case-directory>")
+      stderr("       CarveCLI --catalog <catalog.json>")
       return 1
     }
 
@@ -89,6 +99,25 @@ public enum CLIRunner {
       stderr("  • \(error)")
       return 1
     }
+  }
+
+  private static func validateCatalogArgument(
+    _ catalogPath: String,
+    stdout: (String) -> Void,
+    stderr: (String) -> Void
+  ) -> Int32 {
+    let catalogURL = URL(fileURLWithPath: catalogPath)
+    let casesRoot = catalogURL.deletingLastPathComponent()
+    let problems = validateCatalogBundle(catalogURL: catalogURL, casesRoot: casesRoot)
+    if problems.isEmpty {
+      stdout("OK  catalog")
+      return 0
+    }
+    stderr("FAILED  catalog — \(problems.count) problem(s):")
+    for problem in problems {
+      stderr("  • \(problem)")
+    }
+    return 1
   }
 
   // FileHandle.write is unbuffered, so nothing is lost to stdio buffering

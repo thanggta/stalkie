@@ -87,7 +87,8 @@ struct FragmentHostView: View {
   private func shortTitle(_ fragment: Fragment) -> String {
     switch fragment.type {
     case .thread:
-      return (try? FragmentContent.thread(fragment))?.counterpartyDisplay ?? fragment.label
+      return (try? FragmentContent.thread(fragment))?.counterpartyDisplay(
+        ownerEntityId: session.caseFile.ownerEntityId) ?? fragment.label
     case .note:
       return (try? FragmentContent.note(fragment))?.title ?? fragment.label
     case .record where fragment.recordKind == "social_profile":

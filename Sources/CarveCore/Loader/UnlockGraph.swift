@@ -141,7 +141,7 @@ func canFalsify(_ predicate: any Predicate, reachable: Set<String>) -> Bool {
 }
 
 /// Every fragment id named by a `carved` leaf, including under `not`.
-func allCarvedReferences(_ predicate: any Predicate) -> Set<String> {
+public func allCarvedReferences(_ predicate: any Predicate) -> Set<String> {
   if let carved = predicate as? CarvedPredicate {
     return [carved.fragmentId]
   }
@@ -160,7 +160,7 @@ func allCarvedReferences(_ predicate: any Predicate) -> Set<String> {
   return []
 }
 
-func allAnsweredReferences(_ predicate: any Predicate) -> Set<String> {
+public func allAnsweredReferences(_ predicate: any Predicate) -> Set<String> {
   if let answered = predicate as? AnsweredPredicate {
     return [answered.questionId]
   }

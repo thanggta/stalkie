@@ -247,6 +247,12 @@ Run before every submission.
       names is genuinely a config edit. That is DR-12's only retreat path
 - [ ] Free first case complete and playable to a filed verdict without payment
 - [ ] IAP is one-time unlock only; no cycle purchases exist anywhere in the build
+- [ ] Catalog is the only source of product IDs — none appear in views
+- [ ] Purchase screen states one-time, names the case, shows StoreKit's localized price, says it is not a subscription, and offers Restore Purchases
+- [ ] No fake urgency, countdown, preselected purchase, or disguised buy button
+- [ ] Local `.storekit` configuration is not treated as proof that the App Store Connect product exists
+- [ ] Case 1 (`five_minutes`) launches with StoreKit unavailable
+- [ ] Accessibility baseline checked: VoiceOver labels on library cards, purchase actions, maps pins, social rows, link nodes, verdict options, results; Dynamic Type; Reduce Motion; no critical info by color only; authored image descriptions do not leak `depicts`
 - [ ] Age rating matches actual content
 - [ ] No device-data permission requested that gameplay doesn't need
 - [ ] Privacy nutrition label matches what the app actually collects

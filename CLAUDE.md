@@ -199,18 +199,18 @@ case.
 
 ## Project state
 
-**Engine, damage, phone shell, link board, verdict, and session persistence are in place.**
+**Engine, damage, phone shell, catalog, StoreKit entitlement, and session persistence are in place.**
 
 | Layer | Status |
 |---|---|
 | `CarveCore` | Domain models, six-predicate unlocks, loader, validator (INV-3…INV-5 + cycles), discovery-gated engine (DR-11), forced complete verdict scoring. Foundation-only. |
 | `CarveDamage` | Deterministic Metal damage from clean sources |
-| `CarveShell` | Theme layer (DR-8 retreat), case bundle load, `GameSession`, versioned session snapshots (IO outside Core), brand labels (DR-12) |
-| `CarveUI` | iOS-lookalike SpringBoard shell, Messages / Notes / Photos / Phone / Maps / Instagram / Snapchat surfaces, link board, Decide → results |
-| App | `Apps/Carve` — launch chrome, restore-or-fail progress, case bundle copy, XCUITest full loop |
-| Sample | `cases/five_minutes` and `cases/dont_wait_up` — both relationship drama; authorable as data |
+| `CarveShell` | Theme layer (DR-8 retreat), case bundle load, catalog, `GameSession`, versioned session snapshots (IO outside Core), brand labels (DR-12). StoreKit-free. |
+| `CarveCommerce` | StoreKit 2 non-consumable entitlement. Protocols + fakes for tests. Never grants from unverified transactions. |
+| `CarveUI` | Case library (game-layer), purchase screen, iOS-lookalike phone shell, diegetic Links/Decide, Decide → results |
+| App | `Apps/Carve` — catalog + entitlement + launcher, case bundle copy, XCUITest free-case loop and StoreKit purchase/restore |
+| Sample | `cases/five_minutes` (free) and `cases/dont_wait_up` (paid-case candidate; 32 min internal playtime) |
 
-CI: `swift test`, `CarveCLI` on every case, `swift build --target CarveUI`, iOS simulator
-`xcodebuild` (`.github/workflows/ci.yml`).
+CI: `swift test`, `CarveCLI` on every case, catalog validation, `swift build --target CarveUI`, iOS simulator `xcodebuild` + UI tests (`.github/workflows/ci.yml`).
 
 `riverside` (drowned-brother / client premise) was retired with DR-11 — off-premise under DR-10.

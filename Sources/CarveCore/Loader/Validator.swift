@@ -110,6 +110,34 @@ public func validateCase(_ c: CaseFile) -> [String] {
     problems.append("A case needs at least one verdict question.")
   }
 
+  if let owner = c.ownerEntityId, !owner.isEmpty {
+    let known = harvestedEntityIds(c)
+    if !known.contains(owner) {
+      problems.append(
+        "ownerEntityId \"\(owner)\" does not appear as a participant or depicted entity.")
+    }
+  }
+
+  if let raw = c.decideReadyWhen {
+    do {
+      let predicate = try parsePredicate(raw)
+      if !allAnsweredReferences(predicate).isEmpty {
+        problems.append(
+          "decideReadyWhen cannot use \"answered\" — hiding Decide until a question "
+            + "is filed is a deadlock.")
+      }
+      for ref in allCarvedReferences(predicate) where c.fragments[ref] == nil {
+        problems.append("decideReadyWhen references unknown fragment \"\(ref)\".")
+      }
+      for ref in allCarvedReferences(predicate) where !reachable.contains(ref) {
+        problems.append(
+          "decideReadyWhen references unreachable fragment \"\(ref)\" — Decide would never appear.")
+      }
+    } catch {
+      problems.append("decideReadyWhen is not valid declarative grammar: \(error)")
+    }
+  }
+
   // DR-13: every fragment surface must be a known type/surface pair.
   for id in c.fragments.keys.sorted() {
     guard let fragment = c.fragments[id] else { continue }
@@ -126,4 +154,40 @@ public func validateCase(_ c: CaseFile) -> [String] {
   }
 
   return problems
+}
+
+/// Entity ids authored on threads, images, and records. Used to prove
+/// `ownerEntityId` refers to someone who actually exists in the case.
+func harvestedEntityIds(_ c: CaseFile) -> Set<String> {
+  var ids = Set<String>()
+  for fragment in c.fragments.values {
+    collectEntityIds(.object(fragment.content), into: &ids)
+  }
+  return ids
+}
+
+private func collectEntityIds(_ value: JSONValue, into ids: inout Set<String>) {
+  switch value {
+  case .string:
+    return
+  case .number, .bool, .null:
+    return
+  case .array(let items):
+    for item in items { collectEntityIds(item, into: &ids) }
+  case .object(let object):
+    if case .string(let entityId) = object["entityId"], !entityId.isEmpty {
+      ids.insert(entityId)
+    }
+    if case .array(let depicts) = object["depicts"] {
+      for item in depicts {
+        if case .string(let entityId) = item, !entityId.isEmpty {
+          ids.insert(entityId)
+        }
+      }
+    }
+    if case .string(let author) = object["authorEntityId"], !author.isEmpty {
+      ids.insert(author)
+    }
+    for child in object.values { collectEntityIds(child, into: &ids) }
+  }
 }

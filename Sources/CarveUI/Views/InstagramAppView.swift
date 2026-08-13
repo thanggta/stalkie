@@ -219,6 +219,7 @@ struct InstagramAppView: View {
       }
       .buttonStyle(.plain)
       .accessibilityIdentifier("instagram-post-\(item.id)")
+      .accessibilityLabel(image?.accessibilityDescription ?? image?.caption ?? item.fragment.label)
 
       VStack(alignment: .leading, spacing: theme.spacing.xs) {
         if let likes = image?.likes {
@@ -260,7 +261,7 @@ struct InstagramAppView: View {
               .fill(theme.palette.secondaryText.color.opacity(0.3))
               .frame(width: 48, height: 48)
             VStack(alignment: .leading, spacing: 2) {
-              Text(thread?.counterpartyDisplay ?? item.fragment.label)
+              Text(thread?.counterpartyDisplay(ownerEntityId: session.caseFile.ownerEntityId) ?? item.fragment.label)
                 .font(theme.fonts.headlineFont)
                 .foregroundStyle(theme.palette.primaryText.color)
               Text(thread?.messages.last?.text ?? "")

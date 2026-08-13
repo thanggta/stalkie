@@ -115,6 +115,8 @@ public struct ImageContent: Equatable, Sendable {
   public let authorEntityId: String?
   public let handle: String?
   public let comments: [SocialComment]
+  /// Non-spoiler VoiceOver description. Never a dump of `depicts`.
+  public let accessibilityDescription: String?
 }
 
 public enum FragmentContentError: Error, Equatable {
@@ -297,7 +299,8 @@ public enum FragmentContent {
       likes: number(content, "likes").map { Int($0) },
       authorEntityId: optionalString(content, "authorEntityId"),
       handle: optionalString(content, "handle"),
-      comments: comments)
+      comments: comments,
+      accessibilityDescription: optionalString(content, "accessibilityDescription"))
   }
 
   // MARK: - JSON helpers

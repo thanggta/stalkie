@@ -8,6 +8,7 @@
     "source": "media/img_badge_source.png",
     "capturedAt": "2026-08-12T08:47:00-07:00",
     "exifIntact": true,
-    "depicts": ["jonah", "location_lumen"]
+    "depicts": ["jonah", "location_lumen"],
+    "accessibilityDescription": "A visitor badge on a lanyard, photographed on a table."
   }
 }

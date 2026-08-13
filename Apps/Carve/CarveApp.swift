@@ -1,13 +1,12 @@
 // Apps/Carve/CarveApp.swift
 import SwiftUI
+import CarveCommerce
 import CarveCore
 import CarveShell
 import CarveUI
 
 @main
 struct CarveApp: App {
-  /// Owns the load outcome. On success, holds the `GameSession` the UI observes
-  /// via `environmentObject` (so session mutations still publish correctly).
   @StateObject private var bootstrap: AppBootstrap
 
   init() {
@@ -21,15 +20,41 @@ struct CarveApp: App {
         case .loading:
           PhoneLaunchView(theme: Theme.iosLookalike)
             .accessibilityIdentifier("launch-loading")
-        case .pickCase(let ids):
-          DebugCasePickerView(ids: ids) { id in
-            bootstrap.selectCase(id)
-          }
-        case .ready(let session):
-          RootPhoneView()
+        case .library:
+          CaseLibraryView(
+            catalog: bootstrap.catalog,
+            snapshot: bootstrap.entitlements.snapshot,
+            progress: bootstrap.progress(for:),
+            canLaunch: bootstrap.canLaunch,
+            onOpen: { bootstrap.openCase($0.caseId) },
+            onPurchase: { bootstrap.showPurchase($0) },
+            onReplay: { bootstrap.replay($0.caseId) },
+            onRestore: { Task { await bootstrap.restorePurchases() } },
+            onDeleteAllProgress: { bootstrap.deleteAllProgress() },
+            showDeveloperReset: AppBootstrap.developerToolsEnabled,
+            onDeveloperReset: { bootstrap.resetProgress() }
+          )
+          .environment(\.carveTheme, Theme.iosLookalike)
+        case .phone(let session):
+          RootPhoneView(onLeavePhone: { bootstrap.returnToLibrary() })
             .environmentObject(session)
             .environment(\.carveTheme, session.theme)
             .accessibilityIdentifier("phone-root")
+        case .purchase(let entry):
+          CasePurchaseView(
+            entry: entry,
+            product: entry.productId.flatMap { bootstrap.entitlements.snapshot.product(id: $0) },
+            phase: bootstrap.purchasePhase,
+            loadState: bootstrap.entitlements.snapshot.loadState,
+            onBuy: { Task { await bootstrap.buy(entry) } },
+            onRestore: { Task { await bootstrap.restorePurchases() } },
+            onClose: { bootstrap.returnToLibrary() }
+          )
+          .environment(\.carveTheme, Theme.iosLookalike)
+        case .pickCase(let ids):
+          DebugCasePickerView(ids: ids) { id in
+            bootstrap.openCase(id)
+          }
         case .failed(let message):
           CaseLoadFailureView(message: message)
             .accessibilityIdentifier("case-load-failure")
@@ -37,119 +62,6 @@ struct CarveApp: App {
       }
     }
   }
-}
-
-/// Loads the case once at launch, restores a compatible snapshot, and wires
-/// auto-save. Failures stay failures — no empty fake case.
-@MainActor
-public final class AppBootstrap: ObservableObject {
-  public enum Phase {
-    case loading
-    case pickCase([String])
-    case ready(GameSession)
-    case failed(String)
-  }
-
-  @Published public private(set) var phase: Phase = .loading
-
-  private let arguments: [String]
-  private let supportDirectory: URL
-  private let injectedStore: SessionStore?
-  private var store: SessionStore
-  private var caseId: String
-  private var session: GameSession?
-
-  public init(
-    arguments: [String] = ProcessInfo.processInfo.arguments,
-    store: SessionStore? = nil,
-    autoStart: Bool = true
-  ) {
-    self.arguments = arguments
-    self.injectedStore = store
-    self.supportDirectory =
-      FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-      .first?
-      .appendingPathComponent("Carve", isDirectory: true)
-      ?? FileManager.default.temporaryDirectory.appendingPathComponent("Carve", isDirectory: true)
-    self.caseId = CaseLaunch.resolvedCaseId(arguments: arguments)
-    self.store = store ?? FileSessionStore(directory: supportDirectory, caseId: caseId)
-    if autoStart {
-      start()
-    }
-  }
-
-  public func start() {
-    #if DEBUG
-    if CaseLaunch.shouldShowPicker(arguments: arguments) {
-      phase = .pickCase(CaseLaunch.discoverBundledCaseIds())
-      return
-    }
-    #endif
-    load(caseId: caseId)
-  }
-
-  public func selectCase(_ id: String) {
-    load(caseId: id)
-  }
-
-  private func load(caseId: String) {
-    self.caseId = caseId
-    if injectedStore == nil {
-      store = FileSessionStore(directory: supportDirectory, caseId: caseId)
-    }
-    do {
-      if arguments.contains("-resetProgress") {
-        try? store.clear()
-      }
-
-      guard let dir = CaseBundleLoader.resolveCaseDirectory(id: caseId) else {
-        throw CaseBundleLoaderError.missingManifest(
-          "Cases/\(caseId)/case.json (not in bundle or cwd)")
-      }
-      let caseFile = try CaseBundleLoader.load(directory: dir)
-      guard !caseFile.fragments.isEmpty else {
-        throw SessionPersistenceError.emptyCase
-      }
-
-      let session: GameSession
-      if arguments.contains("-uiTestSkipRestore") {
-        session = GameSession(caseFile: caseFile)
-      } else if let snapshot = try store.load() {
-        do {
-          session = try GameSession(caseFile: caseFile, snapshot: snapshot)
-        } catch {
-          // Incompatible / corrupt progress is visible, not silently wiped to empty.
-          phase = .failed(playerFacingLoadMessage(error))
-          return
-        }
-      } else {
-        session = GameSession(caseFile: caseFile)
-      }
-
-      SessionPersistence.attach(store: store, to: session)
-      self.session = session
-      phase = .ready(session)
-    } catch {
-      phase = .failed(playerFacingLoadMessage(error))
-    }
-  }
-
-  /// Developer reset: wipe snapshot and reload a fresh session.
-  public func resetProgress() {
-    try? store.clear()
-    session = nil
-    phase = .loading
-    start()
-  }
-}
-
-private func playerFacingLoadMessage(_ error: Error) -> String {
-  let failure = PlayerFacingCopy.loadFailure(from: error)
-  #if DEBUG
-  return failure.playerMessage + "\n\n" + failure.developerDetail
-  #else
-  return failure.playerMessage
-  #endif
 }
 
 struct DebugCasePickerView: View {
@@ -162,7 +74,7 @@ struct DebugCasePickerView: View {
       Text("Choose a phone")
         .font(theme.fonts.titleFont)
         .foregroundStyle(theme.palette.primaryText.color)
-      Text("Development only. Production opens the default case.")
+      Text("Development only. Production opens the library.")
         .font(theme.fonts.subheadlineFont)
         .foregroundStyle(theme.palette.secondaryText.color)
 
@@ -199,7 +111,6 @@ struct DebugCasePickerView: View {
   }
 }
 
-/// Phone-shell-matched launch chrome so cold start never flashes raw white.
 public struct PhoneLaunchView: View {
   let theme: Theme
 

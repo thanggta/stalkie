@@ -160,6 +160,53 @@ struct SessionPersistenceTests {
     #expect(session.persistenceFailure == nil)
   }
 
+  /// Why: AppBootstrap holds only the session after `load` returns. If attach
+  /// weak-captures the store, every carve/link/file silently no-ops and the
+  /// free full-loop relaunch cannot restore Decide / filed results.
+  @Test func attachKeepsStoreAliveAfterCallerReleasesIt() throws {
+    let caseFile = try loadFiveMinutes()
+    let session = GameSession(caseFile: caseFile)
+    weak var weakStore: MemorySessionStore?
+
+    do {
+      let store = MemorySessionStore()
+      weakStore = store
+      SessionPersistence.attach(store: store, to: session)
+    }
+
+    #expect(weakStore != nil, "attach must retain the store for the session lifetime")
+    #expect(session.openFragment("thread_theo").outcome == .ok)
+    #expect(session.openFragment("thread_sable").outcome == .ok)
+    let saved = try #require(try weakStore?.load())
+    #expect(saved.carvedIds.contains("thread_sable"))
+  }
+
+  /// Why: after filing, relaunch must show Decide so results are reachable.
+  /// A snapshot with isFiled + carved thread_sable is the free-case contract.
+  @Test func filedRestoreKeepsDecideVisible() throws {
+    let caseFile = try loadFiveMinutes()
+    let session = GameSession(caseFile: caseFile)
+    #expect(session.isDecideVisible == false)
+
+    #expect(session.openFragment("thread_theo").outcome == .ok)
+    #expect(session.isDecideVisible == false)
+    #expect(session.openFragment("thread_sable").outcome == .ok)
+    #expect(session.isDecideVisible == true)
+
+    for q in caseFile.questions {
+      session.setAnswer(questionId: q.id, option: q.correct)
+    }
+    guard case .filed = session.fileVerdict() else {
+      Issue.record("expected filed verdict")
+      return
+    }
+
+    let restored = try GameSession(caseFile: caseFile, snapshot: session.makeSnapshot())
+    #expect(restored.isFiled)
+    #expect(restored.engine.carvedIds.contains("thread_sable"))
+    #expect(restored.isDecideVisible == true)
+  }
+
   @Test func saveFailureIsVisibleAndDoesNotReportSuccess() throws {
     // A disk write that throws must not look like progress was saved.
     // The player gets a recovery warning; the developer error is preserved; retry works.

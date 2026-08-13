@@ -33,6 +33,10 @@ jobs:
             echo "== $d"
             swift run CarveCLI "$d" >/dev/null || exit 1
           done
+      - name: Validate catalog
+        run: swift run CarveCLI --catalog cases/catalog.json
+      - name: Release bypass cannot grant entitlement
+        run: swift test -c release --filter EntitlementBypassReleaseTests
       - name: Build phone shell UI (SPM)
         # Compiles SwiftUI shell + viewers on the host. Proves the theme layer
         # and fragment wiring typecheck without a simulator.
@@ -63,12 +67,35 @@ jobs:
             build-for-testing
 
   uitest:
-    name: Execute FullLoopUITests
-    runs-on: macos-latest
-    timeout-minutes: 30
+    name: Execute UI tests
+    # macos-26 ships Xcode 26.x and iOS 26.0–26.2 runtimes. Prefer those over
+    # 26.5: StoreKitTest under xcodebuild fails with Code=3 on 26.5 simulators
+    # (Octane config never syncs). The selection script ranks 26.0–26.2 first.
+    runs-on: macos-26
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-      - name: Execute FullLoopUITests
+      - name: Select Xcode
+        run: |
+          # Prefer an Xcode whose bundled simulator runtimes still sync StoreKit.
+          for candidate in \
+            /Applications/Xcode_26.2.app \
+            /Applications/Xcode_26.1.1.app \
+            /Applications/Xcode_26.1.app \
+            /Applications/Xcode_26.0.1.app \
+            /Applications/Xcode_26.0.app \
+            /Applications/Xcode_26.6.app \
+            /Applications/Xcode_26.5.app \
+            /Applications/Xcode.app
+          do
+            if [ -d "$candidate" ]; then
+              sudo xcode-select -s "$candidate"
+              break
+            fi
+          done
+          xcodebuild -version
+          xcrun simctl list runtimes | grep iOS || true
+      - name: Execute UI tests
         run: |
           chmod +x scripts/ci-run-ui-tests.sh
           scripts/ci-run-ui-tests.sh
@@ -76,8 +103,9 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: FullLoop-xcresult
+          name: UITest-xcresult
           path: |
             TestResults/FullLoop.xcresult
+            TestResults/StoreKit.xcresult
             TestResults/xcodebuild.log
           if-no-files-found: warn

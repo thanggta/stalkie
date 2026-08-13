@@ -98,6 +98,8 @@ struct LinkBoardView: View {
           in: Capsule()
         )
         .accessibilityIdentifier("link-entity-\(entity.entityId)")
+        .accessibilityLabel(entity.displayName)
+        .accessibilityAddTraits(.isButton)
         .overlay(
           Capsule()
             .stroke(
@@ -107,6 +109,7 @@ struct LinkBoardView: View {
         )
     }
     .buttonStyle(.plain)
+    .frame(minWidth: 44, minHeight: 44)
   }
 
   private func linkList(entities: [BoardEntity]) -> some View {

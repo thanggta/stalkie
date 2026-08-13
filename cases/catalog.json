@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "five_minutes",
+      "title": "Five Minutes",
+      "summary": "His phone is unlocked on the counter. The shower is still running.",
+      "artwork": "five_minutes/media/img_counter_source.png",
+      "order": 1,
+      "access": "free",
+      "availability": "available"
+    },
+    {
+      "id": "dont_wait_up",
+      "title": "Don't Wait Up",
+      "summary": "He said dentist. He said don't wait up. The water is still running.",
+      "artwork": "dont_wait_up/media/img_hotel_source.png",
+      "order": 2,
+      "access": "paid",
+      "productId": "games.carve.case.dont_wait_up",
+      "availability": "available"
+    }
+  ]
+}

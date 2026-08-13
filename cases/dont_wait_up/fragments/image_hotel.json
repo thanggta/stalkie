@@ -8,6 +8,7 @@
     "source": "media/img_hotel_source.png",
     "capturedAt": "2026-08-11T23:08:00-07:00",
     "exifIntact": true,
-    "depicts": ["location_wren"]
+    "depicts": ["location_wren"],
+    "accessibilityDescription": "A hotel window at night, city lights smeared by rain."
   }
 }

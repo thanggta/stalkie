@@ -104,6 +104,9 @@ struct MapsAppView: View {
           }
           .buttonStyle(.plain)
           .accessibilityIdentifier("maps-pin-\(visit.placeId ?? visit.label)")
+          .accessibilityLabel(visit.label)
+          .accessibilityValue(visit.at)
+          .frame(minWidth: 44, minHeight: 44)
           .position(
             x: geo.size.width * visit.x,
             y: geo.size.height * visit.y

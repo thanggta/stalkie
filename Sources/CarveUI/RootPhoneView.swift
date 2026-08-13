@@ -14,10 +14,15 @@ public enum PhoneRoute: Hashable {
 }
 
 public struct RootPhoneView: View {
-  public init() {}
+  public var onLeavePhone: (() -> Void)?
+
+  public init(onLeavePhone: (() -> Void)? = nil) {
+    self.onLeavePhone = onLeavePhone
+  }
 
   @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @State private var path: [PhoneRoute] = []
 
   private var onHome: Bool { path.isEmpty }
@@ -55,6 +60,32 @@ public struct RootPhoneView: View {
           .allowsHitTesting(false)
       }
       .ignoresSafeArea(edges: .top)
+
+      if let onLeavePhone {
+        VStack {
+          HStack {
+            Button(action: onLeavePhone) {
+              Text("Cases")
+                .font(theme.fonts.footnoteFont)
+                .foregroundStyle(theme.palette.badgeText.color)
+                .padding(.horizontal, theme.spacing.sm)
+                .padding(.vertical, theme.spacing.xs)
+                .background(
+                  theme.palette.primaryText.color.opacity(0.28),
+                  in: Capsule()
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("library-back")
+            .accessibilityLabel("Back to case library")
+            .frame(minWidth: 44, minHeight: 44)
+            Spacer()
+          }
+          .padding(.horizontal, theme.spacing.sm)
+          Spacer()
+        }
+        .padding(.top, theme.statusBar.height)
+      }
     }
     .background(theme.palette.screenBackground.color.ignoresSafeArea())
     .environment(\.carveTheme, session.theme)
@@ -102,6 +133,7 @@ struct PersistenceWarningBanner: View {
 struct UnlockBannerStack: View {
   @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @Binding var path: [PhoneRoute]
 
   /// Filing must not be interrupted — jumping to an app mid-verdict drops answers.
@@ -164,8 +196,10 @@ struct UnlockBannerStack: View {
         .padding(.top, theme.spacing.xs)
       }
       .buttonStyle(.plain)
-      .transition(.move(edge: .top).combined(with: .opacity))
-      .animation(.spring(response: 0.35, dampingFraction: 0.85), value: notice.fragmentId)
+      .transition(reduceMotion ? .opacity : .move(edge: .top).combined(with: .opacity))
+      .animation(
+        reduceMotion ? nil : .spring(response: 0.35, dampingFraction: 0.85),
+        value: notice.fragmentId)
       .onAppear {
         let id = notice.fragmentId
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
