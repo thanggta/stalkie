@@ -14,34 +14,24 @@ struct HomeScreenView: View {
   @EnvironmentObject private var session: GameSession
   @Environment(\.carveTheme) private var theme
   @Binding var path: [PhoneRoute]
+  @State private var pageIndex: Int = 0
 
   private static let dockApps: [PhoneAppId] = [.phone, .messages, .photos, .browser]
 
-  private static let pageOrder: [PhoneAppId] = [
-    // Case-critical apps early so they stay within maxPageIcons on short phones.
-    .facetime, .calendar, .photos, .camera,
-    .mail, .notes, .board, .decide,
-    .places, .photoSocial, .ephemeralChat, .clock,
-    .weather, .reminders, .health, .wallet,
-    .settings, .appstore, .files, .books,
-    .music, .podcasts, .tv, .homekit,
-    .contacts, .calculator, .stocks,
+  /// Page 1: evidence and diegetic tools first. Filler is demoted to page 2
+  /// so Links/Decide are never truncated off a compact phone.
+  private static let primaryPageOrder: [PhoneAppId] = [
+    .facetime, .calendar, .camera, .mail,
+    .notes, .board, .decide, .places,
+    .photoSocial, .ephemeralChat, .clock, .reminders,
   ]
 
-  private func pageApps(maxIcons: Int) -> [PhoneAppId] {
-    var seen = Set(Self.dockApps)
-    var out: [PhoneAppId] = []
-    for app in Self.pageOrder where !seen.contains(app) {
-      guard isVisibleOnHome(app) else { continue }
-      out.append(app)
-      seen.insert(app)
-    }
-    for app in PhoneAppId.allCases where !seen.contains(app) {
-      guard isVisibleOnHome(app) else { continue }
-      out.append(app)
-    }
-    return Array(out.prefix(max(0, maxIcons)))
-  }
+  private static let secondaryPageOrder: [PhoneAppId] = [
+    .weather, .health, .wallet, .settings,
+    .appstore, .files, .books, .music,
+    .podcasts, .tv, .homekit, .contacts,
+    .calculator, .stocks,
+  ]
 
   private func isVisibleOnHome(_ app: PhoneAppId) -> Bool {
     switch app {
@@ -49,6 +39,26 @@ struct HomeScreenView: View {
     case .decide: return session.isDecideVisible
     default: return true
     }
+  }
+
+  private func orderedVisible(_ order: [PhoneAppId], excluding: Set<PhoneAppId>) -> [PhoneAppId] {
+    order.filter { !excluding.contains($0) && isVisibleOnHome($0) }
+  }
+
+  private func pages(maxIcons: Int) -> [[PhoneAppId]] {
+    let dock = Set(Self.dockApps)
+    var primary = orderedVisible(Self.primaryPageOrder, excluding: dock)
+    // Photos already in dock — keep page for discovery apps only.
+    let secondary = orderedVisible(Self.secondaryPageOrder, excluding: dock)
+    // Cap each page so bottom chrome never clips.
+    let cap = max(4, maxIcons)
+    if primary.count > cap {
+      let overflow = Array(primary.suffix(from: cap))
+      primary = Array(primary.prefix(cap))
+      return [primary, overflow + secondary].map { Array($0.prefix(cap)) }
+    }
+    let page2 = Array(secondary.prefix(cap))
+    return page2.isEmpty ? [primary] : [primary, page2]
   }
 
   var body: some View {
@@ -61,7 +71,8 @@ struct HomeScreenView: View {
         iconLabelHeight: theme.fonts.iconLabel + 2,
         statusBandHeight: theme.statusBar.height + theme.spacing.xs
       )
-      let apps = pageApps(maxIcons: layout.maxPageIcons)
+      let pages = pages(maxIcons: layout.maxPageIcons)
+      let safePage = min(pageIndex, max(pages.count - 1, 0))
 
       ZStack(alignment: .bottom) {
         wallpaper
@@ -70,8 +81,6 @@ struct HomeScreenView: View {
             cycleTheme()
           }
 
-        // Page content sits above a reserved bottom-chrome band so the
-        // home-indicator Capsule is never pushed off-screen.
         VStack(spacing: 0) {
           Color.clear
             .frame(height: layout.statusBandHeight)
@@ -80,13 +89,24 @@ struct HomeScreenView: View {
             .padding(.horizontal, layout.sideMargin)
             .padding(.bottom, layout.widgetBottomPadding)
 
-          iconPage(layout: layout, apps: apps)
+          TabView(selection: $pageIndex) {
+            ForEach(Array(pages.enumerated()), id: \.offset) { index, apps in
+              iconPage(layout: layout, apps: apps)
+                .tag(index)
+            }
+          }
+          #if os(iOS)
+          .tabViewStyle(.page(indexDisplayMode: .never))
+          #endif
 
           Spacer(minLength: 0)
         }
         .padding(.bottom, layout.bottomChromeHeight)
 
-        bottomChrome(layout: layout)
+        bottomChrome(layout: layout, pageCount: pages.count, current: safePage)
+      }
+      .onChange(of: pages.count) { _, count in
+        if pageIndex >= count { pageIndex = max(0, count - 1) }
       }
     }
     .ignoresSafeArea()
@@ -142,35 +162,47 @@ struct HomeScreenView: View {
     .padding(.horizontal, layout.sideMargin)
   }
 
-  private func bottomChrome(layout: SpringBoardLayout) -> some View {
+  private func bottomChrome(layout: SpringBoardLayout, pageCount: Int, current: Int) -> some View {
     VStack(spacing: 0) {
-      pageDots(layout: layout)
+      pageDots(layout: layout, pageCount: pageCount, current: current)
         .padding(.bottom, layout.dotsBottomPadding)
 
       dock(layout: layout)
 
-      // In-fiction home indicator — must remain fully on-screen (system
-      // overlays are hidden by the shell).
-      Capsule()
-        .fill(theme.palette.badgeText.color.opacity(0.72))
-        .frame(width: layout.homeIndicatorWidth, height: layout.homeIndicatorHeight)
-        .padding(.top, layout.indicatorTopPadding)
-        .padding(.bottom, layout.indicatorBottomPadding)
-        .accessibilityIdentifier("home-indicator")
-        .accessibilityLabel("Home Indicator")
+      // In-fiction home indicator — tappable return-to-home for deep stacks.
+      Button {
+        path = []
+      } label: {
+        Capsule()
+          .fill(theme.palette.badgeText.color.opacity(0.72))
+          .frame(width: layout.homeIndicatorWidth, height: layout.homeIndicatorHeight)
+          .frame(maxWidth: .infinity)
+          .frame(minHeight: 44)
+          .contentShape(Rectangle())
+      }
+      .buttonStyle(.plain)
+      .padding(.top, layout.indicatorTopPadding)
+      .padding(.bottom, layout.indicatorBottomPadding)
+      .accessibilityIdentifier("home-indicator")
+      .accessibilityLabel("Home")
+      .accessibilityHint("Returns to the phone home screen")
     }
     .frame(maxWidth: .infinity)
   }
 
-  private func pageDots(layout: SpringBoardLayout) -> some View {
-    HStack(spacing: layout.pageDotSpacing) {
-      Circle()
-        .fill(theme.palette.badgeText.color)
-        .frame(width: layout.pageDotSize, height: layout.pageDotSize)
-      Circle()
-        .fill(theme.palette.badgeText.color.opacity(0.32))
-        .frame(width: layout.pageDotSize, height: layout.pageDotSize)
+  private func pageDots(layout: SpringBoardLayout, pageCount: Int, current: Int) -> some View {
+    let count = max(1, pageCount)
+    return HStack(spacing: layout.pageDotSpacing) {
+      ForEach(0..<count, id: \.self) { index in
+        Circle()
+          .fill(
+            theme.palette.badgeText.color.opacity(index == current ? 1.0 : 0.32)
+          )
+          .frame(width: layout.pageDotSize, height: layout.pageDotSize)
+      }
     }
+    .accessibilityElement(children: .ignore)
+    .accessibilityLabel("Home screen page \(current + 1) of \(count)")
   }
 
   private func iconButton(_ app: PhoneAppId, showLabel: Bool) -> some View {

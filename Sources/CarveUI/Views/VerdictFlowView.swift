@@ -323,9 +323,11 @@ struct VerdictFlowView: View {
     VStack(alignment: .leading, spacing: theme.spacing.lg) {
       Spacer()
 
-      Text("File this.")
-        .font(theme.fonts.titleFont)
+      Text("This is the line.")
+        .font(theme.fonts.largeTitleFont)
+        .fontWeight(.bold)
         .foregroundStyle(theme.palette.destructive.color)
+        .accessibilityAddTraits(.isHeader)
 
       Text(
         "You are saying you know what he did. If you are wrong about Ivy, about Thursday, about whether he is leaving — that is the story you chose."
@@ -333,9 +335,11 @@ struct VerdictFlowView: View {
       .font(theme.fonts.bodyFont)
       .foregroundStyle(theme.palette.primaryText.color)
 
-      Text("You cannot take a filed verdict back.")
-        .font(theme.fonts.headlineFont)
-        .foregroundStyle(theme.palette.secondaryText.color)
+      Text(
+        "\(session.caseFile.questions.count) answers. Wrong ones stay wrong. You cannot take a filed verdict back."
+      )
+      .font(theme.fonts.headlineFont)
+      .foregroundStyle(theme.palette.secondaryText.color)
 
       Button {
         let result = session.fileVerdict()
@@ -350,8 +354,7 @@ struct VerdictFlowView: View {
         Text("File what I believe")
           .font(theme.fonts.headlineFont)
           .foregroundStyle(theme.palette.badgeText.color)
-          .frame(maxWidth: .infinity)
-          .padding(theme.spacing.md)
+          .frame(maxWidth: .infinity, minHeight: 52)
           .background(
             theme.palette.destructive.color,
             in: RoundedRectangle(cornerRadius: theme.radii.card, style: .continuous)
@@ -359,6 +362,7 @@ struct VerdictFlowView: View {
       }
       .buttonStyle(.plain)
       .accessibilityIdentifier("verdict-file")
+      .accessibilityHint("Locks your answers permanently for this playthrough")
       .disabled(!session.allQuestionsAnswered)
       .opacity(session.allQuestionsAnswered ? 1 : 0.5)
 
@@ -367,6 +371,7 @@ struct VerdictFlowView: View {
       }
       .font(theme.fonts.bodyFont)
       .foregroundStyle(theme.palette.accent.color)
+      .frame(minHeight: 44)
 
       Spacer()
     }

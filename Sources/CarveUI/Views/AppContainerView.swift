@@ -77,6 +77,8 @@ struct AppNavBar: View {
         .fontWeight(.semibold)
         .foregroundStyle(theme.palette.primaryText.color)
         .lineLimit(1)
+        .accessibilityAddTraits(.isHeader)
+        .padding(.horizontal, 88)
 
       HStack(spacing: theme.spacing.xxs) {
         Button(action: onBack) {
@@ -88,6 +90,8 @@ struct AppNavBar: View {
               .font(theme.fonts.bodyFont)
           }
           .foregroundStyle(theme.palette.accent.color)
+          .frame(minWidth: 64, minHeight: 44, alignment: .leading)
+          .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel("\(backLabel)")
@@ -121,13 +125,28 @@ struct EmptyShellAppView: View {
         .font(theme.fonts.titleFont)
         .fontWeight(.semibold)
         .foregroundStyle(theme.palette.primaryText.color)
-      Text("No content")
+      Text(emptyCopy)
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.secondaryText.color)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, theme.spacing.xl)
       Spacer()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .background(theme.palette.groupedBackground.color)
+  }
+
+  private var emptyCopy: String {
+    switch appId {
+    case .calendar: return "No Events"
+    case .mail: return "No Mail"
+    case .browser: return "No tabs open"
+    case .settings: return ""
+    case .camera: return "Camera unavailable"
+    case .contacts: return "No Contacts"
+    case .reminders: return "No Reminders"
+    default: return "No content"
+    }
   }
 }
 
@@ -459,6 +478,9 @@ struct PhotosGridView: View {
               }
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("photos-item-\(item.id)")
+            .accessibilityLabel(item.fragment.label)
+            .accessibilityHint(item.isUnreadUnlock ? "New" : "")
           }
         }
       }

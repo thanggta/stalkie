@@ -1,5 +1,6 @@
 // Sources/CarveUI/Views/MapsAppView.swift
 // Google Maps-style location history from authored data only.
+// Empty state before gate must not read as a broken map.
 // No device location, no network, no real residential addresses.
 
 import SwiftUI
@@ -53,14 +54,15 @@ struct MapsAppView: View {
       Image(systemName: "map")
         .font(theme.fonts.font(40))
         .foregroundStyle(theme.palette.iconPlaces.color)
-      Text("No recent places")
+      Text("No Significant Locations")
         .font(theme.fonts.headlineFont)
         .foregroundStyle(theme.palette.primaryText.color)
-      Text("Timeline appears when location history is available on this phone.")
+      Text("Places show up when this phone has something worth noticing.")
         .font(theme.fonts.subheadlineFont)
         .foregroundStyle(theme.palette.secondaryText.color)
         .multilineTextAlignment(.center)
         .padding(.horizontal, theme.spacing.xl)
+        .accessibilityIdentifier("maps-empty")
       Spacer()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -27,24 +27,26 @@ struct LinkBoardView: View {
   private var instructionBanner: some View {
     Text(
       selectedId == nil
-        ? "Tap two names to connect them. What belongs together?"
-        : "Now tap who that connects to."
+        ? "Who belongs together?"
+        : "Now the other name."
     )
     .font(theme.fonts.subheadlineFont)
+    .fontWeight(.medium)
     .foregroundStyle(theme.palette.secondaryText.color)
     .padding(.horizontal, theme.spacing.md)
     .padding(.vertical, theme.spacing.sm)
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(theme.palette.elevatedBackground.color)
+    .accessibilityIdentifier("links-instruction")
   }
 
   private var emptyState: some View {
     VStack(spacing: theme.spacing.md) {
       Spacer()
-      Text("Nothing on the board yet")
+      Text("No one on the board yet")
         .font(theme.fonts.headlineFont)
         .foregroundStyle(theme.palette.primaryText.color)
-      Text("Open messages, calls, and photos. People you find will show up here.")
+      Text("People appear as you read the phone.")
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.secondaryText.color)
         .multilineTextAlignment(.center)
@@ -52,6 +54,7 @@ struct LinkBoardView: View {
       Spacer()
     }
     .frame(maxWidth: .infinity)
+    .accessibilityIdentifier("links-empty")
   }
 
   private func boardCanvas(entities: [BoardEntity]) -> some View {

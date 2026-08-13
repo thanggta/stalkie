@@ -48,42 +48,42 @@ public struct RootPhoneView: View {
       }
       .hideSystemNavigationChrome()
 
-      // In-fiction status chrome sits in the hardware safe area (next to
-      // Dynamic Island), not *below* it — ignoresSafeArea is required.
-      // Transparent regions must not steal taps from the home grid/dock.
+      // Top chrome only — never a full-screen overlay with Spacer (that steals
+      // or confuses hit-testing for Back/Home under the NavigationStack).
       VStack(spacing: 0) {
         StatusBarView(lightContent: statusBarLight)
           .allowsHitTesting(false)
         PersistenceWarningBanner()
-        UnlockBannerStack(path: $path)
-        Spacer(minLength: 0)
-          .allowsHitTesting(false)
+        // Banners only on SpringBoard — over app chrome they steal Back/Home hits.
+        if onHome {
+          UnlockBannerStack(path: $path)
+        }
       }
+      .frame(maxWidth: .infinity, alignment: .top)
       .ignoresSafeArea(edges: .top)
 
+    }
+    .overlay(alignment: .topTrailing) {
+      // Overlay sizes to the chip only — no full-screen hit target.
       if let onLeavePhone {
-        VStack {
-          HStack {
-            Button(action: onLeavePhone) {
-              Text("Cases")
-                .font(theme.fonts.footnoteFont)
-                .foregroundStyle(theme.palette.badgeText.color)
-                .padding(.horizontal, theme.spacing.sm)
-                .padding(.vertical, theme.spacing.xs)
-                .background(
-                  theme.palette.primaryText.color.opacity(0.28),
-                  in: Capsule()
-                )
-            }
-            .buttonStyle(.plain)
-            .accessibilityIdentifier("library-back")
-            .accessibilityLabel("Back to case library")
-            .frame(minWidth: 44, minHeight: 44)
-            Spacer()
-          }
-          .padding(.horizontal, theme.spacing.sm)
-          Spacer()
+        Button(action: onLeavePhone) {
+          Text("Cases")
+            .font(theme.fonts.footnoteFont)
+            .fontWeight(.semibold)
+            .foregroundStyle(theme.palette.badgeText.color)
+            .padding(.horizontal, theme.spacing.sm)
+            .padding(.vertical, theme.spacing.xs)
+            .background(
+              theme.palette.primaryText.color.opacity(onHome ? 0.34 : 0.22),
+              in: Capsule()
+            )
         }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("library-back")
+        .accessibilityLabel("Back to case library")
+        .frame(minWidth: 44, minHeight: 44)
+        .contentShape(Rectangle())
+        .padding(.trailing, theme.spacing.sm)
         .padding(.top, theme.statusBar.height)
       }
     }

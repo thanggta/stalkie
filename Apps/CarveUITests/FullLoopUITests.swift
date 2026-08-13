@@ -122,13 +122,15 @@ final class FullLoopUITests: XCTestCase {
     for _ in 0..<10 {
       if isOnSpringBoard(app) { return }
 
-      // Prefer stable identifiers; force-tap even when hit-testing is flaky.
-      if forceTapExisting(app.descendants(matching: .any)["nav-home"]) { continue }
-      if forceTapExisting(app.descendants(matching: .any)["instagram-home"]) { continue }
-      if forceTapExisting(app.descendants(matching: .any)["snapchat-home"]) { continue }
-      if forceTapExisting(app.descendants(matching: .any)["nav-back"]) { continue }
-      if forceTapExisting(app.buttons["Home"]) { continue }
-      if forceTapExisting(app.buttons["Back"]) { continue }
+      // Prefer hittable identifiers only. Coordinate-tapping buried stack
+      // elements looks like progress but does not navigate.
+      if hittableTap(app.descendants(matching: .any)["nav-home"]) { continue }
+      if hittableTap(app.descendants(matching: .any)["nav-back"]) { continue }
+      if hittableTap(app.descendants(matching: .any)["instagram-home"]) { continue }
+      if hittableTap(app.descendants(matching: .any)["snapchat-home"]) { continue }
+      if hittableTap(app.buttons["Home"]) { continue }
+      if hittableTap(app.buttons["Back"]) { continue }
+      if hittableTap(app.descendants(matching: .any)["home-indicator"]) { continue }
     }
     XCTAssertTrue(isOnSpringBoard(app), "failed to return to SpringBoard home")
   }
@@ -139,22 +141,15 @@ final class FullLoopUITests: XCTestCase {
   }
 
   @discardableResult
-  private func forceTapExisting(_ element: XCUIElement) -> Bool {
-    guard element.exists else { return false }
-    // Use coordinate tap when the element is in hierarchy but not hittable
-    // (common with stacked NavigationStack + overlay chrome).
-    if element.isHittable {
-      element.tap()
-    } else {
-      element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-    }
+  private func hittableTap(_ element: XCUIElement) -> Bool {
+    guard element.exists, element.isHittable else { return false }
+    element.tap()
     return true
   }
 
   private func tapIdentifier(_ app: XCUIApplication, _ id: String, timeout: TimeInterval = 5) {
     let el = app.descendants(matching: .any)[id]
     XCTAssertTrue(el.waitForExistence(timeout: timeout), "missing \(id)")
-    // Wait briefly for hit-testing after navigation animations.
     let deadline = Date().addingTimeInterval(timeout)
     while Date() < deadline {
       if el.firstMatch.isHittable {
@@ -163,7 +158,6 @@ final class FullLoopUITests: XCTestCase {
       }
       RunLoop.current.run(until: Date().addingTimeInterval(0.15))
     }
-    // Force tap even if hit-test is flaky on stacked NavigationStack views.
     el.firstMatch.tap()
   }
 }
