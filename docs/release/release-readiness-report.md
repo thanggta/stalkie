@@ -30,8 +30,8 @@ Immediate path: owner completes App Store Connect + signing → TestFlight inter
 | Phase 7 green head | `6a227ac` |
 | Prior green CI | https://github.com/thanggta/stalkie/actions/runs/31657829066 |
 | This branch | `release-readiness` |
-| Branch head (after this effort) | `c826956` (docs) on top of `6eb9870` (config/a11y) |
-| CI for this branch | *(fill after push — must be green before merge)* |
+| Branch head (after this effort) | `90b7caf` (docs pin) · `c826956` (handoffs) · `6eb9870` (config/a11y) |
+| CI for this branch | https://github.com/thanggta/stalkie/actions?query=branch%3Arelease-readiness |
 
 ---
 
