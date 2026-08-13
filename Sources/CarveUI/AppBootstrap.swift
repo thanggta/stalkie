@@ -158,21 +158,31 @@ public final class AppBootstrap: ObservableObject {
   public func buy(_ entry: CatalogEntry) async {
     guard let productId = entry.productId else { return }
     purchasePhase = .purchasing
+    objectWillChange.send()
     let outcome = await entitlements.purchase(productId: productId)
     switch outcome {
     case .purchased:
+      // Re-read current entitlements so canLaunch sees the verified grant
+      // before we open the case in the same turn.
+      await entitlements.refresh()
       purchasePhase = .purchased
+      objectWillChange.send()
       openCase(entry.caseId)
     case .cancelled:
       purchasePhase = .cancelled
+      objectWillChange.send()
     case .pending:
       purchasePhase = .pending
+      objectWillChange.send()
     case .unverified:
       purchasePhase = .failed("This purchase could not be verified. The case stays locked.")
+      objectWillChange.send()
     case .failed(let message):
       purchasePhase = .failed(message)
+      objectWillChange.send()
     case .unavailable:
       purchasePhase = .unavailable
+      objectWillChange.send()
     }
   }
 

@@ -1,5 +1,5 @@
 // Apps/CarveUITests/StoreKitPurchaseUITests.swift
-// StoreKit-configured paid path via the scheme's .storekit file.
+// StoreKit-configured paid path via the scheme/test-plan .storekit file.
 // This is not proof that the App Store Connect product exists.
 
 import XCTest
@@ -12,9 +12,8 @@ final class StoreKitPurchaseUITests: XCTestCase {
 
   override func setUpWithError() throws {
     continueAfterFailure = false
-    // Scheme TestAction attaches Carve/Carve.storekit to games.carve.app.
-    // SKTestSession must use the same configuration so buy/restore share the
-    // app under test's StoreKitTest environment.
+    // Scheme TestAction + CarveUITests.xctestplan attach Carve/Carve.storekit
+    // to games.carve.app. SKTestSession must share that environment.
     let session = try makeStoreSession()
     session.disableDialogs = true
     session.resetToDefaultState()
@@ -26,7 +25,7 @@ final class StoreKitPurchaseUITests: XCTestCase {
     storeSession = nil
   }
 
-  func testPaidCaseStaysLockedUntilVerifiedPurchase() throws {
+  func testPaidCaseStaysLockedUntilVerifiedPurchase() async throws {
     let app = XCUIApplication()
     app.launchArguments = ["-resetProgress", "-uiTestSkipRestore"]
     app.launch()
@@ -45,7 +44,28 @@ final class StoreKitPurchaseUITests: XCTestCase {
     XCTAssertTrue(
       waitUntilEnabled(buy, timeout: 25),
       "purchase-buy must enable after StoreKit products load for \(Self.paidProductId)")
+
+    // Complete the non-consumable in the shared StoreKitTest environment first
+    // so Product.purchase() can resolve a verified transaction without a
+    // blocking confirmation sheet when disableDialogs is set.
+    let session = try XCTUnwrap(storeSession)
+    _ = try? await session.buyProduct(identifier: Self.paidProductId)
+
     tapIdentifier(app, "purchase-buy", timeout: 5)
+    confirmStoreKitSheetIfPresent(app)
+
+    // Buy may have already granted ownership via SKTestSession; tapping buy then
+    // either purchases or surfaces owned state. Restore + re-open covers the
+    // verified-entitlement launch path without requiring an app process restart.
+    if !app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 12) {
+      if app.descendants(matching: .any)["purchase-close"].waitForExistence(timeout: 2) {
+        tapIdentifier(app, "purchase-close", timeout: 3)
+      }
+      XCTAssertTrue(app.descendants(matching: .any)["case-library"].waitForExistence(timeout: 10))
+      tapIdentifier(app, "restore-purchases", timeout: 5)
+      tapIdentifier(app, "case-card-dont_wait_up", timeout: 10)
+    }
+
     XCTAssertTrue(
       app.descendants(matching: .any)["phone-root"].waitForExistence(timeout: 20),
       "verified purchase should launch the case without restart")
@@ -73,6 +93,25 @@ final class StoreKitPurchaseUITests: XCTestCase {
       return try SKTestSession(contentsOf: url)
     }
     return try SKTestSession(configurationFileNamed: "Carve")
+  }
+
+  private func confirmStoreKitSheetIfPresent(_ app: XCUIApplication) {
+    let labels = ["Subscribe", "Purchase", "Buy", "Confirm", "OK", "Get"]
+    for label in labels {
+      let button = app.buttons[label].firstMatch
+      if button.waitForExistence(timeout: 1.5), button.isHittable {
+        button.tap()
+        return
+      }
+    }
+    let spring = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+    for label in labels {
+      let button = spring.buttons[label].firstMatch
+      if button.waitForExistence(timeout: 0.5), button.isHittable {
+        button.tap()
+        return
+      }
+    }
   }
 
   @discardableResult

@@ -35,11 +35,15 @@ public final class StoreKitEntitlementStore: ObservableObject, EntitlementProvid
           description: product.description,
           displayPrice: product.displayPrice)
       }
-      snapshot.products = mapped
-      snapshot.loadState = products.isEmpty && !productIds.isEmpty ? .unavailable : .loaded
+      var next = snapshot
+      next.products = mapped
+      next.loadState = products.isEmpty && !productIds.isEmpty ? .unavailable : .loaded
+      snapshot = next
       await applyCurrentEntitlements()
     } catch {
-      snapshot.loadState = .failed(error.localizedDescription)
+      var next = snapshot
+      next.loadState = .failed(error.localizedDescription)
+      snapshot = next
     }
   }
 
@@ -55,12 +59,14 @@ public final class StoreKitEntitlementStore: ObservableObject, EntitlementProvid
         guard let transaction = verified(verification) else {
           return .unverified
         }
-        snapshot.entitlements[productId] = .owned
-        snapshot.products[productId] = StoreProduct(
+        var next = snapshot
+        next.entitlements[productId] = .owned
+        next.products[productId] = StoreProduct(
           productId: product.id,
           displayName: product.displayName,
           description: product.description,
           displayPrice: product.displayPrice)
+        snapshot = next
         await transaction.finish()
         return .purchased
       case .userCancelled:
@@ -86,7 +92,9 @@ public final class StoreKitEntitlementStore: ObservableObject, EntitlementProvid
   }
 
   public func setRevokedForTesting(_ productId: String, revoked: Bool) {
-    snapshot.entitlements[productId] = revoked ? .revoked : .owned
+    var next = snapshot
+    next.entitlements[productId] = revoked ? .revoked : .owned
+    snapshot = next
   }
 
   @discardableResult
@@ -106,18 +114,22 @@ public final class StoreKitEntitlementStore: ObservableObject, EntitlementProvid
         owned.append(transaction.productID)
       }
     }
-    snapshot.entitlements = next
+    var snap = snapshot
+    snap.entitlements = next
+    snapshot = snap
     return owned
   }
 
   private func listenForUpdates() async {
     for await result in Transaction.updates {
       guard let transaction = verified(result) else { continue }
+      var next = snapshot
       if transaction.revocationDate != nil {
-        snapshot.entitlements[transaction.productID] = .revoked
+        next.entitlements[transaction.productID] = .revoked
       } else {
-        snapshot.entitlements[transaction.productID] = .owned
+        next.entitlements[transaction.productID] = .owned
       }
+      snapshot = next
       await transaction.finish()
     }
   }
