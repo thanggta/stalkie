@@ -87,7 +87,7 @@ After a clean usability pass on the slice path, re-score toward **READY FOR RELE
 | FullLoop UI | PASS |
 | Design capture (Pro) | PASS (~30 screens) |
 | StoreKit UI (local 26.5) | Not re-run (known 26.5 infra issue); CI prefers 26.0–26.2 |
-| GitHub Actions | *(fill after push)* |
+| GitHub Actions | **PASS** https://github.com/thanggta/stalkie/actions/runs/31664138100 |
 
 ---
 
@@ -107,5 +107,5 @@ After a clean usability pass on the slice path, re-score toward **READY FOR RELE
 | | |
 |---|---|
 | Branch | `ui-ux-redesign` |
-| SHA | *(after push)* |
-| CI | *(after push)* |
+| SHA | `b1aae7a` |
+| CI | https://github.com/thanggta/stalkie/actions/runs/31664138100 |
