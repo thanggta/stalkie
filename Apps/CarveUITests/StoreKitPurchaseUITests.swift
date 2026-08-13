@@ -17,10 +17,12 @@ final class StoreKitPurchaseUITests: XCTestCase {
     let session = try makeStoreSession()
     session.disableDialogs = true
     session.resetToDefaultState()
+    session.clearTransactions()
     storeSession = session
   }
 
   override func tearDownWithError() throws {
+    storeSession?.clearTransactions()
     storeSession?.resetToDefaultState()
     storeSession = nil
   }
@@ -73,7 +75,20 @@ final class StoreKitPurchaseUITests: XCTestCase {
 
   func testRestorePurchasesUnlocksWithoutRestart() async throws {
     let session = try XCTUnwrap(storeSession)
-    _ = try await session.buyProduct(identifier: Self.paidProductId)
+    // Prior tests may have already owned the product; clear then buy so restore
+    // has a verified transaction to re-apply.
+    session.clearTransactions()
+    session.resetToDefaultState()
+    session.disableDialogs = true
+    do {
+      _ = try await session.buyProduct(identifier: Self.paidProductId)
+    } catch {
+      // If buy still reports already-owned, clear again and retry once.
+      session.clearTransactions()
+      session.resetToDefaultState()
+      session.disableDialogs = true
+      _ = try await session.buyProduct(identifier: Self.paidProductId)
+    }
 
     let app = XCUIApplication()
     app.launchArguments = ["-resetProgress", "-uiTestSkipRestore"]
