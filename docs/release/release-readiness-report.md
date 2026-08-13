@@ -30,8 +30,8 @@ Immediate path: owner completes App Store Connect + signing → TestFlight inter
 | Phase 7 green head | `6a227ac` |
 | Prior green CI | https://github.com/thanggta/stalkie/actions/runs/31657829066 |
 | This branch | `release-readiness` |
-| Branch head (after this effort) | `90b7caf` (docs pin) · `c826956` (handoffs) · `6eb9870` (config/a11y) |
-| CI for this branch | https://github.com/thanggta/stalkie/actions?query=branch%3Arelease-readiness |
+| Branch head (after this effort) | `822ab50` (report links) on `6eb9870` (config/a11y) + docs |
+| CI for this branch | **green** https://github.com/thanggta/stalkie/actions/runs/31659803042 |
 
 ---
 
@@ -205,7 +205,7 @@ Recorded **2026-08-13** on the release-readiness machine (Xcode 26.6 / iOS Simul
 | Release sim build (`xcodebuild -configuration Release`, `CODE_SIGNING_ALLOWED=NO`) | **PASS** |
 | FullLoop UI (`FullLoopUITests` on iPhone 17 Pro, iOS 26.5) | **PASS** (~169s) |
 | StoreKit UI (`StoreKitPurchaseUITests` on local iOS 26.5) | **FAIL (infra)** — `SKInternalErrorDomain Code=3` / Octane never syncs on 26.5 under xcodebuild (same class of issue CI avoids by preferring 26.0–26.2). **Not a product regression claim.** Prior green: Phase 7 CI run `31657829066`. |
-| GitHub Actions after push | *(fill after push)* |
+| GitHub Actions after push | **PASS** https://github.com/thanggta/stalkie/actions/runs/31659803042 |
 
 Local StoreKit UI failure on 26.5 is **not** treated as real App Store sandbox evidence either way.
 
