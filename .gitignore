@@ -3,3 +3,5 @@
 DerivedData/
 xcuserdata/
 TestResults/
+# Generated simulator captures — keep MANIFEST notes if hand-authored; ignore bulk PNG noise in CI caches
+design-review/**/*.xcresult/

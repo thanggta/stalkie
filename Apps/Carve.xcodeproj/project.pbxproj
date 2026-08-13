@@ -15,6 +15,7 @@
 		B1A01ASSET00000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B1A01ASSET00000000000002 /* Assets.xcassets */; };
 		B1A01UITEST0000000000001 /* FullLoopUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1A01UITEST0000000000002 /* FullLoopUITests.swift */; };
 		C7A1UITEST0000000000001 /* StoreKitPurchaseUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */; };
+		D7A1UITEST0000000000001 /* DesignBaselineCaptureUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A1UITEST0000000000002 /* DesignBaselineCaptureUITests.swift */; };
 		C7A1SKRES0000000000001 /* Carve.storekit in Resources */ = {isa = PBXBuildFile; fileRef = C7A1SKIT00000000000001 /* Carve.storekit */; };
 		C7A1SKAPP0000000000001 /* Carve.storekit in Resources */ = {isa = PBXBuildFile; fileRef = C7A1SKIT00000000000001 /* Carve.storekit */; };
 /* End PBXBuildFile section */
@@ -36,6 +37,7 @@
 		B1A01ASSET00000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B1A01UITEST0000000000002 /* FullLoopUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullLoopUITests.swift; sourceTree = "<group>"; };
 		C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitPurchaseUITests.swift; sourceTree = "<group>"; };
+		D7A1UITEST0000000000002 /* DesignBaselineCaptureUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignBaselineCaptureUITests.swift; sourceTree = "<group>"; };
 		B1A01UITEST0000000000003 /* CarveUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CarveUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7A1SKIT00000000000001 /* Carve.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Carve.storekit; sourceTree = "<group>"; };
 		C7A1TPLAN0000000000001 /* CarveUITests.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = CarveUITests.xctestplan; sourceTree = "<group>"; };
@@ -98,6 +100,7 @@
 			children = (
 				B1A01UITEST0000000000002 /* FullLoopUITests.swift */,
 				C7A1UITEST0000000000002 /* StoreKitPurchaseUITests.swift */,
+				D7A1UITEST0000000000002 /* DesignBaselineCaptureUITests.swift */,
 				C7A1TPLAN0000000000001 /* CarveUITests.xctestplan */,
 			);
 			path = CarveUITests;
@@ -240,6 +243,7 @@
 			files = (
 				B1A01UITEST0000000000001 /* FullLoopUITests.swift in Sources */,
 				C7A1UITEST0000000000001 /* StoreKitPurchaseUITests.swift in Sources */,
+				D7A1UITEST0000000000001 /* DesignBaselineCaptureUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
