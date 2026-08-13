@@ -26,5 +26,9 @@ Run VoiceOver on an iPhone simulator and confirm:
 9. Dynamic Type at AX sizes: library cards, purchase copy, verdict prompts still readable
 10. Reduce Motion: unlock banner appears without the slide
 
-Dynamic Type is not exhaustively snapshotted. Theme fonts go through the system text styles
-where the theme layer already does; remaining fixed sizes are a follow-up, not a silent pass.
+Dynamic Type is not exhaustively snapshotted. Theme fonts currently resolve via fixed
+`Font.system(size:)` tokens — they do **not** fully track Accessibility text sizes. That gap
+is tracked as A11Y-1 in `docs/release/release-readiness-report.md`. Do not treat automated
+labels as a completed manual pass.
+
+Manual observation sheet: `docs/release/accessibility-observation-sheet.md`.

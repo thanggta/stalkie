@@ -42,6 +42,9 @@ is configured in App Store Connect.
 
 Until those steps exist, only the local `.storekit` file and protocol fakes are valid tests.
 
+Owner checklist (product, price, sandbox tester, 11-step matrix):
+`docs/release/asc-owner-checklist.md`.
+
 ## What unit tests cover vs StoreKitTest
 
 | Path | How it is tested |
