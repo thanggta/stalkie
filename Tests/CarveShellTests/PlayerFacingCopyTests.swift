@@ -23,6 +23,15 @@ struct PlayerFacingCopyTests {
     }
   }
 
+  @Test func verdictOptionLabelMatchesVisibleTitleCase() {
+    // Why: VoiceOver must speak the same words the sighted player sees.
+    // A raw snake_case option id is not a label.
+    #expect(PlayerFacingCopy.verdictOptionLabel("party_help") == "Party Help")
+    #expect(PlayerFacingCopy.verdictOptionLabel("yes") == "Yes")
+    #expect(PlayerFacingCopy.verdictOptionLabel("sable_place") == "Sable Place")
+    #expect(PlayerFacingCopy.verdictOptionLabel("") == "(nothing)")
+  }
+
   @Test func uiSourceStringLiteralsDoNotUseEngineVocabulary() throws {
     let roots = try uiSourceRoots()
     #expect(!roots.isEmpty)

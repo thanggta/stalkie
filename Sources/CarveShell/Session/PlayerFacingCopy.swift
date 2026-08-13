@@ -34,6 +34,19 @@ public enum PlayerFacingCopy {
     return engineVocabulary.contains { lower.contains($0) }
   }
 
+  /// Human-readable verdict option for on-screen text and VoiceOver.
+  /// Keeps labels identical so selected state is not color-only for a11y users.
+  public static func verdictOptionLabel(_ raw: String) -> String {
+    if raw.isEmpty { return "(nothing)" }
+    return raw
+      .split(separator: "_")
+      .map { part in
+        guard let first = part.first else { return String(part) }
+        return String(first).uppercased() + part.dropFirst()
+      }
+      .joined(separator: " ")
+  }
+
   public static func loadFailure(from error: Error) -> PersistenceFailure {
     PersistenceFailure(
       playerMessage: loadFailedBody,

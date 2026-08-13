@@ -223,7 +223,7 @@ struct VerdictFlowView: View {
           session.setAnswer(questionId: question.id, option: option)
         } label: {
           HStack {
-            Text(displayOption(option))
+            Text(PlayerFacingCopy.verdictOptionLabel(option))
               .font(theme.fonts.bodyFont)
               .foregroundStyle(
                 selected
@@ -250,7 +250,7 @@ struct VerdictFlowView: View {
         .buttonStyle(.plain)
         .frame(minHeight: 44)
         .accessibilityIdentifier("verdict-option-\(question.id)-\(option)")
-        .accessibilityLabel(option.replacingOccurrences(of: "_", with: " "))
+        .accessibilityLabel(PlayerFacingCopy.verdictOptionLabel(option))
         .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
       }
     }
@@ -279,7 +279,7 @@ struct VerdictFlowView: View {
             Text(question.prompt)
               .font(theme.fonts.subheadlineFont)
               .foregroundStyle(theme.palette.secondaryText.color)
-            Text(displayOption(session.draftAnswers[question.id] ?? "—"))
+            Text(PlayerFacingCopy.verdictOptionLabel(session.draftAnswers[question.id] ?? "—"))
               .font(theme.fonts.headlineFont)
               .foregroundStyle(theme.palette.primaryText.color)
           }
@@ -398,13 +398,4 @@ struct VerdictFlowView: View {
     }
   }
 
-  private func displayOption(_ raw: String) -> String {
-    raw
-      .split(separator: "_")
-      .map { part in
-        guard let first = part.first else { return String(part) }
-        return String(first).uppercased() + part.dropFirst()
-      }
-      .joined(separator: " ")
-  }
 }

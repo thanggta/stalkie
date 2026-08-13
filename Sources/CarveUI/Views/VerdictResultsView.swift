@@ -108,11 +108,11 @@ struct VerdictResultsView: View {
         .font(theme.fonts.headlineFont)
         .foregroundStyle(theme.palette.primaryText.color)
 
-      Text("You said \(displayOption(result.given)).")
+      Text("You said \(PlayerFacingCopy.verdictOptionLabel(result.given)).")
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.destructive.color)
 
-      Text("It was \(displayOption(result.correct)).")
+      Text("It was \(PlayerFacingCopy.verdictOptionLabel(result.correct)).")
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.primaryText.color)
 
@@ -135,7 +135,7 @@ struct VerdictResultsView: View {
       Text(prompt)
         .font(theme.fonts.subheadlineFont)
         .foregroundStyle(theme.palette.secondaryText.color)
-      Text(displayOption(result.correct))
+      Text(PlayerFacingCopy.verdictOptionLabel(result.correct))
         .font(theme.fonts.bodyFont)
         .foregroundStyle(theme.palette.primaryText.color)
     }
@@ -184,14 +184,4 @@ struct VerdictResultsView: View {
     }
   }
 
-  private func displayOption(_ raw: String) -> String {
-    if raw.isEmpty { return "(nothing)" }
-    return raw
-      .split(separator: "_")
-      .map { part in
-        guard let first = part.first else { return String(part) }
-        return String(first).uppercased() + part.dropFirst()
-      }
-      .joined(separator: " ")
-  }
 }
